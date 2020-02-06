@@ -1,6 +1,6 @@
-# Aprendizaje Automático Interpretable (Libro)
+# Aprendizaje Automático Interpretable
 
-## Sobre el código
+## Editar el contenido
 El primer paso es descargar los archivos de este repositorio y modificar o ir agregando los archivos .Rmd que compongan la totalidad del libro. Una vez hecho, deben modificarse los archivos **\_bookdown.yml** y **\_output.yml** para proceder a Knitear.
 
 ## Publicación
