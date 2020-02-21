@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 Conjuntos de datos | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 Conjuntos de datos | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 Conjuntos de datos | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-02-21" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="interpretabilidad.html"/>
+
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Bookdown Book</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="intro.html"><a href="intro.html#horadelcuento"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="intro.html"><a href="intro.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="intro.html"><a href="intro.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="intro.html"><a href="intro.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="intro.html"><a href="intro.html#que-es-el-aprendizaje-automatico"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="intro.html"><a href="intro.html#terminología"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad.html"><a href="interpretabilidad.html#interpretabilidad-importancia"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="interpretabilidad.html"><a href="interpretabilidad.html#taxonomia-de-los-metodos-de-interpretacion"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="interpretabilidad.html"><a href="interpretabilidad.html#alcance-de-la-interpretabilidad"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="interpretabilidad.html"><a href="interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="interpretabilidad.html"><a href="interpretabilidad.html#interpretabilidad-global-y-holistica-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="interpretabilidad.html"><a href="interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="interpretabilidad.html"><a href="interpretabilidad.html#interpretabilidad-local-para-una-unica-prediccion"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="interpretabilidad.html"><a href="interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="interpretabilidad.html"><a href="interpretabilidad.html#evaluacion-de-la-interpretabilidad"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="interpretabilidad.html"><a href="interpretabilidad.html#properties"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="interpretabilidad.html"><a href="interpretabilidad.html#amigables"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="interpretabilidad.html"><a href="interpretabilidad.html#que-es-una-explicacion"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="interpretabilidad.html"><a href="interpretabilidad.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html#bike-data"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html#spam-data"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html#cervical"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="conjuntosdedatos" class="section level1">
+<h1><span class="header-section-number">Chapter 3</span> Conjuntos de datos</h1>
+<p>A lo largo del libro, todos los modelos y técnicas se aplican a conjuntos de datos reales que están disponibles gratuitamente en línea.
+Utilizaremos diferentes conjuntos de datos para diferentes tareas:
+Clasificación, regresión y clasificación de textos.</p>
+<div id="bike-data" class="section level2">
+<h2><span class="header-section-number">3.1</span> Alquiler de bicicletas (Regresión)</h2>
+<p>Este conjunto de datos contiene recuentos diarios de bicicletas alquiladas de la empresa de alquiler de bicicletas <a href="https://www.capitalbikeshare.com/">Capital-Bikeshare</a> en Washington D.C., junto con información meteorológica y estacional.
+Los datos se pusieron a disposición de Capital-Bikeshare.
+Fanaee-T y Gama (2013)<a href="#fn12" class="footnote-ref" id="fnref12"><sup>12</sup></a> agregaron datos meteorológicos e información sobre la temporada.
+El objetivo es predecir cuántas bicicletas se alquilarán dependiendo del clima y el día.
+Los datos se pueden descargar del <a href="http://archive.ics.uci.edu/ml/datasets/Bike+Sharing+Dataset">Depósito de aprendizaje automático de UCI</a>.</p>
+<p>Se agregaron nuevas características al conjunto de datos y no se usaron todas las características originales para los ejemplos de este libro.
+Aquí está la lista de características que se utilizaron:</p>
+<ul>
+<li>Recuento de bicicletas, incluidos usuarios ocasionales y registrados.
+El recuento se utiliza como objetivo en la tarea de regresión.</li>
+<li>La temporada, ya sea primavera, verano, otoño o invierno.</li>
+<li>Indicador de si el día fue feriado o no.</li>
+<li>El año, 2011 o 2012.</li>
+<li>Número de días desde el 01.01.2011 (el primer día en el conjunto de datos).
+Esta característica se introdujo para tener en cuenta la tendencia a lo largo del tiempo.</li>
+<li>Indicador de si el día fue un día laboral o un fin de semana.</li>
+<li>La situación climática de ese día. Uno de:
+    - despejado, pocas nubes, parcialmente nublado, nublado
+    - niebla + nubes, niebla + nubes rotas, niebla + pocas nubes, niebla
+    - nieve ligera, lluvia ligera + tormenta eléctrica + nubes dispersas, lluvia ligera + nubes dispersas
+    - fuertes lluvias + paletas de hielo + tormenta eléctrica + niebla, nieve + niebla</li>
+<li>Temperatura en grados Celsius.</li>
+<li>Humedad relativa en porcentaje (0 a 100).</li>
+<li>Velocidad del viento en km por hora.</li>
+</ul>
+<p>Para los ejemplos en este libro, los datos han sido ligeramente procesados.
+Puede encontrar el script R de procesamiento en el <a href="https://github.com/christophM/interpretable-ml-book/blob/master/R/get-bike-sharing-dataset.R">repositorio de Github</a> junto con el <a href="https://github.com/christophM/interpretable-ml-book/blob/master/data/bike.RData">archivo RData final</a>.</p>
+<!--{pagebreak}-->
+</div>
+<div id="spam-data" class="section level2">
+<h2><span class="header-section-number">3.2</span> Comentarios de spam de YouTube (clasificación de texto)</h2>
+<p>Como ejemplo de clasificación de texto, trabajamos con 1956 comentarios de 5 videos de YouTube diferentes.
+Afortunadamente, los autores que utilizaron este conjunto de datos en un artículo sobre clasificación de spam hicieron que los datos estén <a href="http://dcomp.sor.ufscar.br/talmeida/youtubespamcollection/">disponibles gratuitamente</a> (Alberto, Lochter y Almeida (2015)<a href="#fn13" class="footnote-ref" id="fnref13"><sup>13</sup></a>).</p>
+<p>Los comentarios se recopilaron a través de la API de YouTube de cinco de los diez videos más vistos en YouTube en el primer semestre de 2015.
+Los 5 son videos musicales.
+Uno de ellos es “Gangnam Style” del artista coreano Psy.
+Los otros artistas fueron Katy Perry, LMFAO, Eminem y Shakira.</p>
+<p>Revisa algunos de los comentarios.
+Los comentarios fueron etiquetados manualmente como spam o legítimos.
+El spam se codificó con un “1” y los comentarios legítimos con un “0”.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">CONTENT</th>
+<th align="right">CLASS</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Huh, anyway check out this you[tube] channel: kobyoshi02</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Hey guys check out my new channel and our first vid THIS IS US THE MONKEYS!!! I’m the monkey in the white shirt,please leave a like comment and please subscribe!!!!</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">just for test I have to say murdev.com</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">me shaking my sexy ass on my channel enjoy ^_^</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">watch?v=vtaRGgvGtWQ Check this out .</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">Hey, check out my new website!! This site is about kids stuff. kidsmediausa . com</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">Subscribe to my channel</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">i turned it on mute as soon is i came on i just wanted to check the views…</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">You should check my channel for Funny VIDEOS!!</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">and u should.d check my channel and tell me what I should do next!</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>También puedes ir a YouTube y echar un vistazo a la sección de comentarios.
+Pero no te dejes atrapar en el infierno de YouTube, y por favor no termines viendo videos de monos robando y bebiendo cócteles de turistas en la playa.
+El detector de spam de Google también ha cambiado mucho desde 2015.</p>
+<p><a href="https://www.youtube.com/watch?v=9bZkp7q19f0&amp;feature=player_embedded">Vea el video de ruptura de récords “Gangnam Style” aquí</a>.</p>
+<p>Si deseas jugar con los datos, puedes encontrar el <a href="https://github.com/christophM/interpretable-ml-book/blob/master/data/ycomments.RData">archivo RData</a> junto con <a href="https://github.com/christophM/interpretable-ml-book/blob/master/R/get-SpamTube-dataset.R">R -script</a> con algunas funciones convenientes en el repositorio de Github del libro.</p>
+<!--{pagebreak}-->
+</div>
+<div id="cervical" class="section level2">
+<h2><span class="header-section-number">3.3</span> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</h2>
+<p>El conjunto de datos sobre el cáncer cervical contiene indicadores y factores de riesgo para predecir si una mujer tendrá cáncer cervical.
+Las características incluyen datos demográficos (como edad), estilo de vida e historial médico.
+Los datos se pueden descargar desde el <a href="https://archive.ics.uci.edu/ml/datasets/Cervical+cancer+%28Risk+Factors%29">repositorio de UCI Machine Learning</a> y Fernandes, Cardoso y Fernandes lo describen. (2017)<a href="#fn14" class="footnote-ref" id="fnref14"><sup>14</sup></a>.</p>
+<p>El subconjunto de características utilizadas en los ejemplos del libro son:</p>
+<ul>
+<li>Edad en años</li>
+<li>Número de parejas sexuales</li>
+<li>Primera relación sexual (edad en años)</li>
+<li>Número de embarazos</li>
+<li>Fumar o no</li>
+<li>Años fumando</li>
+<li>Anticonceptivos hormonales si o no</li>
+<li>Anticonceptivos hormonales (en años)</li>
+<li>Dispositivo intrauterino sí o no (DIU)</li>
+<li>Número de años con un dispositivo intrauterino (DIU)</li>
+<li>¿Ha tenido alguna vez una enfermedad de transmisión sexual (ETS) sí o no?</li>
+<li>Número de diagnósticos de ETS</li>
+<li>Tiempo desde el primer diagnóstico de ETS</li>
+<li>Tiempo desde el último diagnóstico de ETS</li>
+<li>La biopsia resulta “Saludable” o “Cáncer”. Objetivo de clasificación.</li>
+</ul>
+<p>La biopsia sirve como estádndar para diagnosticar el cáncer cervical.
+Para los ejemplos en este libro, el resultado de la biopsia se utilizó como objetivo.
+Los valores faltantes para cada columna fueron imputados por la moda (valor más frecuente), que probablemente sea una mala solución, ya que la respuesta verdadera podría estar correlacionada con la probabilidad de que falte un valor.
+Probablemente hay un sesgo porque las preguntas son de naturaleza muy privada.
+Pero este no es un libro sobre la imputación de datos faltantes, por lo que la imputación por la moda tendrá que ser suficiente para los ejemplos.</p>
+<p>Para reproducir los ejemplos de este libro con este conjunto de datos, busque el
+<a href="https://github.com/christophM/interpretable-ml-book/blob/master/R/get-cervical-cancer-dataset.R">preprocesamiento de script R</a> y el
+<a href="https://github.com/christophM/interpretable-ml-book/blob/master/data/cervical.RData">archivo RData final</a> en el repositorio de Github del libro.</p>
+
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="footnotes">
+<hr />
+<ol start="12">
+<li id="fn12"><p>Fanaee-T, Hadi y Joao Gama. “Etiquetado de eventos que combina detectores de conjunto y conocimientos básicos”. Progreso en Inteligencia Artificial. Springer Berlin Heidelberg, 1–15. doi: 10.1007 / s13748-013-0040-3. (2013)<a href="conjuntosdedatos.html#fnref12" class="footnote-back">↩</a></p></li>
+<li id="fn13"><p>Alberto, Túlio C, Johannes V Lochter y Tiago A Almeida. “Tubespam: filtro de spam de comentarios en YouTube”. En Machine Learning and Applications (Icmla), Ieee 14th International Conference on, 138–43. IEEE (2015)<a href="conjuntosdedatos.html#fnref13" class="footnote-back">↩</a></p></li>
+<li id="fn14"><p>Fernandes, Kelwin, Jaime S Cardoso y Jessica Fernandes. “Transferir el aprendizaje con observabilidad parcial aplicada a la detección del cáncer cervical”. Conferencia ibérica sobre reconocimiento de patrones y análisis de imágenes, 243–50. Saltador. (2017)<a href="conjuntosdedatos.html#fnref14" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="interpretabilidad.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
