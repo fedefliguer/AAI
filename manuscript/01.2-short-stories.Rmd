@@ -1,0 +1,283 @@
+﻿
+<!--{pagebreak}-->
+
+## Hora del cuento {#horadelcuento}
+
+Comenzaremos con algunas historias cortas.
+Cada historia es una llamada algo exagerada para el aprendizaje automático interpretable.
+Si tenés prisa, puede saltear las historias.
+Si querés entretenerte y (des)motivarte, ¡sigue leyendo!
+
+El formato está inspirado en los cuentos técnicos de Jack Clark en su [Boletín informativo Importación AI](https://jack-clark.net/).
+Si te gustan este tipo de historias o si estás interesado en la inteligencia artificial, te recomiendo que te registres.
+
+### Un rayo nunca golpea dos veces {-}
+**2030: un laboratorio médico en Suiza**
+
+```{r hospital, echo = FALSE, fig.cap = "",width=500}
+knitr::include_graphics("images/hospital.jpg")
+```
+
+
+"¡Definitivamente no es la peor forma de morir!" Tom resumió, tratando de encontrar algo positivo en la tragedia.
+Sacó la bomba del poste intravenoso.
+"Simplemente murió por las razones equivocadas", agregó Lena.
+"¡Y ciertamente con la bomba de morfina equivocada!
+¡Solo estamos creando más trabajo para nosotros!", Se quejó Tom mientras desenroscaba la placa posterior de la bomba.
+Después de quitar todos los tornillos, levantó la placa y la dejó a un lado.
+Conectó un cable al puerto de diagnóstico.
+"No solo te quejaste de tener un trabajo, ¿verdad?" Lena le dedicó una sonrisa burlona.
+"Por supuesto que no. ¡Nunca!" exclamó con un tono sarcástico.
+
+Arrancó la computadora de la bomba.
+Lena enchufó el otro extremo del cable a su tableta.
+"Muy bien, los diagnósticos se están ejecutando", anunció.
+"Tengo mucha curiosidad por saber qué salió mal".
+"Ciertamente le disparó a nuestro John Doe al Nirvana.
+Fue la alta concentración de este material de morfina.
+Hombre. Quiero decir, normalmente, una bomba rota emite muy poco o nada en absoluto.
+Pero nunca, ya sabes, algo así", explicó Tom.
+"Lo sé. No tienes que convencerme ... Oye, mira eso". Lena levantó su tableta.
+"¿Ves este pico aquí? Esa es la potencia de la mezcla de analgésicos.
+¡Mira! Esta línea muestra el nivel de referencia.
+El pobre tipo tenía una mezcla de analgésicos en su sistema sanguíneo que podría matarlo 17 veces.
+Inyectado por nuestra bomba aquí.
+Y aquí ... "se deslizó," aquí puedes ver el momento de la muerte del paciente".
+"Entonces, ¿alguna idea de lo que pasó, jefe?" Tom le preguntó a su supervisor.
+"Hmm... Los sensores parecen estar bien.
+Frecuencia cardíaca, niveles de oxígeno, glucosa, ... Los datos se recopilaron como se esperaba.
+Algunos valores faltantes en los datos de oxígeno en la sangre, pero eso no es inusual.
+Mira aquí.
+Los sensores también han detectado la frecuencia cardíaca lenta del paciente y los niveles extremadamente bajos de cortisol causados por el derivado de la morfina y otros agentes bloqueadores del dolor".
+Ella continuó pasando el informe de diagnóstico.
+Tom miraba cautivado la pantalla.
+Fue su primera investigación de una falla real del dispositivo.
+
+"Ok, aquí está nuestra primera pieza del rompecabezas.
+El sistema no pudo enviar una advertencia al canal de comunicación del hospital.
+La advertencia se activó, pero se rechazó a nivel de protocolo.
+Podría ser culpa nuestra, pero también podría ser culpa del hospital.
+Envíe los registros al equipo de IT", le dijo Lena a Tom.
+Tom asintió con los ojos todavía fijos en la pantalla.
+Lena continuó:
+"Es extraño.
+La advertencia también debería haber causado que la bomba se apagara.
+Pero obviamente no lo hizo.
+Eso debe ser un error.
+Algo que control de calidad perdió.
+Algo realmente malo.
+Tal vez esté relacionado con el problema del protocolo".
+"Entonces, el sistema de emergencia de la bomba de alguna manera se averió, pero ¿por qué la bomba se llenó de bananas e inyectó tanto analgésico en John Doe?" Tom se preguntó.
+"Buena pregunta.
+Tienes razón.
+Dejando de lado la falla de emergencia del protocolo, la bomba no debería haber administrado esa cantidad de medicamento.
+El algoritmo debería haberse detenido por sí solo mucho antes, dado el bajo nivel de cortisol y otras señales de advertencia", explicó Lena.
+"¿Quizás algo de mala suerte, como una cosa entre un millón, como ser alcanzado por un rayo?" Tom le preguntó.
+"No, Tom.
+Si hubiera leído la documentación que le envié, habría sabido que la bomba se entrenó primero en experimentos con animales, luego en humanos, para aprender a inyectar la cantidad perfecta de analgésicos en función de la información sensorial.
+El algoritmo de la bomba puede ser opaco y complejo, pero no es aleatorio.
+Eso significa que en la misma situación la bomba se comportaría exactamente de la misma manera nuevamente.
+Nuestro paciente moriría de nuevo.
+Una combinación o interacción no deseada de las entradas sensoriales debe haber desencadenado el comportamiento erróneo de la bomba.
+Es por eso que tenemos que profundizar más y descubrir qué sucedió aquí", explicó Lena.
+
+"Ya veo ...", respondió Tom, perdido en sus pensamientos.
+"¿No iba a morir el paciente pronto de todos modos? ¿Por cáncer o algo así?"
+Lena asintió mientras leía el informe del análisis.
+Tom se levantó y fue a la ventana.
+Miró hacia afuera, con los ojos fijos en un punto a la distancia.
+"Tal vez la máquina le hizo un favor, ya sabes, al liberarlo del dolor.
+No más sufrimiento.
+Tal vez simplemente hizo lo correcto.
+Como un rayo, pero, ya sabes, uno bueno.
+Me refiero a la lotería, pero no al azar.
+Pero por una razón.
+Si yo fuera la bomba, habría hecho lo mismo".
+Finalmente levantó la cabeza y lo miró.
+Seguía mirando algo afuera.
+Ambos guardaron silencio por unos momentos.
+Lena volvió a bajar la cabeza y continuó el análisis.
+"No, Tom. Es un error ... Solo un maldito error".
+
+### Perder confianza {-}
+
+**2050: una estación de metro en Singapur**
+
+```{r access-denied, echo = FALSE, fig.cap = "", width=500}
+knitr::include_graphics("images/access-denied.jpg")
+```
+
+Se apresuró a la estación Bishan.
+Sus pensamientos ya estaban en el trabajo.
+Las pruebas para la nueva arquitectura neuronal deberían completarse por ahora.
+Ella dirigió el rediseño del "Sistema fiscal de predicción de afinidad para entidades individuales" del gobierno, que predice si una persona esconderá dinero que debe pagar en impuestos.
+Su equipo ha creado una elegante pieza de ingeniería.
+Si tiene éxito, el sistema no solo serviría a la oficina de impuestos, sino que también se incorporaría a otros sistemas, como el sistema de alarma contra el terrorismo y el registro comercial.
+Un día, el gobierno podría incluso integrar las predicciones en el Civic Trust Score.
+El Civic Trust Score estima cuán confiable es una persona.
+La estimación afecta cada parte de su vida diaria, como obtener un préstamo o cuánto tiempo tiene que esperar para obtener un nuevo pasaporte.
+Mientras bajaba la escalera mecánica, se imaginó cómo se vería una integración del sistema de su equipo en el sistema de puntuación de confianza cívica.
+
+Rutinariamente pasaba la mano por el lector sin reducir su velocidad de marcha.
+Su mente estaba ocupada, hasta que sonaron las alarmas en su cerebro.
+
+Demasiado tarde.
+
+Con la nariz primero, corrió hacia la puerta de entrada del metro y cayó con el trasero al suelo.
+Se suponía que la puerta se abría ... pero no fue así.
+Atónita, se levantó y miró la pantalla junto a la puerta.
+"Por favor, inténtalo en otro momento", sugirió una carita sonriente en la pantalla.
+Una persona pasó y, ignorándola, pasó la mano sobre el lector.
+La puerta se abrió y él entró.
+La puerta se cerró de nuevo.
+Se limpió la nariz.
+Le dolía, pero al menos no sangraba.
+Ella trató de abrir la puerta, pero fue rechazada nuevamente.
+Fue extraño
+Tal vez su cuenta de transporte público no tenía suficiente crédito.
+Miró su reloj inteligente para verificar el saldo de la cuenta.
+
+"Inicio de sesión denegado. ¡Comuníquese con su Oficina de asesoramiento para ciudadanos! su reloj le informó.
+
+Una sensación de náuseas la golpeó como un puño en el estómago.
+Ella sospechaba lo que había sucedido.
+Para confirmar su teoría, abrió "Sniper Guild", un juego de disparos en primera persona.
+La aplicación se cerró de nuevo automáticamente, lo que confirmó su teoría.
+Se mareó y volvió a sentarse en el suelo.
+
+Solo había una explicación posible:
+Su puntuación de confianza cívica había bajado.
+Sustancialmente.
+Una pequeña caída significaba inconvenientes menores, como no obtener vuelos de primera clase o tener que esperar un poco más para obtener los documentos oficiales.
+Un puntaje de confianza bajo era raro y quien lo tenía estaba clasificado como una amenaza para la sociedad: Una medida para tratar con estas personas era mantenerlas alejadas de lugares públicos como el metro.
+El gobierno, además, restringió las transacciones financieras de sujetos con bajos puntajes de confianza cívica.
+También comenzaron a monitorear activamente su comportamiento en las redes sociales e incluso llegaron a restringir cierto contenido, como los juegos violentos.
+Se había vuelto más difícil aumentar el puntaje de confianza cívica cuanto más bajo era éste. Las personas con un puntaje muy bajo generalmente nunca se recuperaban.
+
+No podía pensar en ninguna razón por la cual su puntuación debería haber caído.
+La puntuación se basó en el aprendizaje automático.
+El Civic Trust Score System funcionó como un motor bien engrasado que dirigía la sociedad.
+El rendimiento del sistema de puntuación de confianza siempre se supervisó de cerca.
+El aprendizaje automático había mejorado mucho desde principios de siglo.
+Se había vuelto tan eficiente que las decisiones tomadas por el Trust Score System ya no podían ser cuestionadas.
+Un sistema infalible.
+
+Rió desesperada.
+Sistema infalible.
+El sistema rara vez había fallado.
+Pero falló.
+Ella debe ser uno de esos casos especiales;
+un error del sistema;
+a partir de ahora un paria.
+Nadie se atrevió a cuestionar el sistema.
+Estaba demasiado integrado en el gobierno, en la sociedad misma, para ser cuestionado.
+En los pocos países democráticos restantes, estaba prohibido formar movimientos antidemocráticos, no porque fueran inherentemente maliciosos, sino porque desestabilizarían el sistema actual.
+La misma lógica se aplica a las ahora algocracias. 
+La crítica en los algoritmos estaba prohibida debido al peligro para el status quo.
+
+La confianza algorítmica era el tejido del orden social.
+Por el bien común, se aceptaron tácitamente raras puntuaciones falsas de confianza.
+Cientos de otros sistemas de predicción y bases de datos ingresaron al puntaje, lo que hace imposible saber qué causó la caída en su puntaje.
+Sintió que un gran agujero oscuro se abría dentro y debajo de ella.
+Con horror, miró al vacío.
+
+Su sistema de afinidad fiscal finalmente se integró en el Sistema de puntuación de confianza cívica, pero nunca llegó a saberlo.
+
+
+
+### Clips de papel de Fermi {-}
+
+**Año 612 AMS (después del asentamiento en Marte): un museo en Marte**
+
+```{r burnt-earth, echo = FALSE, fig.cap = "", width=500}
+knitr::include_graphics("images/burnt-earth.jpg")
+```
+
+"La historia es aburrida", le susurró Xola a su amiga.
+Xola, una chica de cabello azul, perseguía uno de los drones del proyector que zumbaba en la habitación con la mano izquierda.
+"La historia es importante", dijo la maestra con voz molesta, mirando a las chicas.
+Xola se sonrojó.
+No esperaba que su maestra la escuchara.
+
+"Xola, ¿qué acabas de aprender?" la maestra le preguntó.
+"¿Que la gente antigua usó todos los recursos del Planeta Terrestre y luego murió?" ella preguntó cuidadosamente.
+"No. Calentaron el clima y no fueron las personas, fueron las computadoras y las máquinas. Y es el planeta Tierra, no el planeta Terrestre", agregó otra chica llamada Lin.
+Xola asintió de acuerdo.
+Con un toque de orgullo, la maestra sonrió y asintió.
+"Ambos tienen razón. ¿Sabes por qué sucedió?"
+"¿Porque la gente era miope y codiciosa?" Xola preguntó.
+"¡La gente no podía parar sus máquinas!" Espetó Lin.
+
+"Una vez más, ambos tienen razón", decidió la maestra,
+"Pero es mucho más complicado que eso.
+La mayoría de las personas en ese momento no sabían lo que estaba sucediendo.
+Algunos vieron los cambios drásticos, pero no pudieron revertirlos.
+La pieza más famosa de este período es un poema de un autor anónimo.
+Captura mejor lo que sucedió en ese momento.
+¡Escucha cuidadosamente!"
+
+
+La maestra comenzó el poema.
+Una docena de pequeños drones se reposicionaron frente a los niños y comenzaron a proyectar el video directamente en sus ojos.
+Mostraba a una persona en un traje de pie en un bosque con solo tocones de árboles.
+La persona comenzó a hablar:
+
+*Las máquinas computan; las máquinas predicen.*
+
+*Somos parte de esto.*
+
+*Perseguimos un óptimo entrenado.*
+
+*Lo óptimo es unidimensional, local y sin restricciones.*
+
+
+*Silicio y carne, persiguiendo la exponencialidad.*
+
+*El crecimiento es nuestra mentalidad.*
+
+*Cuando todas las recompensas sean recogidas,*
+
+*y sus efectos secundarios descuidados;*
+
+*Cuando se extraigan todas las monedas,*
+
+*y la naturaleza haya quedado atrás;*
+
+*Estaremos en problemas,*
+
+*Después de todo, el crecimiento exponencial es una burbuja.*
+
+
+*La tragedia del desarrollo de los comunes,*
+
+*Explotando,*
+
+*Ante nuestros ojos.*
+
+
+*Cálculos fríos y avaricia helada,*
+
+*Llena la tierra de calor.*
+
+*Todo se está muriendo,*
+
+*Y estamos cumpliendo.*
+
+
+*Al igual que los caballos con anteojeras, corremos la carrera de nuestra propia creación,*
+
+*Hacia el gran filtro de la civilización.*
+
+*Y así marchamos sin descanso.*
+
+*Como somos parte de la máquina.*
+
+*Abrazando la entropía.*
+
+"Un recuerdo oscuro", dijo la maestra para romper el silencio en la sala.
+"Se cargará en su biblioteca.
+Tu tarea es memorizarla hasta la próxima semana."
+Xola suspiró.
+Ella logró atrapar uno de los pequeños drones.
+El dron estaba caliente por la CPU y los motores.
+A Xola le gustó cómo le calentó las manos.
