@@ -1,0 +1,114 @@
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+devtools::load_all()
+```
+
+
+# Conjuntos de datos {#conjuntosdedatos}
+
+A lo largo del libro, todos los modelos y técnicas se aplican a conjuntos de datos reales que están disponibles gratuitamente en línea.
+Utilizaremos diferentes conjuntos de datos para diferentes tareas:
+Clasificación, regresión y clasificación de textos.
+
+## Alquiler de bicicletas (Regresión) {#bike-data}
+Este conjunto de datos contiene recuentos diarios de bicicletas alquiladas de la empresa de alquiler de bicicletas [Capital-Bikeshare](https://www.capitalbikeshare.com/) en Washington D.C., junto con información meteorológica y estacional.
+Los datos se pusieron a disposición de Capital-Bikeshare.
+Fanaee-T y Gama (2013)[^Fanaee] agregaron datos meteorológicos e información sobre la temporada.
+El objetivo es predecir cuántas bicicletas se alquilarán dependiendo del clima y el día.
+Los datos se pueden descargar del [Depósito de aprendizaje automático de UCI](http://archive.ics.uci.edu/ml/datasets/Bike+Sharing+Dataset).
+
+
+Se agregaron nuevas características al conjunto de datos y no se usaron todas las características originales para los ejemplos de este libro.
+Aquí está la lista de características que se utilizaron:
+
+- Recuento de bicicletas, incluidos usuarios ocasionales y registrados.
+El recuento se utiliza como objetivo en la tarea de regresión.
+- La temporada, ya sea primavera, verano, otoño o invierno.
+- Indicador de si el día fue feriado o no.
+- El año, 2011 o 2012.
+- Número de días desde el 01.01.2011 (el primer día en el conjunto de datos).
+Esta característica se introdujo para tener en cuenta la tendencia a lo largo del tiempo.
+- Indicador de si el día fue un día laboral o un fin de semana.
+- La situación climática de ese día. Uno de:
+    - despejado, pocas nubes, parcialmente nublado, nublado
+    - niebla + nubes, niebla + nubes rotas, niebla + pocas nubes, niebla
+    - nieve ligera, lluvia ligera + tormenta eléctrica + nubes dispersas, lluvia ligera + nubes dispersas
+    - fuertes lluvias + paletas de hielo + tormenta eléctrica + niebla, nieve + niebla
+- Temperatura en grados Celsius.
+- Humedad relativa en porcentaje (0 a 100).
+- Velocidad del viento en km por hora.
+
+
+Para los ejemplos en este libro, los datos han sido ligeramente procesados.
+Puede encontrar el script R de procesamiento en el [repositorio de Github](https://github.com/christophM/interpretable-ml-book/blob/master/R/get-bike-sharing-dataset.R) junto con el [archivo RData final](https://github.com/christophM/interpretable-ml-book/blob/master/data/bike.RData).
+
+
+<!--{pagebreak}-->
+
+## Comentarios de spam de YouTube (clasificación de texto) {#spam-data}
+Como ejemplo de clasificación de texto, trabajamos con 1956 comentarios de 5 videos de YouTube diferentes.
+Afortunadamente, los autores que utilizaron este conjunto de datos en un artículo sobre clasificación de spam hicieron que los datos estén [disponibles gratuitamente](http://dcomp.sor.ufscar.br/talmeida/youtubespamcollection/) (Alberto, Lochter y Almeida (2015)[^Alberto]).
+
+Los comentarios se recopilaron a través de la API de YouTube de cinco de los diez videos más vistos en YouTube en el primer semestre de 2015.
+Los 5 son videos musicales.
+Uno de ellos es "Gangnam Style" del artista coreano Psy.
+Los otros artistas fueron Katy Perry, LMFAO, Eminem y Shakira.
+
+
+Revisa algunos de los comentarios.
+Los comentarios fueron etiquetados manualmente como spam o legítimos.
+El spam se codificó con un "1" y los comentarios legítimos con un "0".
+
+```{r show-dating-data-TubeSpam}
+data(ycomments)
+knitr::kable(ycomments[1:10, c('CONTENT', 'CLASS')])
+```
+
+También puedes ir a YouTube y echar un vistazo a la sección de comentarios.
+Pero no te dejes atrapar en el infierno de YouTube, y por favor no termines viendo videos de monos robando y bebiendo cócteles de turistas en la playa.
+El detector de spam de Google también ha cambiado mucho desde 2015.
+
+[Vea el video de ruptura de récords "Gangnam Style" aquí](https://www.youtube.com/watch?v=9bZkp7q19f0&feature=player_embedded).
+
+Si deseas jugar con los datos, puedes encontrar el [archivo RData](https://github.com/christophM/interpretable-ml-book/blob/master/data/ycomments.RData) junto con [R -script](https://github.com/christophM/interpretable-ml-book/blob/master/R/get-SpamTube-dataset.R) con algunas funciones convenientes en el repositorio de Github del libro.
+
+<!--{pagebreak}-->
+
+## Factores de riesgo para el cáncer de cuello uterino (Clasificación) {#cervical}
+
+El conjunto de datos sobre el cáncer cervical contiene indicadores y factores de riesgo para predecir si una mujer tendrá cáncer cervical.
+Las características incluyen datos demográficos (como edad), estilo de vida e historial médico.
+Los datos se pueden descargar desde el [repositorio de UCI Machine Learning](https://archive.ics.uci.edu/ml/datasets/Cervical+cancer+%28Risk+Factors%29) y Fernandes, Cardoso y Fernandes lo describen. (2017)[^Fernandes].
+
+El subconjunto de características utilizadas en los ejemplos del libro son:
+
+- Edad en años
+- Número de parejas sexuales
+- Primera relación sexual (edad en años)
+- Número de embarazos
+- Fumar o no
+- Años fumando
+- Anticonceptivos hormonales si o no
+- Anticonceptivos hormonales (en años)
+- Dispositivo intrauterino sí o no (DIU)
+- Número de años con un dispositivo intrauterino (DIU)
+- ¿Ha tenido alguna vez una enfermedad de transmisión sexual (ETS) sí o no?
+- Número de diagnósticos de ETS
+- Tiempo desde el primer diagnóstico de ETS
+- Tiempo desde el último diagnóstico de ETS
+- La biopsia resulta "Saludable" o "Cáncer". Objetivo de clasificación.
+
+La biopsia sirve como estádndar para diagnosticar el cáncer cervical.
+Para los ejemplos en este libro, el resultado de la biopsia se utilizó como objetivo.
+Los valores faltantes para cada columna fueron imputados por la moda (valor más frecuente), que probablemente sea una mala solución, ya que la respuesta verdadera podría estar correlacionada con la probabilidad de que falte un valor.
+Probablemente hay un sesgo porque las preguntas son de naturaleza muy privada.
+Pero este no es un libro sobre la imputación de datos faltantes, por lo que la imputación por la moda tendrá que ser suficiente para los ejemplos.
+
+Para reproducir los ejemplos de este libro con este conjunto de datos, busque el
+[preprocesamiento de script R](https://github.com/christophM/interpretable-ml-book/blob/master/R/get-cervical-cancer-dataset.R) y el
+[archivo RData final](https://github.com/christophM/interpretable-ml-book/blob/master/data/cervical.RData) en el repositorio de Github del libro.
+
+[^Fanaee]: Fanaee-T, Hadi y Joao Gama. "Etiquetado de eventos que combina detectores de conjunto y conocimientos básicos". Progreso en Inteligencia Artificial. Springer Berlin Heidelberg, 1–15. doi: 10.1007 / s13748-013-0040-3. (2013)
+
+[^Alberto]: Alberto, Túlio C, Johannes V Lochter y Tiago A Almeida. "Tubespam: filtro de spam de comentarios en YouTube". En Machine Learning and Applications (Icmla), Ieee 14th International Conference on, 138–43. IEEE (2015)
+
+[^Fernandes]: Fernandes, Kelwin, Jaime S Cardoso y Jessica Fernandes. "Transferir el aprendizaje con observabilidad parcial aplicada a la detección del cáncer cervical". Conferencia ibérica sobre reconocimiento de patrones y análisis de imágenes, 243–50. Saltador. (2017)

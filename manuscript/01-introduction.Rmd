@@ -1,0 +1,40 @@
+﻿
+<!--{pagebreak}-->
+
+# Introducción {#intro}
+
+Este libro te explica cómo hacer que los modelos de aprendizaje automático (supervisados) sean interpretables.
+Los capítulos contienen algunas fórmulas matemáticas, pero deberías poder comprender las ideas detrás de los métodos, incluso sin las fórmulas.
+Este libro no es para personas que intentan aprender el aprendizaje automático desde cero.
+Si sos nuevo en el aprendizaje automático, hay muchos libros y otros recursos para aprender los conceptos básicos.
+Recomiendo el libro "Los elementos del aprendizaje estadístico" de Hastie, Tibshirani y Friedman (2009) [^Hastie] y [el curso en línea "Machine Learning" de Andrew Ng](https://www.coursera.org/learn/machine-learning) en la plataforma de aprendizaje en línea coursera.com para comenzar con el aprendizaje automático.
+¡Tanto el libro como el curso están disponibles de forma gratuita!
+
+Se publican nuevos métodos para la interpretación de modelos de aprendizaje automático a una velocidad vertiginosa.
+Mantenerse al día con todo lo que se publica sería una locura y simplemente imposible.
+Es por eso que no encontrarás los métodos más novedosos y sofisticados en este libro, sino los métodos establecidos y los conceptos básicos de la capacidad de interpretación del aprendizaje automático.
+Estos conceptos básicos te preparan para hacer que los modelos de aprendizaje automático sean interpretables.
+La internalización de los conceptos básicos, además, te permitirá comprender y evaluar mejor cualquier documento nuevo sobre interpretabilidad publicado en [arxiv.org](https://arxiv.org/) en los últimos 5 minutos desde que comenzaste a leer este libro (podría estar exagerando la tasa de publicación).
+
+Este libro comienza con algunas [historias cortas](#horadelcuento) (distópicas) que no son necesarias para entender el libro, pero con suerte te entretendrán y te harán pensar.
+Luego, el libro explora los conceptos de [interpretabilidad del aprendizaje automático](#interpretabilidad).
+Discutiremos cuándo la interpretabilidad es importante y qué diferentes tipos de explicaciones hay.
+Los términos utilizados a lo largo de todo el libro se pueden consultar en el [Capítulo de terminología](#terminología).
+La mayoría de los modelos y métodos explicados se presentan utilizando ejemplos de datos reales que se describen en el [Capítulo de conuntos de datos](#conjuntosdedatos).
+Una forma de hacer que el aprendizaje automático sea interpretable es usar [modelos interpretables](#simple), como modelos lineales o árboles de decisión.
+La otra opción es el uso de [herramientas de interpretación modelo-agnósticas](#agnóstico) que se pueden aplicar a cualquier modelo supervisado de aprendizaje automático.
+El capítulo Métodos modelo-agnósticos trata con métodos tales como gráficas de dependencia parcial (PDP) e importancia de la característica de permutación.
+Los métodos modelo-agnósticos funcionan cambiando la entrada del modelo de aprendizaje automático y midiendo los cambios en la salida de predicción.
+Los métodos independientes al modelo que devuelven observaciones como explicaciones se analizan en el capítulo [Explicaciones basadas en ejemplos](#basadoenejemplos).
+Los métodos independientes al modelo se pueden diferenciar aún más, en función de si explican el comportamiento global del modelo en todas las observaciones o si explican predicciones individuales.
+Los siguientes métodos explican el comportamiento general del modelo: [Gráficos de dependencia parcial](#pdp), [Efectos locales acumulados](#ale), [Interacción de características](#interacción), [Importancia de características](#importanciadecaracterísticas) , [Modelos sustitutos globales](#global) y [Prototipos y críticas](#proto).
+Para explicar las predicciones individuales, en cambio, tenemos [Modelos sustitutos locales](#LIME), [Explicaciones del valor de Shapley](#shapley), [Explicaciones contrafactuales](#contrafactual) (y estrechamente relacionados: [Ejemplos adversos](#adversarial)).
+Algunos métodos se pueden usar para explicar ambos aspectos del comportamiento del modelo, tanto el carácter global como las predicciones individuales: [Expectativa condicional individual](#ICE) e [Instancias influyentes](#influyente).
+
+El libro termina con una perspectiva optimista sobre cómo podría ser [el futuro del aprendizaje automático interpretable](#futuro).
+
+Podés leer el libro de principio a fin o saltar directamente a los métodos que le interesen.
+
+¡Espero que disfrutes la lectura! 
+
+[^Hastie]: Friedman, Jerome, Trevor Hastie y Robert Tibshirani. "Los elementos del aprendizaje estadístico". www.web.stanford.edu/~hastie/ElemStatLearn/ (2009).
