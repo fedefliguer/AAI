@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 1 Introducción | Aprendizaje automatico interpretable</title>
+  <title>1.3 Terminología | Aprendizaje automatico interpretable</title>
   <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta property="og:title" content="1.3 Terminología | Aprendizaje automatico interpretable" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta name="twitter:title" content="1.3 Terminología | Aprendizaje automatico interpretable" />
   
   <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="horadelcuento.html"/>
+<link rel="prev" href="que-es-el-aprendizaje-automatico.html"/>
+<link rel="next" href="interpretabilidad.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -158,44 +158,59 @@ window.cookieconsent.initialise({
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="intro" class="section level1">
-<h1><span class="header-section-number">Chapter 1</span> Introducción</h1>
-<p>Este libro te explica cómo hacer que los modelos de aprendizaje automático (supervisados) sean interpretables.
-Los capítulos contienen algunas fórmulas matemáticas, pero deberías poder comprender las ideas detrás de los métodos, incluso sin las fórmulas.
-Este libro no es para personas que intentan aprender el aprendizaje automático desde cero.
-Si sos nuevo en el aprendizaje automático, hay muchos libros y otros recursos para aprender los conceptos básicos.
-Recomiendo el libro “Los elementos del aprendizaje estadístico” de Hastie, Tibshirani y Friedman (2009) <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> y <a href="https://www.coursera.org/learn/machine-learning">el curso en línea “Machine Learning” de Andrew Ng</a> en la plataforma de aprendizaje en línea coursera.com para comenzar con el aprendizaje automático.
-¡Tanto el libro como el curso están disponibles de forma gratuita!</p>
-<p>Se publican nuevos métodos para la interpretación de modelos de aprendizaje automático a una velocidad vertiginosa.
-Mantenerse al día con todo lo que se publica sería una locura y simplemente imposible.
-Es por eso que no encontrarás los métodos más novedosos y sofisticados en este libro, sino los métodos establecidos y los conceptos básicos de la capacidad de interpretación del aprendizaje automático.
-Estos conceptos básicos te preparan para hacer que los modelos de aprendizaje automático sean interpretables.
-La internalización de los conceptos básicos, además, te permitirá comprender y evaluar mejor cualquier documento nuevo sobre interpretabilidad publicado en <a href="https://arxiv.org/">arxiv.org</a> en los últimos 5 minutos desde que comenzaste a leer este libro (podría estar exagerando la tasa de publicación).</p>
-<p>Este libro comienza con algunas <a href="horadelcuento.html#horadelcuento">historias cortas</a> (distópicas) que no son necesarias para entender el libro, pero con suerte te entretendrán y te harán pensar.
-Luego, el libro explora los conceptos de <a href="interpretabilidad.html#interpretabilidad">interpretabilidad del aprendizaje automático</a>.
-Discutiremos cuándo la interpretabilidad es importante y qué diferentes tipos de explicaciones hay.
-Los términos utilizados a lo largo de todo el libro se pueden consultar en el <a href="terminología.html#terminología">Capítulo de terminología</a>.
-La mayoría de los modelos y métodos explicados se presentan utilizando ejemplos de datos reales que se describen en el <a href="conjuntosdedatos.html#conjuntosdedatos">Capítulo de conuntos de datos</a>.
-Una forma de hacer que el aprendizaje automático sea interpretable es usar <a href="#simple">modelos interpretables</a>, como modelos lineales o árboles de decisión.
-La otra opción es el uso de <a href="#agnóstico">herramientas de interpretación modelo-agnósticas</a> que se pueden aplicar a cualquier modelo supervisado de aprendizaje automático.
-El capítulo Métodos modelo-agnósticos trata con métodos tales como gráficas de dependencia parcial (PDP) e importancia de la característica de permutación.
-Los métodos modelo-agnósticos funcionan cambiando la entrada del modelo de aprendizaje automático y midiendo los cambios en la salida de predicción.
-Los métodos independientes al modelo que devuelven observaciones como explicaciones se analizan en el capítulo <a href="#basadoenejemplos">Explicaciones basadas en ejemplos</a>.
-Los métodos independientes al modelo se pueden diferenciar aún más, en función de si explican el comportamiento global del modelo en todas las observaciones o si explican predicciones individuales.
-Los siguientes métodos explican el comportamiento general del modelo: <a href="#pdp">Gráficos de dependencia parcial</a>, <a href="#ale">Efectos locales acumulados</a>, <a href="#interacción">Interacción de características</a>, <a href="#importanciadecaracterísticas">Importancia de características</a> , <a href="#global">Modelos sustitutos globales</a> y <a href="#proto">Prototipos y críticas</a>.
-Para explicar las predicciones individuales, en cambio, tenemos <a href="#LIME">Modelos sustitutos locales</a>, <a href="#shapley">Explicaciones del valor de Shapley</a>, <a href="#contrafactual">Explicaciones contrafactuales</a> (y estrechamente relacionados: <a href="#adversarial">Ejemplos adversos</a>).
-Algunos métodos se pueden usar para explicar ambos aspectos del comportamiento del modelo, tanto el carácter global como las predicciones individuales: <a href="#ICE">Expectativa condicional individual</a> e <a href="#influyente">Instancias influyentes</a>.</p>
-<p>El libro termina con una perspectiva optimista sobre cómo podría ser <a href="#futuro">el futuro del aprendizaje automático interpretable</a>.</p>
-<p>Podés leer el libro de principio a fin o saltar directamente a los métodos que le interesen.</p>
-<p>¡Espero que disfrutes la lectura!</p>
-
-<p>﻿
-<!--{pagebreak}--></p> 
+<div id="terminología" class="section level2">
+<h2><span class="header-section-number">1.3</span> Terminología</h2>
+<p>Para evitar confusiones debido a la ambigüedad, aquí hay algunas definiciones de los términos utilizados en este libro:</p>
+<p>Un <strong>Algoritmo</strong> es un conjunto de reglas que una máquina sigue para lograr un objetivo particular<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.
+Un algoritmo puede considerarse como una receta que define las entradas, la salida y todos los pasos necesarios para pasar de las entradas a la salida.
+Las recetas de cocción son algoritmos en los que los ingredientes son las entradas, la comida cocida es la salida y los pasos de preparación y cocción son las instrucciones del algoritmo.</p>
+<p><strong>Aprendizaje automático</strong> es un conjunto de métodos que permiten a las computadoras aprender de los datos para hacer y mejorar predicciones (por ejemplo, cáncer, ventas semanales, incumplimiento de crédito).
+El aprendizaje automático es un cambio de paradigma de la “programación normal”, donde todas las instrucciones se deben dar explícitamente a la computadora a la “programación indirecta” que se realiza mediante el suministro de datos.</p>
+<p><img src="images/programing-ml.png" width="423" /></p>
+<p>Un <strong>Aprendiz</strong> o <strong>Algoritmo de aprendizaje automático</strong> es el programa utilizado para aprender un modelo de aprendizaje automático a partir de datos.
+Otro nombre es “inductor” (por ejemplo, “inductor de árbol”).</p>
+<p>Un <strong>Modelo de aprendizaje automático</strong> es el programa aprendido que asigna entradas a predicciones.
+Esto puede ser un conjunto de pesos para un modelo lineal o para una red neuronal.
+Otros nombres para la palabra bastante inespecífica “modelo” son “predictor” o, según la tarea, “clasificador” o “modelo de regresión”.
+En las fórmulas, el modelo de aprendizaje automático entrenado se llama <span class="math inline">\(\hat{f}\)</span> o <span class="math inline">\(\hat{f}(x)\)</span>.</p>
+<div class="figure"><span id="fig:learner-definition"></span>
+<img src="images/learner.png" alt="A learner learns a model from labeled training data. The model is used to make predictions." width="320" />
+<p class="caption">
+FIGURE 1.1: A learner learns a model from labeled training data. The model is used to make predictions.
+</p>
 </div>
+<p>Un <strong>Modelo de caja negra</strong> es un sistema que no revela sus mecanismos internos.
+En el aprendizaje automático, la “caja negra” describe modelos que no se pueden entender al observar sus parámetros (por ejemplo, una red neuronal).
+El opuesto de una caja negra a veces se denomina <strong>caja blanca</strong>, y es llamada en este libro como <a href="#simple">modelo interpretable</a>.
+<a href="#agnóstico">Los métodos modelo-agnósticos</a> para la interpretabilidad tratan los modelos de aprendizaje automático como cajas negras, incluso si no lo son.</p>
+<p><img src="images/iml.png" width="384" /></p>
+<p><strong>Aprendizaje automático interpretable</strong> se refiere a métodos y modelos que hacen que el comportamiento y las predicciones de los sistemas de aprendizaje automático sean comprensibles para los humanos.</p>
+<p>Un <strong>conjunto de datos </strong> es una tabla con los datos de los cuales la máquina aprende.
+El conjunto de datos contiene las características y el objetivo a predecir.
+Cuando se usa para el aprendizaje de un modelo, el conjunto de datos se denomina datos de entrenamiento.</p>
+<p>Una <strong>observación</strong> es una fila en el conjunto de datos.
+Otros nombres para ‘observación’ son: punto (datos), ejemplo, instancia.
+Una instancia consta de los valores de característica <span class="math inline">\(x^{(i)}\)</span> y, si se conoce, el resultado objetivo <span class="math inline">\(y_i\)</span>.</p>
+<p>Las <strong>características</strong> son las entradas utilizadas para la predicción o clasificación.
+Una característica es una columna en el conjunto de datos.
+A lo largo del libro, se supone que las características son interpretables, lo que significa que es fácil entender lo que significan, como la temperatura en un día determinado o la altura de una persona.
+La interpretabilidad de las características es una gran suposición, pero si es difícil entender las características de entrada, es aún más difícil entender lo que hace el modelo.
+La matriz con todas las características se llama X y <span class="math inline">\(x^{(i)}\)</span> para instancia individual.
+El vector de una sola característica para todas las instancias es <span class="math inline">\(x_j\)</span> y el valor para la característica j y la instancia i es <span class="math inline">\(x^{(i)}_j\)</span>.</p>
+<p>El <strong>Objetivo (o target)</strong> es la columna que la máquina aprende a predecir.
+En las fórmulas matemáticas, el objetivo generalmente se llama y o <span class="math inline">\(y_i\)</span> para una sola instancia.</p>
+<p>Una <strong>Tarea de aprendizaje automático</strong> es la combinación de un conjunto de datos con características y un objetivo.
+Dependiendo del tipo de objetivo, la tarea puede ser, por ejemplo, clasificación, regresión, análisis de supervivencia, agrupamiento o detección de valores atípicos.</p>
+<p>La <strong>Predicción</strong> es el valor que el modelo de aprendizaje automático pronostica, en función de las características dadas.
+En este libro, la predicción del modelo se denota por <span class="math inline">\(\hat{f}(x^{(i)})\)</span> o <span class="math inline">\(\hat{y}\)</span>.</p>
+
+<p>﻿<code>{r, message = FALSE, warning = FALSE, echo = FALSE} devtools::load_all()</code></p>
+</div>
+<!-- </div> -->
 <div class="footnotes">
 <hr />
-<ol start="1">
-<li id="fn1"><p>Friedman, Jerome, Trevor Hastie y Robert Tibshirani. “Los elementos del aprendizaje estadístico”. www.web.stanford.edu/~hastie/ElemStatLearn/ (2009).<a href="intro.html#fnref1" class="footnote-back">↩</a></p></li>
+<ol start="2">
+<li id="fn2"><p>“Definición de algoritmo”. <a href="https://www.merriam-webster.com/dictionary/algorithm" class="uri">https://www.merriam-webster.com/dictionary/algorithm</a>. (2017)<a href="terminología.html#fnref2" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
             </section>
@@ -203,8 +218,8 @@ Algunos métodos se pueden usar para explicar ambos aspectos del comportamiento 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="horadelcuento.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="que-es-el-aprendizaje-automatico.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="interpretabilidad.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

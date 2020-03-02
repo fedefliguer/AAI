@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 1 Introducción | Aprendizaje automatico interpretable</title>
+  <title>2.2 Taxonomía de los métodos de interpretación | Aprendizaje automatico interpretable</title>
   <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta property="og:title" content="2.2 Taxonomía de los métodos de interpretación | Aprendizaje automatico interpretable" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta name="twitter:title" content="2.2 Taxonomía de los métodos de interpretación | Aprendizaje automatico interpretable" />
   
   <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="horadelcuento.html"/>
+<link rel="prev" href="interpretabilidad-importancia.html"/>
+<link rel="next" href="alcance-de-la-interpretabilidad.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -158,53 +158,63 @@ window.cookieconsent.initialise({
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="intro" class="section level1">
-<h1><span class="header-section-number">Chapter 1</span> Introducción</h1>
-<p>Este libro te explica cómo hacer que los modelos de aprendizaje automático (supervisados) sean interpretables.
-Los capítulos contienen algunas fórmulas matemáticas, pero deberías poder comprender las ideas detrás de los métodos, incluso sin las fórmulas.
-Este libro no es para personas que intentan aprender el aprendizaje automático desde cero.
-Si sos nuevo en el aprendizaje automático, hay muchos libros y otros recursos para aprender los conceptos básicos.
-Recomiendo el libro “Los elementos del aprendizaje estadístico” de Hastie, Tibshirani y Friedman (2009) <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> y <a href="https://www.coursera.org/learn/machine-learning">el curso en línea “Machine Learning” de Andrew Ng</a> en la plataforma de aprendizaje en línea coursera.com para comenzar con el aprendizaje automático.
-¡Tanto el libro como el curso están disponibles de forma gratuita!</p>
-<p>Se publican nuevos métodos para la interpretación de modelos de aprendizaje automático a una velocidad vertiginosa.
-Mantenerse al día con todo lo que se publica sería una locura y simplemente imposible.
-Es por eso que no encontrarás los métodos más novedosos y sofisticados en este libro, sino los métodos establecidos y los conceptos básicos de la capacidad de interpretación del aprendizaje automático.
-Estos conceptos básicos te preparan para hacer que los modelos de aprendizaje automático sean interpretables.
-La internalización de los conceptos básicos, además, te permitirá comprender y evaluar mejor cualquier documento nuevo sobre interpretabilidad publicado en <a href="https://arxiv.org/">arxiv.org</a> en los últimos 5 minutos desde que comenzaste a leer este libro (podría estar exagerando la tasa de publicación).</p>
-<p>Este libro comienza con algunas <a href="horadelcuento.html#horadelcuento">historias cortas</a> (distópicas) que no son necesarias para entender el libro, pero con suerte te entretendrán y te harán pensar.
-Luego, el libro explora los conceptos de <a href="interpretabilidad.html#interpretabilidad">interpretabilidad del aprendizaje automático</a>.
-Discutiremos cuándo la interpretabilidad es importante y qué diferentes tipos de explicaciones hay.
-Los términos utilizados a lo largo de todo el libro se pueden consultar en el <a href="terminología.html#terminología">Capítulo de terminología</a>.
-La mayoría de los modelos y métodos explicados se presentan utilizando ejemplos de datos reales que se describen en el <a href="conjuntosdedatos.html#conjuntosdedatos">Capítulo de conuntos de datos</a>.
-Una forma de hacer que el aprendizaje automático sea interpretable es usar <a href="#simple">modelos interpretables</a>, como modelos lineales o árboles de decisión.
-La otra opción es el uso de <a href="#agnóstico">herramientas de interpretación modelo-agnósticas</a> que se pueden aplicar a cualquier modelo supervisado de aprendizaje automático.
-El capítulo Métodos modelo-agnósticos trata con métodos tales como gráficas de dependencia parcial (PDP) e importancia de la característica de permutación.
-Los métodos modelo-agnósticos funcionan cambiando la entrada del modelo de aprendizaje automático y midiendo los cambios en la salida de predicción.
-Los métodos independientes al modelo que devuelven observaciones como explicaciones se analizan en el capítulo <a href="#basadoenejemplos">Explicaciones basadas en ejemplos</a>.
-Los métodos independientes al modelo se pueden diferenciar aún más, en función de si explican el comportamiento global del modelo en todas las observaciones o si explican predicciones individuales.
-Los siguientes métodos explican el comportamiento general del modelo: <a href="#pdp">Gráficos de dependencia parcial</a>, <a href="#ale">Efectos locales acumulados</a>, <a href="#interacción">Interacción de características</a>, <a href="#importanciadecaracterísticas">Importancia de características</a> , <a href="#global">Modelos sustitutos globales</a> y <a href="#proto">Prototipos y críticas</a>.
-Para explicar las predicciones individuales, en cambio, tenemos <a href="#LIME">Modelos sustitutos locales</a>, <a href="#shapley">Explicaciones del valor de Shapley</a>, <a href="#contrafactual">Explicaciones contrafactuales</a> (y estrechamente relacionados: <a href="#adversarial">Ejemplos adversos</a>).
-Algunos métodos se pueden usar para explicar ambos aspectos del comportamiento del modelo, tanto el carácter global como las predicciones individuales: <a href="#ICE">Expectativa condicional individual</a> e <a href="#influyente">Instancias influyentes</a>.</p>
-<p>El libro termina con una perspectiva optimista sobre cómo podría ser <a href="#futuro">el futuro del aprendizaje automático interpretable</a>.</p>
-<p>Podés leer el libro de principio a fin o saltar directamente a los métodos que le interesen.</p>
-<p>¡Espero que disfrutes la lectura!</p>
-
-<p>﻿
-<!--{pagebreak}--></p> 
-</div>
-<div class="footnotes">
-<hr />
-<ol start="1">
-<li id="fn1"><p>Friedman, Jerome, Trevor Hastie y Robert Tibshirani. “Los elementos del aprendizaje estadístico”. www.web.stanford.edu/~hastie/ElemStatLearn/ (2009).<a href="intro.html#fnref1" class="footnote-back">↩</a></p></li>
-</ol>
+<div id="taxonomia-de-los-metodos-de-interpretacion" class="section level2">
+<h2><span class="header-section-number">2.2</span> Taxonomía de los métodos de interpretación</h2>
+<p>Los métodos para la interpretación de aprendizaje automático se pueden clasificar de acuerdo con varios criterios.</p>
+<p><strong>¿Intrínseco o post hoc?</strong>
+Este criterio distingue si la interpretabilidad se logra restringiendo la complejidad del modelo de aprendizaje automático (intrínseco) o aplicando métodos que analizan el modelo después del entrenamiento (post hoc).
+La interpretabilidad intrínseca se refiere a modelos de aprendizaje automático que se consideran interpretables debido a su estructura simple, como árboles de decisión cortos o modelos lineales dispersos.
+La interpretabilidad post hoc se refiere a la aplicación de métodos de interpretación después del entrenamiento modelo.
+La importancia de la característica de permutación es, por ejemplo, un método de interpretación post hoc.
+Los métodos post hoc también se pueden aplicar a modelos intrínsecamente interpretables.
+Por ejemplo, la importancia de la característica de permutación se puede calcular para los árboles de decisión.
+La organización de los capítulos de este libro está determinada por la distinción entre [modelos intrínsecamente interpretables] (#simple) y [métodos de interpretación post hoc (y modelo-agnósticos)] (#agnóstico).</p>
+<p><strong>Resultado del método de interpretación</strong>
+Los diversos métodos de interpretación pueden diferenciarse aproximadamente de acuerdo con sus resultados.</p>
+<ul>
+<li><strong>Estadística de resumen de características</strong>:
+Muchos métodos de interpretación proporcionan estadísticas de resumen para cada covariable.
+Algunos métodos devuelven un solo número por característica, como la importancia de la característica, o un resultado más complejo, como las fortalezas de interacción de features por pares.</li>
+<li><strong>Visualización de resumen de características</strong>:
+La mayoría de las estadísticas de resumen de características también se pueden visualizar.
+Algunos resúmenes de características en realidad solo tienen sentido si se visualizan y una tabla sería una elección incorrecta.
+La dependencia parcial de una característica es tal caso.
+Las gráficas de dependencia parcial son curvas que muestran una característica y el resultado promedio pronosticado. La mejor manera de presentar dependencias parciales es dibujar la curva en lugar de imprimir las coordenadas.</li>
+<li><strong>Elementos internos del modelo (p. Ej., Pesos aprendidos)</strong>:
+La interpretación de modelos intrínsecamente interpretables entra en esta categoría.
+Algunos ejemplos son los pesos en modelos lineales o la estructura de árbol aprendida (las características y los umbrales utilizados para las divisiones) de los árboles de decisión.
+Las líneas se desdibujan entre las partes internas del modelo y la estadística de resumen de características en, por ejemplo, modelos lineales, porque los pesos son tanto las partes internas del modelo como las estadísticas de resumen de las características al mismo tiempo.
+Otro método que genera modelos internos es la visualización de detectores de características aprendidos en redes neuronales convolucionales. Los métodos de interpretación que generan elementos internos del modelo son, por definición, específicos del modelo (consulte el siguiente criterio).</li>
+<li><strong>Punto de datos </strong>:
+Esta categoría incluye todos los métodos que devuelven observaciones (ya existentes o recién creados) para hacer que un modelo sea interpretable.
+Un método se llama explicaciones contrafácticas.
+Para explicar la predicción de una instancia de datos, el método encuentra una observación similar al cambiar algunas de las características para las cuales el resultado predicho cambia de manera relevante.
+Otro ejemplo es la identificación de prototipos de clases predichas.
+Para ser útiles, los métodos de interpretación que generan nuevos puntos de datos requieren que los propios puntos de datos puedan ser interpretados.
+Esto funciona bien para imágenes y textos, pero es menos útil para datos tabulares con cientos de características.</li>
+<li><strong>Modelo intrínsecamente interpretable</strong>:
+Una solución para interpretar modelos de caja negra es aproximarlos (global o localmente) con un modelo interpretable.
+El modelo interpretable en sí mismo se interpreta mirando los parámetros internos del modelo o las estadísticas de resumen de sus características.</li>
+</ul>
+<p><strong>Modelo específico o modelo agnóstico?</strong>
+Las herramientas de interpretación modelo-específicas están limitadas a esos modelos.
+La interpretación de los pesos de regresión en un modelo lineal es una interpretación de este tipo ya que, por definición, siempre es específica del modelo.
+Herramientas que solo funcionan para la interpretación de, por ejemplo, las redes neuronales son específicas del modelo.
+Las herramientas independientes del modelo se pueden usar en cualquier modelo de aprendizaje automático y se aplican después de que el modelo haya sido entrenado (post hoc).
+Estos métodos generalmente funcionan mediante el análisis de pares de entrada y salida de características.
+Por definición, estos métodos no pueden tener acceso a los modelos internos, como los pesos o la información estructural.</p>
+<p><strong>¿Local o global?</strong>
+¿El método de interpretación explica una predicción individual o el comportamiento completo del modelo?
+¿O algún punto intermedio? Lea más sobre el criterio de alcance en la siguiente sección.</p>
+<!--{pagebreak}-->
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="horadelcuento.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="interpretabilidad-importancia.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="alcance-de-la-interpretabilidad.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

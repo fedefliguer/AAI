@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>1.1 Hora del cuento | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="1.1 Hora del cuento | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="1.1 Hora del cuento | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-03-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="intro.html"/>
+<link rel="next" href="que-es-el-aprendizaje-automatico.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "This website uses cookies for Google Analytics so that I know how many people are reading the book and which chapters are the most popular. The book website doesn't collect any personal data."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="style.css+" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Bookdown Book</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="que-es-el-aprendizaje-automatico.html"><a href="que-es-el-aprendizaje-automatico.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomia-de-los-metodos-de-interpretacion.html"><a href="taxonomia-de-los-metodos-de-interpretacion.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holistica-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-unica-prediccion"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluacion-de-la-interpretabilidad.html"><a href="evaluacion-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#que-es-una-explicacion"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="horadelcuento" class="section level2">
+<h2><span class="header-section-number">1.1</span> Hora del cuento</h2>
+<p>Comenzaremos con algunas historias cortas.
+Cada historia es una llamada algo exagerada para el aprendizaje automático interpretable.
+Si tenés prisa, puede saltear las historias.
+Si querés entretenerte y (des)motivarte, ¡sigue leyendo!</p>
+<p>El formato está inspirado en los cuentos técnicos de Jack Clark en su <a href="https://jack-clark.net/">Boletín informativo Importación AI</a>.
+Si te gustan este tipo de historias o si estás interesado en la inteligencia artificial, te recomiendo que te registres.</p>
+<div id="un-rayo-nunca-golpea-dos-veces" class="section level3 unnumbered">
+<h3>Un rayo nunca golpea dos veces</h3>
+<p><strong>2030: un laboratorio médico en Suiza</strong></p>
+<p><img src="images/hospital.jpg" width="409" /></p>
+<p>“¡Definitivamente no es la peor forma de morir!” Tom resumió, tratando de encontrar algo positivo en la tragedia.
+Sacó la bomba del poste intravenoso.
+“Simplemente murió por las razones equivocadas”, agregó Lena.
+“¡Y ciertamente con la bomba de morfina equivocada!
+¡Solo estamos creando más trabajo para nosotros!”, Se quejó Tom mientras desenroscaba la placa posterior de la bomba.
+Después de quitar todos los tornillos, levantó la placa y la dejó a un lado.
+Conectó un cable al puerto de diagnóstico.
+“No solo te quejaste de tener un trabajo, ¿verdad?” Lena le dedicó una sonrisa burlona.
+“Por supuesto que no. ¡Nunca!” exclamó con un tono sarcástico.</p>
+<p>Arrancó la computadora de la bomba.
+Lena enchufó el otro extremo del cable a su tableta.
+“Muy bien, los diagnósticos se están ejecutando”, anunció.
+“Tengo mucha curiosidad por saber qué salió mal”.
+“Ciertamente le disparó a nuestro John Doe al Nirvana.
+Fue la alta concentración de este material de morfina.
+Hombre. Quiero decir, normalmente, una bomba rota emite muy poco o nada en absoluto.
+Pero nunca, ya sabes, algo así”, explicó Tom.
+“Lo sé. No tienes que convencerme … Oye, mira eso”. Lena levantó su tableta.
+“¿Ves este pico aquí? Esa es la potencia de la mezcla de analgésicos.
+¡Mira! Esta línea muestra el nivel de referencia.
+El pobre tipo tenía una mezcla de analgésicos en su sistema sanguíneo que podría matarlo 17 veces.
+Inyectado por nuestra bomba aquí.
+Y aquí …”se deslizó,&quot; aquí puedes ver el momento de la muerte del paciente“.”Entonces, ¿alguna idea de lo que pasó, jefe?&quot; Tom le preguntó a su supervisor.
+“Hmm… Los sensores parecen estar bien.
+Frecuencia cardíaca, niveles de oxígeno, glucosa, … Los datos se recopilaron como se esperaba.
+Algunos valores faltantes en los datos de oxígeno en la sangre, pero eso no es inusual.
+Mira aquí.
+Los sensores también han detectado la frecuencia cardíaca lenta del paciente y los niveles extremadamente bajos de cortisol causados por el derivado de la morfina y otros agentes bloqueadores del dolor”.
+Ella continuó pasando el informe de diagnóstico.
+Tom miraba cautivado la pantalla.
+Fue su primera investigación de una falla real del dispositivo.</p>
+<p>“Ok, aquí está nuestra primera pieza del rompecabezas.
+El sistema no pudo enviar una advertencia al canal de comunicación del hospital.
+La advertencia se activó, pero se rechazó a nivel de protocolo.
+Podría ser culpa nuestra, pero también podría ser culpa del hospital.
+Envíe los registros al equipo de IT”, le dijo Lena a Tom.
+Tom asintió con los ojos todavía fijos en la pantalla.
+Lena continuó:
+“Es extraño.
+La advertencia también debería haber causado que la bomba se apagara.
+Pero obviamente no lo hizo.
+Eso debe ser un error.
+Algo que control de calidad perdió.
+Algo realmente malo.
+Tal vez esté relacionado con el problema del protocolo”.
+“Entonces, el sistema de emergencia de la bomba de alguna manera se averió, pero ¿por qué la bomba se llenó de bananas e inyectó tanto analgésico en John Doe?” Tom se preguntó.
+“Buena pregunta.
+Tienes razón.
+Dejando de lado la falla de emergencia del protocolo, la bomba no debería haber administrado esa cantidad de medicamento.
+El algoritmo debería haberse detenido por sí solo mucho antes, dado el bajo nivel de cortisol y otras señales de advertencia”, explicó Lena.
+“¿Quizás algo de mala suerte, como una cosa entre un millón, como ser alcanzado por un rayo?” Tom le preguntó.
+“No, Tom.
+Si hubiera leído la documentación que le envié, habría sabido que la bomba se entrenó primero en experimentos con animales, luego en humanos, para aprender a inyectar la cantidad perfecta de analgésicos en función de la información sensorial.
+El algoritmo de la bomba puede ser opaco y complejo, pero no es aleatorio.
+Eso significa que en la misma situación la bomba se comportaría exactamente de la misma manera nuevamente.
+Nuestro paciente moriría de nuevo.
+Una combinación o interacción no deseada de las entradas sensoriales debe haber desencadenado el comportamiento erróneo de la bomba.
+Es por eso que tenemos que profundizar más y descubrir qué sucedió aquí”, explicó Lena.</p>
+<p>“Ya veo …”, respondió Tom, perdido en sus pensamientos.
+“¿No iba a morir el paciente pronto de todos modos? ¿Por cáncer o algo así?”
+Lena asintió mientras leía el informe del análisis.
+Tom se levantó y fue a la ventana.
+Miró hacia afuera, con los ojos fijos en un punto a la distancia.
+“Tal vez la máquina le hizo un favor, ya sabes, al liberarlo del dolor.
+No más sufrimiento.
+Tal vez simplemente hizo lo correcto.
+Como un rayo, pero, ya sabes, uno bueno.
+Me refiero a la lotería, pero no al azar.
+Pero por una razón.
+Si yo fuera la bomba, habría hecho lo mismo”.
+Finalmente levantó la cabeza y lo miró.
+Seguía mirando algo afuera.
+Ambos guardaron silencio por unos momentos.
+Lena volvió a bajar la cabeza y continuó el análisis.
+“No, Tom. Es un error … Solo un maldito error”.</p>
+</div>
+<div id="perder-confianza" class="section level3 unnumbered">
+<h3>Perder confianza</h3>
+<p><strong>2050: una estación de metro en Singapur</strong></p>
+<p><img src="images/access-denied.jpg" width="640" /></p>
+<p>Se apresuró a la estación Bishan.
+Sus pensamientos ya estaban en el trabajo.
+Las pruebas para la nueva arquitectura neuronal deberían completarse por ahora.
+Ella dirigió el rediseño del “Sistema fiscal de predicción de afinidad para entidades individuales” del gobierno, que predice si una persona esconderá dinero que debe pagar en impuestos.
+Su equipo ha creado una elegante pieza de ingeniería.
+Si tiene éxito, el sistema no solo serviría a la oficina de impuestos, sino que también se incorporaría a otros sistemas, como el sistema de alarma contra el terrorismo y el registro comercial.
+Un día, el gobierno podría incluso integrar las predicciones en el Civic Trust Score.
+El Civic Trust Score estima cuán confiable es una persona.
+La estimación afecta cada parte de su vida diaria, como obtener un préstamo o cuánto tiempo tiene que esperar para obtener un nuevo pasaporte.
+Mientras bajaba la escalera mecánica, se imaginó cómo se vería una integración del sistema de su equipo en el sistema de puntuación de confianza cívica.</p>
+<p>Rutinariamente pasaba la mano por el lector sin reducir su velocidad de marcha.
+Su mente estaba ocupada, hasta que sonaron las alarmas en su cerebro.</p>
+<p>Demasiado tarde.</p>
+<p>Con la nariz primero, corrió hacia la puerta de entrada del metro y cayó con el trasero al suelo.
+Se suponía que la puerta se abría … pero no fue así.
+Atónita, se levantó y miró la pantalla junto a la puerta.
+“Por favor, inténtalo en otro momento”, sugirió una carita sonriente en la pantalla.
+Una persona pasó y, ignorándola, pasó la mano sobre el lector.
+La puerta se abrió y él entró.
+La puerta se cerró de nuevo.
+Se limpió la nariz.
+Le dolía, pero al menos no sangraba.
+Ella trató de abrir la puerta, pero fue rechazada nuevamente.
+Fue extraño
+Tal vez su cuenta de transporte público no tenía suficiente crédito.
+Miró su reloj inteligente para verificar el saldo de la cuenta.</p>
+<p>&quot;Inicio de sesión denegado. ¡Comuníquese con su Oficina de asesoramiento para ciudadanos! su reloj le informó.</p>
+<p>Una sensación de náuseas la golpeó como un puño en el estómago.
+Ella sospechaba lo que había sucedido.
+Para confirmar su teoría, abrió “Sniper Guild”, un juego de disparos en primera persona.
+La aplicación se cerró de nuevo automáticamente, lo que confirmó su teoría.
+Se mareó y volvió a sentarse en el suelo.</p>
+<p>Solo había una explicación posible:
+Su puntuación de confianza cívica había bajado.
+Sustancialmente.
+Una pequeña caída significaba inconvenientes menores, como no obtener vuelos de primera clase o tener que esperar un poco más para obtener los documentos oficiales.
+Un puntaje de confianza bajo era raro y quien lo tenía estaba clasificado como una amenaza para la sociedad: Una medida para tratar con estas personas era mantenerlas alejadas de lugares públicos como el metro.
+El gobierno, además, restringió las transacciones financieras de sujetos con bajos puntajes de confianza cívica.
+También comenzaron a monitorear activamente su comportamiento en las redes sociales e incluso llegaron a restringir cierto contenido, como los juegos violentos.
+Se había vuelto más difícil aumentar el puntaje de confianza cívica cuanto más bajo era éste. Las personas con un puntaje muy bajo generalmente nunca se recuperaban.</p>
+<p>No podía pensar en ninguna razón por la cual su puntuación debería haber caído.
+La puntuación se basó en el aprendizaje automático.
+El Civic Trust Score System funcionó como un motor bien engrasado que dirigía la sociedad.
+El rendimiento del sistema de puntuación de confianza siempre se supervisó de cerca.
+El aprendizaje automático había mejorado mucho desde principios de siglo.
+Se había vuelto tan eficiente que las decisiones tomadas por el Trust Score System ya no podían ser cuestionadas.
+Un sistema infalible.</p>
+<p>Rió desesperada.
+Sistema infalible.
+El sistema rara vez había fallado.
+Pero falló.
+Ella debe ser uno de esos casos especiales;
+un error del sistema;
+a partir de ahora un paria.
+Nadie se atrevió a cuestionar el sistema.
+Estaba demasiado integrado en el gobierno, en la sociedad misma, para ser cuestionado.
+En los pocos países democráticos restantes, estaba prohibido formar movimientos antidemocráticos, no porque fueran inherentemente maliciosos, sino porque desestabilizarían el sistema actual.
+La misma lógica se aplica a las ahora algocracias.
+La crítica en los algoritmos estaba prohibida debido al peligro para el status quo.</p>
+<p>La confianza algorítmica era el tejido del orden social.
+Por el bien común, se aceptaron tácitamente raras puntuaciones falsas de confianza.
+Cientos de otros sistemas de predicción y bases de datos ingresaron al puntaje, lo que hace imposible saber qué causó la caída en su puntaje.
+Sintió que un gran agujero oscuro se abría dentro y debajo de ella.
+Con horror, miró al vacío.</p>
+<p>Su sistema de afinidad fiscal finalmente se integró en el Sistema de puntuación de confianza cívica, pero nunca llegó a saberlo.</p>
+</div>
+<div id="clips-de-papel-de-fermi" class="section level3 unnumbered">
+<h3>Clips de papel de Fermi</h3>
+<p><strong>Año 612 AMS (después del asentamiento en Marte): un museo en Marte</strong></p>
+<p><img src="images/burnt-earth.jpg" width="960" /></p>
+<p>“La historia es aburrida”, le susurró Xola a su amiga.
+Xola, una chica de cabello azul, perseguía uno de los drones del proyector que zumbaba en la habitación con la mano izquierda.
+“La historia es importante”, dijo la maestra con voz molesta, mirando a las chicas.
+Xola se sonrojó.
+No esperaba que su maestra la escuchara.</p>
+<p>“Xola, ¿qué acabas de aprender?” la maestra le preguntó.
+“¿Que la gente antigua usó todos los recursos del Planeta Terrestre y luego murió?” ella preguntó cuidadosamente.
+“No. Calentaron el clima y no fueron las personas, fueron las computadoras y las máquinas. Y es el planeta Tierra, no el planeta Terrestre”, agregó otra chica llamada Lin.
+Xola asintió de acuerdo.
+Con un toque de orgullo, la maestra sonrió y asintió.
+“Ambos tienen razón. ¿Sabes por qué sucedió?”
+“¿Porque la gente era miope y codiciosa?” Xola preguntó.
+“¡La gente no podía parar sus máquinas!” Espetó Lin.</p>
+<p>“Una vez más, ambos tienen razón”, decidió la maestra,
+“Pero es mucho más complicado que eso.
+La mayoría de las personas en ese momento no sabían lo que estaba sucediendo.
+Algunos vieron los cambios drásticos, pero no pudieron revertirlos.
+La pieza más famosa de este período es un poema de un autor anónimo.
+Captura mejor lo que sucedió en ese momento.
+¡Escucha cuidadosamente!”</p>
+<p>La maestra comenzó el poema.
+Una docena de pequeños drones se reposicionaron frente a los niños y comenzaron a proyectar el video directamente en sus ojos.
+Mostraba a una persona en un traje de pie en un bosque con solo tocones de árboles.
+La persona comenzó a hablar:</p>
+<p><em>Las máquinas computan; las máquinas predicen.</em></p>
+<p><em>Somos parte de esto.</em></p>
+<p><em>Perseguimos un óptimo entrenado.</em></p>
+<p><em>Lo óptimo es unidimensional, local y sin restricciones.</em></p>
+<p><em>Silicio y carne, persiguiendo la exponencialidad.</em></p>
+<p><em>El crecimiento es nuestra mentalidad.</em></p>
+<p><em>Cuando todas las recompensas sean recogidas,</em></p>
+<p><em>y sus efectos secundarios descuidados;</em></p>
+<p><em>Cuando se extraigan todas las monedas,</em></p>
+<p><em>y la naturaleza haya quedado atrás;</em></p>
+<p><em>Estaremos en problemas,</em></p>
+<p><em>Después de todo, el crecimiento exponencial es una burbuja.</em></p>
+<p><em>La tragedia del desarrollo de los comunes,</em></p>
+<p><em>Explotando,</em></p>
+<p><em>Ante nuestros ojos.</em></p>
+<p><em>Cálculos fríos y avaricia helada,</em></p>
+<p><em>Llena la tierra de calor.</em></p>
+<p><em>Todo se está muriendo,</em></p>
+<p><em>Y estamos cumpliendo.</em></p>
+<p><em>Al igual que los caballos con anteojeras, corremos la carrera de nuestra propia creación,</em></p>
+<p><em>Hacia el gran filtro de la civilización.</em></p>
+<p><em>Y así marchamos sin descanso.</em></p>
+<p><em>Como somos parte de la máquina.</em></p>
+<p><em>Abrazando la entropía.</em></p>
+<p>“Un recuerdo oscuro”, dijo la maestra para romper el silencio en la sala.
+“Se cargará en su biblioteca.
+Tu tarea es memorizarla hasta la próxima semana.”
+Xola suspiró.
+Ella logró atrapar uno de los pequeños drones.
+El dron estaba caliente por la CPU y los motores.
+A Xola le gustó cómo le calentó las manos.</p>
+
+<p>﻿
+<!--{pagebreak}--></p>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="intro.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="que-es-el-aprendizaje-automatico.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

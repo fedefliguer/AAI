@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 1 Introducción | Aprendizaje automatico interpretable</title>
+  <title>1.2 ¿Qué es el aprendizaje automático? | Aprendizaje automatico interpretable</title>
   <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta property="og:title" content="1.2 ¿Qué es el aprendizaje automático? | Aprendizaje automatico interpretable" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta name="twitter:title" content="1.2 ¿Qué es el aprendizaje automático? | Aprendizaje automatico interpretable" />
   
   <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="horadelcuento.html"/>
+<link rel="prev" href="horadelcuento.html"/>
+<link rel="next" href="terminología.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -158,53 +158,54 @@ window.cookieconsent.initialise({
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="intro" class="section level1">
-<h1><span class="header-section-number">Chapter 1</span> Introducción</h1>
-<p>Este libro te explica cómo hacer que los modelos de aprendizaje automático (supervisados) sean interpretables.
-Los capítulos contienen algunas fórmulas matemáticas, pero deberías poder comprender las ideas detrás de los métodos, incluso sin las fórmulas.
-Este libro no es para personas que intentan aprender el aprendizaje automático desde cero.
-Si sos nuevo en el aprendizaje automático, hay muchos libros y otros recursos para aprender los conceptos básicos.
-Recomiendo el libro “Los elementos del aprendizaje estadístico” de Hastie, Tibshirani y Friedman (2009) <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> y <a href="https://www.coursera.org/learn/machine-learning">el curso en línea “Machine Learning” de Andrew Ng</a> en la plataforma de aprendizaje en línea coursera.com para comenzar con el aprendizaje automático.
-¡Tanto el libro como el curso están disponibles de forma gratuita!</p>
-<p>Se publican nuevos métodos para la interpretación de modelos de aprendizaje automático a una velocidad vertiginosa.
-Mantenerse al día con todo lo que se publica sería una locura y simplemente imposible.
-Es por eso que no encontrarás los métodos más novedosos y sofisticados en este libro, sino los métodos establecidos y los conceptos básicos de la capacidad de interpretación del aprendizaje automático.
-Estos conceptos básicos te preparan para hacer que los modelos de aprendizaje automático sean interpretables.
-La internalización de los conceptos básicos, además, te permitirá comprender y evaluar mejor cualquier documento nuevo sobre interpretabilidad publicado en <a href="https://arxiv.org/">arxiv.org</a> en los últimos 5 minutos desde que comenzaste a leer este libro (podría estar exagerando la tasa de publicación).</p>
-<p>Este libro comienza con algunas <a href="horadelcuento.html#horadelcuento">historias cortas</a> (distópicas) que no son necesarias para entender el libro, pero con suerte te entretendrán y te harán pensar.
-Luego, el libro explora los conceptos de <a href="interpretabilidad.html#interpretabilidad">interpretabilidad del aprendizaje automático</a>.
-Discutiremos cuándo la interpretabilidad es importante y qué diferentes tipos de explicaciones hay.
-Los términos utilizados a lo largo de todo el libro se pueden consultar en el <a href="terminología.html#terminología">Capítulo de terminología</a>.
-La mayoría de los modelos y métodos explicados se presentan utilizando ejemplos de datos reales que se describen en el <a href="conjuntosdedatos.html#conjuntosdedatos">Capítulo de conuntos de datos</a>.
-Una forma de hacer que el aprendizaje automático sea interpretable es usar <a href="#simple">modelos interpretables</a>, como modelos lineales o árboles de decisión.
-La otra opción es el uso de <a href="#agnóstico">herramientas de interpretación modelo-agnósticas</a> que se pueden aplicar a cualquier modelo supervisado de aprendizaje automático.
-El capítulo Métodos modelo-agnósticos trata con métodos tales como gráficas de dependencia parcial (PDP) e importancia de la característica de permutación.
-Los métodos modelo-agnósticos funcionan cambiando la entrada del modelo de aprendizaje automático y midiendo los cambios en la salida de predicción.
-Los métodos independientes al modelo que devuelven observaciones como explicaciones se analizan en el capítulo <a href="#basadoenejemplos">Explicaciones basadas en ejemplos</a>.
-Los métodos independientes al modelo se pueden diferenciar aún más, en función de si explican el comportamiento global del modelo en todas las observaciones o si explican predicciones individuales.
-Los siguientes métodos explican el comportamiento general del modelo: <a href="#pdp">Gráficos de dependencia parcial</a>, <a href="#ale">Efectos locales acumulados</a>, <a href="#interacción">Interacción de características</a>, <a href="#importanciadecaracterísticas">Importancia de características</a> , <a href="#global">Modelos sustitutos globales</a> y <a href="#proto">Prototipos y críticas</a>.
-Para explicar las predicciones individuales, en cambio, tenemos <a href="#LIME">Modelos sustitutos locales</a>, <a href="#shapley">Explicaciones del valor de Shapley</a>, <a href="#contrafactual">Explicaciones contrafactuales</a> (y estrechamente relacionados: <a href="#adversarial">Ejemplos adversos</a>).
-Algunos métodos se pueden usar para explicar ambos aspectos del comportamiento del modelo, tanto el carácter global como las predicciones individuales: <a href="#ICE">Expectativa condicional individual</a> e <a href="#influyente">Instancias influyentes</a>.</p>
-<p>El libro termina con una perspectiva optimista sobre cómo podría ser <a href="#futuro">el futuro del aprendizaje automático interpretable</a>.</p>
-<p>Podés leer el libro de principio a fin o saltar directamente a los métodos que le interesen.</p>
-<p>¡Espero que disfrutes la lectura!</p>
-
-<p>﻿
-<!--{pagebreak}--></p> 
-</div>
-<div class="footnotes">
-<hr />
-<ol start="1">
-<li id="fn1"><p>Friedman, Jerome, Trevor Hastie y Robert Tibshirani. “Los elementos del aprendizaje estadístico”. www.web.stanford.edu/~hastie/ElemStatLearn/ (2009).<a href="intro.html#fnref1" class="footnote-back">↩</a></p></li>
-</ol>
+<div id="que-es-el-aprendizaje-automatico" class="section level2">
+<h2><span class="header-section-number">1.2</span> ¿Qué es el aprendizaje automático?</h2>
+<p>El aprendizaje automático es un conjunto de métodos que usan las computadoras para hacer y mejorar predicciones o comportamientos basados en datos.</p>
+<p>Por ejemplo, para predecir el valor de una casa, la computadora puede aprender patrones de ventas pasadas de casas.
+El libro se centra en el aprendizaje automático supervisado, que cubre todos los problemas de predicción en los que tenemos un conjunto de datos para el que ya conocemos el resultado de interés (por ejemplo, precios anteriores de la vivienda) y queremos predecir el resultado de los nuevos datos.
+Se excluyen del aprendizaje supervisado, por ejemplo, las tareas de agrupación (aprendizaje no supervisado) donde no tenemos un resultado específico de interés, pero queremos encontrar grupos de observaciones.
+También se excluyen cosas como el aprendizaje por refuerzo, donde un agente aprende a optimizar cierta recompensa actuando en un entorno (por ejemplo, una computadora que juega Tetris).
+El objetivo del aprendizaje supervisado es aprender un modelo predictivo que relacione características de los datos (por ejemplo, tamaño de la casa, ubicación, tipo de piso, …) con una salida (por ejemplo, el precio de la casa).
+Si el resultado es categórico, el objetivo se llama clasificación, y si es numérico, se llama regresión.
+El algoritmo de aprendizaje automático aprende un modelo mediante la estimación de parámetros (como pesos) o estructuras de aprendizaje (como árboles).
+El algoritmo se guía por una función de puntuación o pérdida que se minimiza.
+En el ejemplo del valor de la vivienda, la máquina minimiza la diferencia entre el precio estimado de la vivienda y el precio previsto.
+Un modelo de aprendizaje automático totalmente entrenado se puede utilizar para hacer predicciones para nuevas instancias.</p>
+<p>Estimación de precios de la vivienda, recomendaciones de productos, detección de letreros, predicción de incumplimiento crediticio y detección de fraude:
+Todos estos ejemplos tienen en común que pueden resolverse mediante el aprendizaje automático.
+Las tareas son diferentes, pero el enfoque es el mismo:
+Paso 1: recopilación de datos.
+Mientras más, mejor.
+Los datos deben contener el resultado que desea predecir e información adicional a partir de la cual realizar la predicción.
+Para un detector de letrero de calle (“¿Hay un letrero de calle en la imagen?”), debes recopilar imágenes de la calle y etiquetar si un letrero de calle es visible o no.
+Para un predictor de incumplimiento de crédito, necesitas datos pasados sobre préstamos reales, información sobre si los clientes estaban en incumplimiento con sus préstamos y datos que lo ayudarán a hacer predicciones, como ingresos, incumplimientos de créditos pasados, etc.
+Para un programa de estimación automática del valor de la vivienda, podés recopilar datos de ventas de viviendas anteriores e información sobre los bienes inmuebles, como el tamaño, la ubicación, etc.
+Paso 2: ingreso de esta información en un algoritmo de aprendizaje automático que genera un modelo de detector de signos, un modelo de calificación crediticia o un estimador del valor de la vivienda.
+Paso 3: uso del modelo con nuevos datos.
+Integrar el modelo en un producto o proceso, como un automóvil sin conductor, un proceso de solicitud de crédito o un sitio web del mercado inmobiliario.</p>
+<p>Las máquinas superan a los humanos en muchas tareas, como jugar al ajedrez (o más recientemente Go) o predecir el clima.
+Incluso si la máquina es tan buena como un ser humano o un poco peor en una tarea, sigue habiendo grandes ventajas en términos de velocidad, reproducibilidad y escala.
+Una vez implementado, un modelo de aprendizaje automático puede completar una tarea mucho más rápido que los humanos, ofrece resultados consistentes y se puede copiar infinitamente.
+La replicación de un modelo de aprendizaje automático en otra máquina es rápida y barata.
+El entrenamiento de un humano para una tarea puede llevar décadas (especialmente cuando son jóvenes) y es muy costoso.
+Una desventaja importante del uso del aprendizaje automático es que los conocimientos sobre los datos y la tarea que resuelve la máquina están ocultos en modelos cada vez más complejos.
+Necesita millones de números para describir una red neuronal profunda, y no hay forma de entender el modelo en su totalidad.
+Otros modelos, como el random forest, consisten en cientos de árboles de decisión que “votan” por predicciones.
+Para comprender cómo se tomó la decisión, debería examinar los votos y las estructuras de cada uno de los cientos de árboles.
+Eso simplemente no funciona, no importa cuán inteligente sea o cuán buena sea su memoria de trabajo.
+Los modelos con mejor rendimiento son a menudo mezclas de varios modelos (también llamados conjuntos) imposibles de interpretar, aún bajo la posibilidad de que cada modelo se pudiera interpretar.
+Si te enfocas solo en el rendimiento, obtendrás automáticamente modelos cada vez más opacos.
+Solo echa un vistazo a <a href="http://blog.kaggle.com/">entrevistas con ganadores en la plataforma de competencia de aprendizaje automático kaggle.com</a>:
+Los modelos ganadores eran en su mayoría conjuntos de modelos o modelos muy complejos, como árboles potenciados o redes neuronales profundas.</p>
+<!--{pagebreak}-->
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="horadelcuento.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="horadelcuento.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="terminología.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

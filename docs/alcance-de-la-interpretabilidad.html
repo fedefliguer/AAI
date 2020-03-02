@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 1 Introducción | Aprendizaje automatico interpretable</title>
+  <title>2.3 Alcance de la interpretabilidad | Aprendizaje automatico interpretable</title>
   <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta property="og:title" content="2.3 Alcance de la interpretabilidad | Aprendizaje automatico interpretable" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta name="twitter:title" content="2.3 Alcance de la interpretabilidad | Aprendizaje automatico interpretable" />
   
   <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="horadelcuento.html"/>
+<link rel="prev" href="taxonomia-de-los-metodos-de-interpretacion.html"/>
+<link rel="next" href="evaluacion-de-la-interpretabilidad.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -158,44 +158,81 @@ window.cookieconsent.initialise({
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="intro" class="section level1">
-<h1><span class="header-section-number">Chapter 1</span> Introducción</h1>
-<p>Este libro te explica cómo hacer que los modelos de aprendizaje automático (supervisados) sean interpretables.
-Los capítulos contienen algunas fórmulas matemáticas, pero deberías poder comprender las ideas detrás de los métodos, incluso sin las fórmulas.
-Este libro no es para personas que intentan aprender el aprendizaje automático desde cero.
-Si sos nuevo en el aprendizaje automático, hay muchos libros y otros recursos para aprender los conceptos básicos.
-Recomiendo el libro “Los elementos del aprendizaje estadístico” de Hastie, Tibshirani y Friedman (2009) <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> y <a href="https://www.coursera.org/learn/machine-learning">el curso en línea “Machine Learning” de Andrew Ng</a> en la plataforma de aprendizaje en línea coursera.com para comenzar con el aprendizaje automático.
-¡Tanto el libro como el curso están disponibles de forma gratuita!</p>
-<p>Se publican nuevos métodos para la interpretación de modelos de aprendizaje automático a una velocidad vertiginosa.
-Mantenerse al día con todo lo que se publica sería una locura y simplemente imposible.
-Es por eso que no encontrarás los métodos más novedosos y sofisticados en este libro, sino los métodos establecidos y los conceptos básicos de la capacidad de interpretación del aprendizaje automático.
-Estos conceptos básicos te preparan para hacer que los modelos de aprendizaje automático sean interpretables.
-La internalización de los conceptos básicos, además, te permitirá comprender y evaluar mejor cualquier documento nuevo sobre interpretabilidad publicado en <a href="https://arxiv.org/">arxiv.org</a> en los últimos 5 minutos desde que comenzaste a leer este libro (podría estar exagerando la tasa de publicación).</p>
-<p>Este libro comienza con algunas <a href="horadelcuento.html#horadelcuento">historias cortas</a> (distópicas) que no son necesarias para entender el libro, pero con suerte te entretendrán y te harán pensar.
-Luego, el libro explora los conceptos de <a href="interpretabilidad.html#interpretabilidad">interpretabilidad del aprendizaje automático</a>.
-Discutiremos cuándo la interpretabilidad es importante y qué diferentes tipos de explicaciones hay.
-Los términos utilizados a lo largo de todo el libro se pueden consultar en el <a href="terminología.html#terminología">Capítulo de terminología</a>.
-La mayoría de los modelos y métodos explicados se presentan utilizando ejemplos de datos reales que se describen en el <a href="conjuntosdedatos.html#conjuntosdedatos">Capítulo de conuntos de datos</a>.
-Una forma de hacer que el aprendizaje automático sea interpretable es usar <a href="#simple">modelos interpretables</a>, como modelos lineales o árboles de decisión.
-La otra opción es el uso de <a href="#agnóstico">herramientas de interpretación modelo-agnósticas</a> que se pueden aplicar a cualquier modelo supervisado de aprendizaje automático.
-El capítulo Métodos modelo-agnósticos trata con métodos tales como gráficas de dependencia parcial (PDP) e importancia de la característica de permutación.
-Los métodos modelo-agnósticos funcionan cambiando la entrada del modelo de aprendizaje automático y midiendo los cambios en la salida de predicción.
-Los métodos independientes al modelo que devuelven observaciones como explicaciones se analizan en el capítulo <a href="#basadoenejemplos">Explicaciones basadas en ejemplos</a>.
-Los métodos independientes al modelo se pueden diferenciar aún más, en función de si explican el comportamiento global del modelo en todas las observaciones o si explican predicciones individuales.
-Los siguientes métodos explican el comportamiento general del modelo: <a href="#pdp">Gráficos de dependencia parcial</a>, <a href="#ale">Efectos locales acumulados</a>, <a href="#interacción">Interacción de características</a>, <a href="#importanciadecaracterísticas">Importancia de características</a> , <a href="#global">Modelos sustitutos globales</a> y <a href="#proto">Prototipos y críticas</a>.
-Para explicar las predicciones individuales, en cambio, tenemos <a href="#LIME">Modelos sustitutos locales</a>, <a href="#shapley">Explicaciones del valor de Shapley</a>, <a href="#contrafactual">Explicaciones contrafactuales</a> (y estrechamente relacionados: <a href="#adversarial">Ejemplos adversos</a>).
-Algunos métodos se pueden usar para explicar ambos aspectos del comportamiento del modelo, tanto el carácter global como las predicciones individuales: <a href="#ICE">Expectativa condicional individual</a> e <a href="#influyente">Instancias influyentes</a>.</p>
-<p>El libro termina con una perspectiva optimista sobre cómo podría ser <a href="#futuro">el futuro del aprendizaje automático interpretable</a>.</p>
-<p>Podés leer el libro de principio a fin o saltar directamente a los métodos que le interesen.</p>
-<p>¡Espero que disfrutes la lectura!</p>
-
-<p>﻿
-<!--{pagebreak}--></p> 
+<div id="alcance-de-la-interpretabilidad" class="section level2">
+<h2><span class="header-section-number">2.3</span> Alcance de la interpretabilidad</h2>
+<p>Un algoritmo entrena un modelo que produce las predicciones.
+Cada paso puede evaluarse en términos de transparencia o interpretabilidad.</p>
+<div id="transparencia-del-algoritmo" class="section level3">
+<h3><span class="header-section-number">2.3.1</span> Transparencia del algoritmo</h3>
+<p><em>¿Cómo crea el algoritmo el modelo?</em></p>
+<p>La transparencia del algoritmo se trata de cómo el algoritmo aprende un modelo desde los datos, y de qué tipo de relaciones puede incorporar.
+Si utilizas redes neuronales convolucionales para clasificar imágenes, puedes explicar que el algoritmo aprende detectores de borde y filtros en las capas más bajas.
+Esto es una comprensión de cómo funciona el algoritmo, pero no para el modelo específico que se aprende al final, y tampoco para la forma en la que se hacen las predicciones individuales.
+La transparencia del algoritmo solo requiere el conocimiento del algoritmo y no de los datos o el modelo aprendido.
+Este libro se centra en la interpretabilidad del modelo y no en la transparencia del algoritmo.
+Algoritmos como el método de mínimos cuadrados para modelos lineales están bien estudiados y entendidos.
+Se caracterizan por una alta transparencia.
+Los enfoques de aprendizaje profundo (empujar un gradiente a través de una red con millones de pesos) se entienden menos y el funcionamiento interno es el foco de la investigación en curso.
+Se consideran menos transparentes.</p>
+</div>
+<div id="interpretabilidad-global-y-holistica-del-modelo" class="section level3">
+<h3><span class="header-section-number">2.3.2</span> Interpretabilidad global y holística del modelo</h3>
+<p><em>¿Cómo hace predicciones el modelo entrenado?</em></p>
+<p>Podrías describir un modelo como interpretable si puedes comprender todo el modelo de una vez (Lipton 2016<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>).
+Para explicar el resultado del modelo global necesitas el modelo entrenado, el conocimiento del algoritmo y los datos.
+Este nivel de interpretabilidad se trata de comprender cómo toma decisiones el modelo, en función de una visión holística de sus características y de cada uno de los componentes aprendidos, como los pesos, parámetros y estructuras.
+¿Qué características son importantes y qué tipo de interacciones entre ellas tienen lugar?
+La interpretación global del modelo ayuda a comprender la distribución de su resultado objetivo en función de las características.
+La interpretabilidad del modelo global es muy difícil de lograr en la práctica.
+Es improbable que cualquier modelo que exceda un puñado de parámetros o pesos se ajuste a la memoria a corto plazo del ser humano promedio.
+Sostengo que realmente no puedes imaginar un modelo lineal con 5 características, porque significaría dibujar mentalmente el hiperplano estimado en un espacio de 5 dimensiones.
+Cualquier espacio de características con más de 3 dimensiones es simplemente inconcebible para los humanos.
+Por lo general, cuando las personas intentan comprender un modelo, solo consideran partes de él, como los pesos en los modelos lineales.</p>
+</div>
+<div id="interpretabilidad-del-modelo-global-en-un-nivel-modular" class="section level3">
+<h3><span class="header-section-number">2.3.3</span> Interpretabilidad del modelo global en un nivel modular</h3>
+<p><em>¿Cómo afectan las predicciones las partes del modelo?</em></p>
+<p>Un modelo de Naive Bayes con cientos de características sería demasiado grande para mantenerlo en nuestra memoria de trabajo.
+E incluso si logramos memorizar todos los pesos, no podríamos hacer predicciones rápidamente para nuevas observaciones.
+Además, debes tener la distribución conjunta de todas las características en su cabeza para estimar la importancia de cada característica y cómo las características afectan las predicciones en promedio.
+Una tarea imposible.
+Pero puedes entender fácilmente un solo peso.
+Si bien la interpretación global del modelo generalmente está fuera del alcance, existe una buena posibilidad de comprender al menos algunos modelos a nivel modular.
+No todos los modelos son interpretables a nivel de parámetro.
+Para los modelos lineales, las partes interpretables son los pesos, para los árboles serían las divisiones (características seleccionadas más puntos de corte) y las predicciones de los nodos foliares.
+Los modelos lineales, por ejemplo, se ven como si pudieran interpretarse perfectamente en un nivel modular, pero la interpretación de un solo peso está entrelazada con todos los demás pesos.
+La interpretación de un solo peso siempre viene con la nota al pie de página de que las otras características de entrada permanecen en el mismo valor, que no es el caso con muchas aplicaciones reales.
+Un modelo lineal que predice el valor de una casa, que tiene en cuenta tanto el tamaño de la casa como el número de habitaciones, puede tener un peso negativo para la característica de la cantidad de habitaciones.
+Puede suceder porque ya existe la característica de tamaño de la casa altamente correlacionada.
+En un mercado donde la gente prefiere habitaciones más grandes, una casa con menos habitaciones podría valer más que una casa con más habitaciones si ambas tienen el mismo tamaño.
+Los pesos solo tienen sentido en el contexto de las otras características del modelo.
+Pero los pesos en un modelo lineal aún se pueden interpretar mejor que los pesos de una red neuronal profunda.</p>
+</div>
+<div id="interpretabilidad-local-para-una-unica-prediccion" class="section level3">
+<h3><span class="header-section-number">2.3.4</span> Interpretabilidad local para una única predicción</h3>
+<p><em>¿Por qué el modelo hizo una cierta predicción para una instancia?</em></p>
+<p>Puedes ampliar una sola instancia y examinar lo que el modelo predice para esta entrada, y explicar por qué.
+Si observas una predicción individual, el comportamiento del modelo complejo podría comportarse de manera más agradable.
+Localmente, la predicción podría depender solo linealmente o monotónicamente de algunas características, en lugar de tener una dependencia compleja de ellas.
+Por ejemplo, el valor de una casa puede depender no linealmente de su tamaño.
+Pero si solo estás mirando una casa particular de 100 metros cuadrados, existe la posibilidad de que para ese subconjunto de datos, la predicción de su modelo dependa linealmente del tamaño.
+Puedes descubrir esto simulando cómo cambia el precio previsto cuando aumenta o disminuye el tamaño en 10 metros cuadrados.
+Por lo tanto, las explicaciones locales pueden ser más precisas que las explicaciones globales.
+Este libro presenta métodos que pueden hacer que las predicciones individuales sean más interpretables en la [sección sobre métodos modelo-agnósticos] (#agnostico).</p>
+</div>
+<div id="interpretabilidad-local-para-un-grupo-de-predicciones" class="section level3">
+<h3><span class="header-section-number">2.3.5</span> Interpretabilidad local para un grupo de predicciones</h3>
+<p><em>¿Por qué el modelo hizo predicciones específicas para un grupo de instancias?</em></p>
+<p>Las predicciones del modelo para varias observaciones pueden explicarse con métodos de interpretación de modelos globales (a nivel modular) o con explicaciones particulares por observación.
+Los métodos globales se pueden aplicar tomando el grupo de observaciones, tratándolos como si fuera el conjunto de datos completo y utilizando los métodos globales con este subconjunto.
+Los métodos de explicación individuales se pueden utilizar en cada instancia y luego enumerar o agregar para todo el grupo.</p>
+<!--{pagebreak}-->
+</div>
 </div>
 <div class="footnotes">
 <hr />
-<ol start="1">
-<li id="fn1"><p>Friedman, Jerome, Trevor Hastie y Robert Tibshirani. “Los elementos del aprendizaje estadístico”. www.web.stanford.edu/~hastie/ElemStatLearn/ (2009).<a href="intro.html#fnref1" class="footnote-back">↩</a></p></li>
+<ol start="6">
+<li id="fn6"><p>Lipton, Zachary C. “The mythos of model interpretability.” arXiv preprint arXiv:1606.03490, (2016).<a href="alcance-de-la-interpretabilidad.html#fnref6" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
             </section>
@@ -203,8 +240,8 @@ Algunos métodos se pueden usar para explicar ambos aspectos del comportamiento 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="horadelcuento.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="taxonomia-de-los-metodos-de-interpretacion.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="evaluacion-de-la-interpretabilidad.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

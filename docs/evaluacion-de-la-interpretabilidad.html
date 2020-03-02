@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 1 Introducción | Aprendizaje automatico interpretable</title>
+  <title>2.4 Evaluación de la interpretabilidad | Aprendizaje automatico interpretable</title>
   <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta property="og:title" content="2.4 Evaluación de la interpretabilidad | Aprendizaje automatico interpretable" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 1 Introducción | Aprendizaje automatico interpretable" />
+  <meta name="twitter:title" content="2.4 Evaluación de la interpretabilidad | Aprendizaje automatico interpretable" />
   
   <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
   
@@ -31,8 +31,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="index.html"/>
-<link rel="next" href="horadelcuento.html"/>
+<link rel="prev" href="alcance-de-la-interpretabilidad.html"/>
+<link rel="next" href="properties.html"/>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -158,53 +158,40 @@ window.cookieconsent.initialise({
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="intro" class="section level1">
-<h1><span class="header-section-number">Chapter 1</span> Introducción</h1>
-<p>Este libro te explica cómo hacer que los modelos de aprendizaje automático (supervisados) sean interpretables.
-Los capítulos contienen algunas fórmulas matemáticas, pero deberías poder comprender las ideas detrás de los métodos, incluso sin las fórmulas.
-Este libro no es para personas que intentan aprender el aprendizaje automático desde cero.
-Si sos nuevo en el aprendizaje automático, hay muchos libros y otros recursos para aprender los conceptos básicos.
-Recomiendo el libro “Los elementos del aprendizaje estadístico” de Hastie, Tibshirani y Friedman (2009) <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> y <a href="https://www.coursera.org/learn/machine-learning">el curso en línea “Machine Learning” de Andrew Ng</a> en la plataforma de aprendizaje en línea coursera.com para comenzar con el aprendizaje automático.
-¡Tanto el libro como el curso están disponibles de forma gratuita!</p>
-<p>Se publican nuevos métodos para la interpretación de modelos de aprendizaje automático a una velocidad vertiginosa.
-Mantenerse al día con todo lo que se publica sería una locura y simplemente imposible.
-Es por eso que no encontrarás los métodos más novedosos y sofisticados en este libro, sino los métodos establecidos y los conceptos básicos de la capacidad de interpretación del aprendizaje automático.
-Estos conceptos básicos te preparan para hacer que los modelos de aprendizaje automático sean interpretables.
-La internalización de los conceptos básicos, además, te permitirá comprender y evaluar mejor cualquier documento nuevo sobre interpretabilidad publicado en <a href="https://arxiv.org/">arxiv.org</a> en los últimos 5 minutos desde que comenzaste a leer este libro (podría estar exagerando la tasa de publicación).</p>
-<p>Este libro comienza con algunas <a href="horadelcuento.html#horadelcuento">historias cortas</a> (distópicas) que no son necesarias para entender el libro, pero con suerte te entretendrán y te harán pensar.
-Luego, el libro explora los conceptos de <a href="interpretabilidad.html#interpretabilidad">interpretabilidad del aprendizaje automático</a>.
-Discutiremos cuándo la interpretabilidad es importante y qué diferentes tipos de explicaciones hay.
-Los términos utilizados a lo largo de todo el libro se pueden consultar en el <a href="terminología.html#terminología">Capítulo de terminología</a>.
-La mayoría de los modelos y métodos explicados se presentan utilizando ejemplos de datos reales que se describen en el <a href="conjuntosdedatos.html#conjuntosdedatos">Capítulo de conuntos de datos</a>.
-Una forma de hacer que el aprendizaje automático sea interpretable es usar <a href="#simple">modelos interpretables</a>, como modelos lineales o árboles de decisión.
-La otra opción es el uso de <a href="#agnóstico">herramientas de interpretación modelo-agnósticas</a> que se pueden aplicar a cualquier modelo supervisado de aprendizaje automático.
-El capítulo Métodos modelo-agnósticos trata con métodos tales como gráficas de dependencia parcial (PDP) e importancia de la característica de permutación.
-Los métodos modelo-agnósticos funcionan cambiando la entrada del modelo de aprendizaje automático y midiendo los cambios en la salida de predicción.
-Los métodos independientes al modelo que devuelven observaciones como explicaciones se analizan en el capítulo <a href="#basadoenejemplos">Explicaciones basadas en ejemplos</a>.
-Los métodos independientes al modelo se pueden diferenciar aún más, en función de si explican el comportamiento global del modelo en todas las observaciones o si explican predicciones individuales.
-Los siguientes métodos explican el comportamiento general del modelo: <a href="#pdp">Gráficos de dependencia parcial</a>, <a href="#ale">Efectos locales acumulados</a>, <a href="#interacción">Interacción de características</a>, <a href="#importanciadecaracterísticas">Importancia de características</a> , <a href="#global">Modelos sustitutos globales</a> y <a href="#proto">Prototipos y críticas</a>.
-Para explicar las predicciones individuales, en cambio, tenemos <a href="#LIME">Modelos sustitutos locales</a>, <a href="#shapley">Explicaciones del valor de Shapley</a>, <a href="#contrafactual">Explicaciones contrafactuales</a> (y estrechamente relacionados: <a href="#adversarial">Ejemplos adversos</a>).
-Algunos métodos se pueden usar para explicar ambos aspectos del comportamiento del modelo, tanto el carácter global como las predicciones individuales: <a href="#ICE">Expectativa condicional individual</a> e <a href="#influyente">Instancias influyentes</a>.</p>
-<p>El libro termina con una perspectiva optimista sobre cómo podría ser <a href="#futuro">el futuro del aprendizaje automático interpretable</a>.</p>
-<p>Podés leer el libro de principio a fin o saltar directamente a los métodos que le interesen.</p>
-<p>¡Espero que disfrutes la lectura!</p>
-
-<p>﻿
-<!--{pagebreak}--></p> 
-</div>
-<div class="footnotes">
-<hr />
-<ol start="1">
-<li id="fn1"><p>Friedman, Jerome, Trevor Hastie y Robert Tibshirani. “Los elementos del aprendizaje estadístico”. www.web.stanford.edu/~hastie/ElemStatLearn/ (2009).<a href="intro.html#fnref1" class="footnote-back">↩</a></p></li>
-</ol>
+<div id="evaluacion-de-la-interpretabilidad" class="section level2">
+<h2><span class="header-section-number">2.4</span> Evaluación de la interpretabilidad</h2>
+<p>No existe un consenso real sobre qué interpretabilidad es en el aprendizaje automático.
+Tampoco está claro cómo medirla.
+Pero hay una investigación inicial sobre esto y un intento de formular algunos enfoques para la evaluación, como se describe en la siguiente sección.
+Doshi-Velez y Kim (2017) proponen tres niveles principales para la evaluación de la interpretabilidad:</p>
+<p><strong>Evaluación del nivel de aplicación (tarea real)</strong>:
+Ponga la explicación en el producto y haga que el usuario final lo pruebe.
+Imagine un software de detección de fracturas con un componente de aprendizaje automático que localiza y marca fracturas en rayos X.
+A nivel de aplicación, los radiólogos probarían el software de detección de fracturas directamente para evaluar el modelo.
+Esto requiere una buena configuración experimental y una comprensión de cómo evaluar la calidad.
+Una buena base para esto es siempre qué tan bueno sería un humano para explicar la misma decisión.</p>
+<p><strong>Evaluación a nivel humano (tarea simple)</strong>
+Es una evaluación de nivel de aplicación simplificada.
+La diferencia es que estos experimentos no se llevan a cabo con expertos en el dominio, sino con personas ‘laicas’.
+Esto hace que los experimentos sean más baratos (especialmente si los expertos en el dominio son radiólogos) y es más fácil encontrar más evaluadores.
+Un ejemplo sería mostrarle a un usuario diferentes explicaciones y el usuario elegiría la mejor.</p>
+<p><strong>La evaluación del nivel de función (tarea proxy)</strong> no requiere humanos.
+Esto funciona mejor cuando la clase de modelo utilizada ya ha sido evaluada por otra persona en una evaluación a nivel humano.
+Por ejemplo, podría saberse que los usuarios finales entienden los árboles de decisión.
+En este caso, un proxy para la calidad de la explicación puede ser la profundidad del árbol.
+Los árboles más cortos obtendrían una mejor puntuación de explicabilidad.
+Tendría sentido agregar la restricción de que el rendimiento predictivo del árbol sigue siendo bueno y no disminuye demasiado en comparación con un árbol más grande.</p>
+<p>El próximo capítulo se centra en la evaluación de explicaciones para predicciones individuales en el nivel de función.
+¿Cuáles son las propiedades relevantes de las explicaciones que consideraríamos para su evaluación?</p>
+<!--{pagebreak}-->
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="horadelcuento.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="alcance-de-la-interpretabilidad.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="properties.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
