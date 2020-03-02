@@ -24,7 +24,7 @@
 <meta name="author" content="Christoph Molnar" />
 
 
-<meta name="date" content="2020-02-21" />
+<meta name="date" content="2020-03-02" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -50,70 +50,45 @@
 
 
 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
 
-<style type="text/css">
-a.sourceLine { display: inline-block; line-height: 1.25; }
-a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
-a.sourceLine:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode { white-space: pre; position: relative; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-code.sourceCode { white-space: pre-wrap; }
-a.sourceLine { text-indent: -1em; padding-left: 1em; }
-}
-pre.numberSource a.sourceLine
-  { position: relative; left: -4em; }
-pre.numberSource a.sourceLine::before
-  { content: attr(data-line-number);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; pointer-events: all; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "This website uses cookies for Google Analytics so that I know how many people are reading the book and which chapters are the most popular. The book website doesn't collect any personal data."
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {  }
-@media screen {
-a.sourceLine::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-</style>
+})});
+</script>
+
+
 
 <link rel="stylesheet" href="style.css" type="text/css" />
 </head>
@@ -187,33 +162,32 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1 class="title">Aprendizaje automatico interpretable</h1>
 <h2 class="subtitle"><em>Una guia para hacer que los modelos de caja negra sean explicables.</em></h2>
 <p class="author"><em>Christoph Molnar</em></p>
-<p class="date"><em>2020-02-21</em></p>
+<p class="date"><em>2020-03-02</em></p>
 </div>
-<p>﻿<code>{r setup, cache=FALSE, include=FALSE} devtools::load_all() is.html = !is.null(output) &amp;&amp; output == &quot;html&quot; only.in.html = &quot;*This chapter is currently only available in this web version. ebook and print will follow.*&quot; devtools::install_github(&quot;viadee/anchorsOnR&quot;)</code></p>
 <div id="prefacio" class="section level1 unnumbered">
 <h1>Prefacio</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">knitr<span class="op">::</span><span class="kw">include_graphics</span>(<span class="st">&#39;images/title_page.jpg&#39;</span>, <span class="dt">dpi =</span> <span class="ot">NA</span>)</a></code></pre></div>
 <p><img src="images/title_page.jpg" width="500" style="display: block; margin: auto;" /></p>
 <p>El aprendizaje automático tiene un gran potencial para mejorar productos, procesos e investigación.
 Pero <strong>las computadoras generalmente no explican sus predicciones</strong>, lo cual es una barrera para la adopción del aprendizaje automático.
 Este libro trata de hacer que los modelos de aprendizaje automático y sus decisiones sean interpretables.</p>
-<p>Después de explorar los conceptos de interpretabilidad, aprenderás sobre modelos <strong>simples e interpretables</strong> como árboles de decisión, reglas de decisión y regresión lineal.
+<p>Después de explorar los conceptos de interpretabilidad, aprenderá sobre modelos <strong>simples e interpretables</strong> como árboles de decisión, reglas de decisión y regresión lineal.
 Los capítulos posteriores se centran en métodos generales independientes del modelo para <strong>interpretar modelos de caja negra</strong> como la importancia de la característica y los efectos locales acumulados, y explicar las predicciones individuales con valores de Shapley y LIME.</p>
 <p>Todos los métodos de interpretación se explican en profundidad y se analizan críticamente.
 ¿Cómo funcionan detrás de escena?
 ¿Cuales son sus fortalezas y debilidades?
 ¿Cómo se pueden interpretar sus resultados?
 Este libro te permitirá seleccionar y aplicar correctamente el método de interpretación más adecuado para su proyecto de aprendizaje automático.</p>
-<p>El libro se enfoca en modelos de aprendizaje automático para datos tabulares (también llamados datos relacionales o estructurados) y no se enfoca en visión artifical ni en procesamiento de lenguaje natural.
+<p>El libro se enfoca en modelos de aprendizaje automático para datos tabulares (también llamados datos relacionales o estructurados) y menos en visión artifical, ni en procesamiento de lenguaje natural.
 Se recomienda leer el libro para profesionales del aprendizaje automático, científicos de datos, estadísticos y cualquier otra persona interesada en hacer que los modelos de aprendizaje automático sean interpretables.</p>
-<p>Podés comprar la versión en PDF y en e-book (epub, mobi) del libro <a href="https://leanpub.com/interpretable-machine-learning">en leanpub.com</a>.</p>
-<p>Podés comprar la versión en papel <a href="http://www.lulu.com/shop/christoph-molnar/interpretable-machine-learning/paperback/product-24036234.html">en lulu.com</a>.</p>
+<p>Puedes comprar la versión en PDF y en e-book (epub, mobi) del libro <a href="https://leanpub.com/interpretable-machine-learning">en leanpub.com</a>.</p>
+<p>Puedes comprar la versión en papel <a href="http://www.lulu.com/shop/christoph-molnar/interpretable-machine-learning/paperback/product-24036234.html">en lulu.com</a>.</p>
 <p><strong>Sobre el autor:</strong> Mi nombre es Christoph Molnar, Soy estadístico y un profesional del aprendizaje automático.
 Mi objetivo es hacer al aprendizaje automático interpretable.</p>
 <p>Mail: <a href="mailto:christoph.molnar.ai@gmail.com">christoph.molnar.ai@gmail.com</a></p>
 <p>Website: <a href="https://christophm.github.io/" class="uri">https://christophm.github.io/</a></p>
 <p>Seguime en Twitter! <a href="https://twitter.com/ChristophMolnar">@ChristophMolnar</a></p>
 <p>Portada por <a href="https://twitter.com/YvonneDoinel">@YvonneDoinel</a></p>
+<p><strong>Sobre el traductor:</strong> Mi nombre es …………………..</p>
 <div class="figure">
 <img src="images/by-nc-sa.png" alt="Creative Commons License" />
 <p class="caption">Creative Commons License</p>
@@ -267,7 +241,7 @@ Si te gustan este tipo de historias o si estás interesado en la inteligencia ar
 <div id="un-rayo-nunca-golpea-dos-veces" class="section level3 unnumbered">
 <h3>Un rayo nunca golpea dos veces</h3>
 <p><strong>2030: un laboratorio médico en Suiza</strong></p>
-<p><img src="images/hospital.jpg" width="638" /></p>
+<p><img src="images/hospital.jpg" width="409" /></p>
 <p>“¡Definitivamente no es la peor forma de morir!” Tom resumió, tratando de encontrar algo positivo en la tragedia.
 Sacó la bomba del poste intravenoso.
 “Simplemente murió por las razones equivocadas”, agregó Lena.
@@ -347,7 +321,7 @@ Lena volvió a bajar la cabeza y continuó el análisis.
 <div id="perder-confianza" class="section level3 unnumbered">
 <h3>Perder confianza</h3>
 <p><strong>2050: una estación de metro en Singapur</strong></p>
-<p><img src="images/access-denied.jpg" width="1000" /></p>
+<p><img src="images/access-denied.jpg" width="640" /></p>
 <p>Se apresuró a la estación Bishan.
 Sus pensamientos ya estaban en el trabajo.
 Las pruebas para la nueva arquitectura neuronal deberían completarse por ahora.
@@ -417,7 +391,7 @@ Con horror, miró al vacío.</p>
 <div id="clips-de-papel-de-fermi" class="section level3 unnumbered">
 <h3>Clips de papel de Fermi</h3>
 <p><strong>Año 612 AMS (después del asentamiento en Marte): un museo en Marte</strong></p>
-<p><img src="images/burnt-earth.jpg" width="1500" /></p>
+<p><img src="images/burnt-earth.jpg" width="960" /></p>
 <p>“La historia es aburrida”, le susurró Xola a su amiga.
 Xola, una chica de cabello azul, perseguía uno de los drones del proyector que zumbaba en la habitación con la mano izquierda.
 “La historia es importante”, dijo la maestra con voz molesta, mirando a las chicas.
@@ -527,7 +501,7 @@ Un algoritmo puede considerarse como una receta que define las entradas, la sali
 Las recetas de cocción son algoritmos en los que los ingredientes son las entradas, la comida cocida es la salida y los pasos de preparación y cocción son las instrucciones del algoritmo.</p>
 <p><strong>Aprendizaje automático</strong> es un conjunto de métodos que permiten a las computadoras aprender de los datos para hacer y mejorar predicciones (por ejemplo, cáncer, ventas semanales, incumplimiento de crédito).
 El aprendizaje automático es un cambio de paradigma de la “programación normal”, donde todas las instrucciones se deben dar explícitamente a la computadora a la “programación indirecta” que se realiza mediante el suministro de datos.</p>
-<p><img src="images/programing-ml.png" width="660" /></p>
+<p><img src="images/programing-ml.png" width="423" /></p>
 <p>Un <strong>Aprendiz</strong> o <strong>Algoritmo de aprendizaje automático</strong> es el programa utilizado para aprender un modelo de aprendizaje automático a partir de datos.
 Otro nombre es “inductor” (por ejemplo, “inductor de árbol”).</p>
 <p>Un <strong>Modelo de aprendizaje automático</strong> es el programa aprendido que asigna entradas a predicciones.
@@ -535,7 +509,7 @@ Esto puede ser un conjunto de pesos para un modelo lineal o para una red neurona
 Otros nombres para la palabra bastante inespecífica “modelo” son “predictor” o, según la tarea, “clasificador” o “modelo de regresión”.
 En las fórmulas, el modelo de aprendizaje automático entrenado se llama <span class="math inline">\(\hat{f}\)</span> o <span class="math inline">\(\hat{f}(x)\)</span>.</p>
 <div class="figure"><span id="fig:learner-definition"></span>
-<img src="images/learner.png" alt="A learner learns a model from labeled training data. The model is used to make predictions." width="500" />
+<img src="images/learner.png" alt="A learner learns a model from labeled training data. The model is used to make predictions." width="320" />
 <p class="caption">
 FIGURE 1.1: A learner learns a model from labeled training data. The model is used to make predictions.
 </p>
@@ -544,7 +518,7 @@ FIGURE 1.1: A learner learns a model from labeled training data. The model is us
 En el aprendizaje automático, la “caja negra” describe modelos que no se pueden entender al observar sus parámetros (por ejemplo, una red neuronal).
 El opuesto de una caja negra a veces se denomina <strong>caja blanca</strong>, y es llamada en este libro como <a href="#simple">modelo interpretable</a>.
 <a href="#agnóstico">Los métodos modelo-agnósticos</a> para la interpretabilidad tratan los modelos de aprendizaje automático como cajas negras, incluso si no lo son.</p>
-<p><img src="images/iml.png" width="600" /></p>
+<p><img src="images/iml.png" width="384" /></p>
 <p><strong>Aprendizaje automático interpretable</strong> se refiere a métodos y modelos que hacen que el comportamiento y las predicciones de los sistemas de aprendizaje automático sean comprensibles para los humanos.</p>
 <p>Un <strong>conjunto de datos </strong> es una tabla con los datos de los cuales la máquina aprende.
 El conjunto de datos contiene las características y el objetivo a predecir.
@@ -624,7 +598,6 @@ Sí, tiene sentido sugerir guantes si ya tengo un gorro de nieve en mi carrito d
 El algoritmo recomienda esta película, porque los usuarios a quienes les gustaron otras películas que me gustaron también disfrutaron la película recomendada.
 Cada vez más, las compañías de Internet están agregando explicaciones a sus recomendaciones.
 Un buen ejemplo es la recomendación de productos de Amazon, que se basa en combinaciones de productos que se compran con frecuencia:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">knitr<span class="op">::</span><span class="kw">include_graphics</span>(<span class="st">&quot;images/amazon-freq-bought-together.png&quot;</span>)</a></code></pre></div>
 <div class="figure"><span id="fig:amazon-recommendation"></span>
 <img src="images/amazon-freq-bought-together.png" alt="Productos recomendados cuando se compra pintura en Amazon." width="500" />
 <p class="caption">
@@ -671,7 +644,6 @@ Quizás la explicación completa de por qué Doge se atascó podría ser que la 
 Estas razones (y algunas más) hicieron que el robot se atascara, aunque algo estaba en el camino, y eso fue suficiente para que confiara en su comportamiento y se produjera el accidente.
 Por cierto, Doge se quedó atascado en el baño nuevamente.
 Tenemos que quitar las alfombras cada vez antes de dejar que Doge aspire.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">knitr<span class="op">::</span><span class="kw">include_graphics</span>(<span class="st">&quot;images/doge-stuck.jpg&quot;</span>)</a></code></pre></div>
 <div class="figure"><span id="fig:doge-stuck"></span>
 <img src="images/doge-stuck.jpg" alt="Doge, nuestra aspiradora, se atascó. Como explicación del accidente, Doge nos dijo que debe estar en una superficie plana." width="800" />
 <p class="caption">
