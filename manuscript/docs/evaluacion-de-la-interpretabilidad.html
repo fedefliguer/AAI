@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2.4 Evaluación de la interpretabilidad | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2.4 Evaluación de la interpretabilidad | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2.4 Evaluación de la interpretabilidad | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-03-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="alcance-de-la-interpretabilidad.html"/>
+<link rel="next" href="properties.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "This website uses cookies for Google Analytics so that I know how many people are reading the book and which chapters are the most popular. The book website doesn't collect any personal data."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="style.css+" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Bookdown Book</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="que-es-el-aprendizaje-automatico.html"><a href="que-es-el-aprendizaje-automatico.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomia-de-los-metodos-de-interpretacion.html"><a href="taxonomia-de-los-metodos-de-interpretacion.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holistica-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-unica-prediccion"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluacion-de-la-interpretabilidad.html"><a href="evaluacion-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#que-es-una-explicacion"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="evaluacion-de-la-interpretabilidad" class="section level2">
+<h2><span class="header-section-number">2.4</span> Evaluación de la interpretabilidad</h2>
+<p>No existe un consenso real sobre qué interpretabilidad es en el aprendizaje automático.
+Tampoco está claro cómo medirla.
+Pero hay una investigación inicial sobre esto y un intento de formular algunos enfoques para la evaluación, como se describe en la siguiente sección.
+Doshi-Velez y Kim (2017) proponen tres niveles principales para la evaluación de la interpretabilidad:</p>
+<p><strong>Evaluación del nivel de aplicación (tarea real)</strong>:
+Ponga la explicación en el producto y haga que el usuario final lo pruebe.
+Imagine un software de detección de fracturas con un componente de aprendizaje automático que localiza y marca fracturas en rayos X.
+A nivel de aplicación, los radiólogos probarían el software de detección de fracturas directamente para evaluar el modelo.
+Esto requiere una buena configuración experimental y una comprensión de cómo evaluar la calidad.
+Una buena base para esto es siempre qué tan bueno sería un humano para explicar la misma decisión.</p>
+<p><strong>Evaluación a nivel humano (tarea simple)</strong>
+Es una evaluación de nivel de aplicación simplificada.
+La diferencia es que estos experimentos no se llevan a cabo con expertos en el dominio, sino con personas ‘laicas’.
+Esto hace que los experimentos sean más baratos (especialmente si los expertos en el dominio son radiólogos) y es más fácil encontrar más evaluadores.
+Un ejemplo sería mostrarle a un usuario diferentes explicaciones y el usuario elegiría la mejor.</p>
+<p><strong>La evaluación del nivel de función (tarea proxy)</strong> no requiere humanos.
+Esto funciona mejor cuando la clase de modelo utilizada ya ha sido evaluada por otra persona en una evaluación a nivel humano.
+Por ejemplo, podría saberse que los usuarios finales entienden los árboles de decisión.
+En este caso, un proxy para la calidad de la explicación puede ser la profundidad del árbol.
+Los árboles más cortos obtendrían una mejor puntuación de explicabilidad.
+Tendría sentido agregar la restricción de que el rendimiento predictivo del árbol sigue siendo bueno y no disminuye demasiado en comparación con un árbol más grande.</p>
+<p>El próximo capítulo se centra en la evaluación de explicaciones para predicciones individuales en el nivel de función.
+¿Cuáles son las propiedades relevantes de las explicaciones que consideraríamos para su evaluación?</p>
+<!--{pagebreak}-->
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="alcance-de-la-interpretabilidad.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="properties.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

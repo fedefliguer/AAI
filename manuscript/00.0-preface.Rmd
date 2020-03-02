@@ -1,4 +1,4 @@
-﻿```{r setup, cache=FALSE, include=FALSE}
+```{r setup, cache=FALSE, include=FALSE}
 devtools::load_all()
 is.html = !is.null(output) && output == "html"
 only.in.html = "*This chapter is currently only available in this web version. ebook and print will follow.*"
@@ -15,7 +15,7 @@ El aprendizaje automático tiene un gran potencial para mejorar productos, proce
 Pero **las computadoras generalmente no explican sus predicciones**, lo cual es una barrera para la adopción del aprendizaje automático.
 Este libro trata de hacer que los modelos de aprendizaje automático y sus decisiones sean interpretables.
 
-Después de explorar los conceptos de interpretabilidad, aprenderás sobre modelos **simples e interpretables** como árboles de decisión, reglas de decisión y regresión lineal.
+Después de explorar los conceptos de interpretabilidad, aprenderá sobre modelos **simples e interpretables** como árboles de decisión, reglas de decisión y regresión lineal.
 Los capítulos posteriores se centran en métodos generales independientes del modelo para **interpretar modelos de caja negra** como la importancia de la característica y los efectos locales acumulados, y explicar las predicciones individuales con valores de Shapley y LIME.
 
 Todos los métodos de interpretación se explican en profundidad y se analizan críticamente.
@@ -24,12 +24,12 @@ Todos los métodos de interpretación se explican en profundidad y se analizan c
 ¿Cómo se pueden interpretar sus resultados?
 Este libro te permitirá seleccionar y aplicar correctamente el método de interpretación más adecuado para su proyecto de aprendizaje automático.
 
-El libro se enfoca en modelos de aprendizaje automático para datos tabulares (también llamados datos relacionales o estructurados) y no se enfoca en visión artifical ni en procesamiento de lenguaje natural.
+El libro se enfoca en modelos de aprendizaje automático para datos tabulares (también llamados datos relacionales o estructurados) y menos en visión artifical, ni en procesamiento de lenguaje natural.
 Se recomienda leer el libro para profesionales del aprendizaje automático, científicos de datos, estadísticos y cualquier otra persona interesada en hacer que los modelos de aprendizaje automático sean interpretables.
 
-`r if(is.html){"Podés comprar la versión en PDF y en e-book (epub, mobi) del libro [en leanpub.com](https://leanpub.com/interpretable-machine-learning)."}`
+`r if(is.html){"Puedes comprar la versión en PDF y en e-book (epub, mobi) del libro [en leanpub.com](https://leanpub.com/interpretable-machine-learning)."}`
 
-`r if(is.html){"Podés comprar la versión en papel [en lulu.com](http://www.lulu.com/shop/christoph-molnar/interpretable-machine-learning/paperback/product-24036234.html)."}`
+`r if(is.html){"Puedes comprar la versión en papel [en lulu.com](http://www.lulu.com/shop/christoph-molnar/interpretable-machine-learning/paperback/product-24036234.html)."}`
 
 **Sobre el autor:** Mi nombre es Christoph Molnar, Soy estadístico y un profesional del aprendizaje automático.
 Mi objetivo es hacer al aprendizaje automático interpretable.
@@ -42,7 +42,7 @@ Seguime en Twitter! [\@ChristophMolnar](https://twitter.com/ChristophMolnar)
 
 Portada por [\@YvonneDoinel](https://twitter.com/YvonneDoinel)
 
-
+**Sobre el traductor:** Mi nombre es .......................
 
 `r if(is.html){"![Creative Commons License](images/by-nc-sa.png)"}`
 

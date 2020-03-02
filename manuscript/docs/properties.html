@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>2.5 Propiedades de las explicaciones | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.17 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="2.5 Propiedades de las explicaciones | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="2.5 Propiedades de las explicaciones | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-03-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="evaluacion-de-la-interpretabilidad.html"/>
+<link rel="next" href="amigables.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "This website uses cookies for Google Analytics so that I know how many people are reading the book and which chapters are the most popular. The book website doesn't collect any personal data."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="style.css+" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Bookdown Book</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="que-es-el-aprendizaje-automatico.html"><a href="que-es-el-aprendizaje-automatico.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomia-de-los-metodos-de-interpretacion.html"><a href="taxonomia-de-los-metodos-de-interpretacion.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holistica-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-unica-prediccion"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluacion-de-la-interpretabilidad.html"><a href="evaluacion-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#que-es-una-explicacion"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="properties" class="section level2">
+<h2><span class="header-section-number">2.5</span> Propiedades de las explicaciones</h2>
+<p>Queremos explicar las predicciones de un modelo de aprendizaje automático.
+Para lograr esto, confiamos en algún método de explicación, que es un algoritmo que genera explicaciones.
+<strong>Una explicación generalmente relaciona los valores de características de una instancia con la predicción de su modelo de una manera humanamente comprensible.</strong>
+Otros tipos de explicaciones consisten en un conjunto de instancias de datos (por ejemplo, en el caso del modelo vecino k-más cercano).
+Por ejemplo, podríamos predecir el riesgo de cáncer utilizando una SVM y explicar las predicciones utilizando el <a href="#LIME">método sustituto local</a>, que genera árboles de decisión como explicaciones.
+O podríamos usar un modelo de regresión lineal en lugar de una SVM. El modelo de regresión lineal ya está equipado con un método de explicación (interpretación de los pesos).</p>
+<p>Echamos un vistazo más de cerca a las propiedades de los métodos de explicación y explicaciones (Robnik-Sikonja y Bohanec, 2018<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a>).
+Estas propiedades se pueden usar para juzgar qué tan bueno es un método.
+No está claro para todas estas propiedades cómo medirlas correctamente, por lo que uno de los desafíos es formalizar cómo podrían calcularse.</p>
+<p><strong>Propiedades de los métodos de explicación</strong></p>
+<ul>
+<li><strong>Poder expresivo</strong> es el “lenguaje” o estructura de las explicaciones que el método puede generar.
+Un método de explicación podría generar reglas IF-THEN, árboles de decisión, una suma ponderada, lenguaje natural u otra cosa.</li>
+<li><strong>Translucidez</strong> describe cuánto se basa el método de explicación en analizar el modelo de aprendizaje automático, como sus parámetros.
+Por ejemplo, los métodos de explicación que se basan en modelos intrínsecamente interpretables como el modelo de regresión lineal (específico del modelo) son altamente translúcidos.
+Los métodos que solo se basan en manipular entradas y observar las predicciones tienen cero translucidez.
+Dependiendo del escenario, diferentes niveles de translucidez pueden ser deseables.
+La ventaja de la alta translucidez es que el método puede confiar en más información para generar explicaciones.
+La ventaja de la baja translucidez es que el método de explicación es más portátil.</li>
+<li><strong>Portabilidad</strong> describe la gama de modelos de aprendizaje automático con los que se puede utilizar el método de explicación.
+Los métodos con baja translucidez tienen una mayor portabilidad porque tratan el modelo de aprendizaje automático como una caja negra.
+Los modelos sustitutos pueden ser el método de explicación con la mayor portabilidad.
+Métodos que solo funcionan, por ejemplo, para explicar las redes neuronales tienen baja portabilidad.</li>
+<li><strong>Complejidad algorítmica</strong> describe la complejidad computacional del método que genera la explicación.
+Es importante tener en cuenta esta propiedad cuando el tiempo de cálculo es un cuello de botella en la generación de explicaciones.</li>
+</ul>
+<p><strong>Propiedades de explicaciones individuales</strong></p>
+<ul>
+<li><strong>Precisión</strong>: ¿Qué tan bien una explicación predice datos nuevos?
+La alta precisión es especialmente importante si la explicación se usa para las predicciones, y no para el modelo en sí.
+La baja precisión puede estar bien si la precisión del modelo de aprendizaje automático también es baja, y si el objetivo es explicar lo que hace el modelo de caja negra.
+En este caso, solo la fidelidad es importante.</li>
+<li><strong>Fidelity</strong>: ¿Qué tan bien se aproxima la explicación a la predicción del modelo de caja negra?
+La alta fidelidad es una de las propiedades más importantes de una explicación, porque una explicación con baja fidelidad es inútil para explicar el modelo de aprendizaje automático.
+La precisión y la fidelidad están estrechamente relacionadas.
+Si el modelo de caja negra tiene una alta precisión y la explicación tiene una alta fidelidad, la explicación también tiene una alta precisión. Algunas explicaciones ofrecen solo fidelidad local, lo que significa que la explicación solo se aproxima bien a la predicción del modelo para un subconjunto de datos (por ejemplo, <a href="#%20LIME">modelos sustitutos locales</a>) o incluso solo para una observación individual (por ejemplo, [Valores de Shapley] ( # shapley)).</li>
+<li><strong>Consistencia</strong>: ¿Cuánto difiere una explicación entre los modelos que han sido entrenados en la misma tarea y que producen predicciones similares?
+Por ejemplo, entreno una SVM y un modelo de regresión lineal en la misma tarea y ambos producen predicciones muy similares.
+Calculo explicaciones usando un método de mi elección y analizo cuán diferentes son las explicaciones.
+Si las explicaciones son muy similares, las explicaciones son muy consistentes.
+Encuentro esta propiedad algo complicada, ya que los dos modelos podrían usar características diferentes, pero obtener predicciones similares (también llamado <a href="https://en.wikipedia.org/wiki/Rashomon_effect">“Efecto Rashomon”</a>).
+En este caso, no es deseable una alta consistencia porque las explicaciones tienen que ser muy diferentes.
+Es deseable una alta consistencia si los modelos realmente dependen de relaciones similares.</li>
+<li><strong>Estabilidad</strong>: ¿Qué tan similares son las explicaciones para instancias similares?
+Mientras que la coherencia compara explicaciones entre modelos, la estabilidad compara explicaciones entre instancias similares para un modelo fijo.
+Alta estabilidad significa que ligeras variaciones en las características de una observación no cambian sustancialmente la explicación (a menos que estas ligeras variaciones también cambien fuertemente la predicción).
+La falta de estabilidad puede ser el resultado de una alta variación del método de explicación.
+En otras palabras, el método de explicación se ve fuertemente afectado por ligeros cambios en los valores de las características de la observación a explicar.
+La falta de estabilidad también puede ser causada por componentes no deterministas del método de explicación, como un paso de muestreo de datos, como el uso del <a href="#local">método sustituto local</a>.
+La alta estabilidad siempre es deseable.</li>
+<li><strong>Comprensibilidad</strong>: ¿Qué tan bien entienden los humanos las explicaciones?
+Esto se parece a una propiedad más entre muchas, pero es el elefante en la habitación.
+Difícil de definir y medir, pero extremadamente importante para acertar.
+Muchas personas están de acuerdo en que la comprensión depende de la audiencia.
+Las ideas para medir la comprensibilidad incluyen medir el tamaño de la explicación (número de características con un peso distinto de cero en un modelo lineal, número de reglas de decisión, …) o probar qué tan bien las personas pueden predecir el comportamiento del modelo de aprendizaje automático a partir de las explicaciones.
+También se debe considerar la comprensión de las características utilizadas en la explicación. Una transformación compleja de características podría ser menos comprensible que las características originales.</li>
+<li><strong>Certeza</strong>: ¿La explicación refleja la certeza del modelo de aprendizaje automático?
+Muchos modelos de aprendizaje automático solo dan predicciones sin una declaración sobre la confianza de los modelos de que la predicción es correcta.
+Si el modelo predice un 4% de probabilidad de cáncer para un paciente, ¿es igual de cierto que un 4% de probabilidad para otro paciente con diferentes valores de características, pero igual valor predicho?
+Una explicación que incluye la certeza del modelo es muy útil.</li>
+<li><strong>Grado de importancia</strong>: ¿Qué tan bien refleja la explicación la importancia de las características o partes de la explicación?
+Por ejemplo, si se genera una regla de decisión como explicación para una predicción individual, ¿está claro cuál de las condiciones de la regla fue la más importante?</li>
+<li><strong>Novedad</strong>: ¿La explicación refleja si una instancia de datos a explicar proviene de una “nueva” región muy alejada de la distribución de datos de capacitación?
+En tales casos, el modelo puede ser inexacto y la explicación puede ser inútil.
+El concepto de novedad está relacionado con el concepto de certeza.
+Cuanto mayor sea la novedad, más probable es que el modelo tenga poca certeza debido a la falta de datos.</li>
+<li><strong>Representatividad</strong>: ¿Cuántas instancias cubre una explicación?
+Las explicaciones pueden abarcar todo el modelo (p. Ej., Interpretación de pesos en un modelo de regresión lineal) o representar solo una predicción individual (p. Ej., <a href="#shapley">Valores de Shapley</a>).</li>
+</ul>
+<!--{pagebreak}-->
+</div>
+<div class="footnotes">
+<hr />
+<ol start="7">
+<li id="fn7"><p>Robnik-Sikonja, Marko, y Marko Bohanec. “Perturbation-based explanations of prediction models.” Human and Machine Learning. Springer, Cham. 159-175. (2018).<a href="properties.html#fnref7" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="evaluacion-de-la-interpretabilidad.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="amigables.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
