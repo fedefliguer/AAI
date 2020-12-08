@@ -1,0 +1,44 @@
+
+<!--{pagebreak}-->
+
+## Otros modelos interpretables {#interpretables-otros}
+
+La lista de modelos interpretables está en constante crecimiento y es de tamaño desconocido.
+Incluye modelos simples como modelos lineales, árboles de decisión y Naive Bayes, pero también modelos más complejos que combinan o modifican modelos de aprendizaje automático no interpretables para hacerlos más interpretables.
+Especialmente las publicaciones sobre este último tipo de modelos se están produciendo actualmente en alta frecuencia y es difícil mantenerse al día con los desarrollos.
+El libro solo muestra el clasificador Naive Bayes y los k vecinos más cercanos en este capítulo.
+
+### Clasificador Naive Bayes
+
+El clasificador Naive Bayes utiliza el teorema de Bayes de probabilidades condicionales.
+Para cada característica, calcula la probabilidad de una clase dependiendo del valor de la característica.
+El clasificador Naive Bayes calcula las probabilidades de clase para cada característica de forma independiente, lo que equivale a un supuesto fuerte (= ingenuo) de independencia de las características.
+Naive Bayes es un modelo de probabilidad condicional y modela la probabilidad de una clase $C_k$ de la siguiente manera:
+
+$$P(C_k|x)=\frac{1}{Z}P(C_k)\prod_{i=1}^n{}P(x_i|C_k)$$
+
+El término Z es un parámetro de escala que asegura que la suma de probabilidades para todas las clases es 1 (de lo contrario, no serían probabilidades).
+La probabilidad condicional de una clase es la probabilidad de clase multiplicada por la probabilidad de cada característica dada la clase, normalizada por Z.
+Esta fórmula puede derivarse utilizando el teorema de Bayes.
+
+Naive Bayes es un modelo interpretable debido al supuesto de independencia.
+Se puede interpretar a nivel modular.
+Está muy claro para cada característica cuánto contribuye a una determinada predicción de clase, ya que podemos interpretar la probabilidad condicional.
+
+### K Vecinos más cercanos
+
+El método del k vecino más cercano se puede usar para regresión y clasificación, y utiliza los vecinos más cercanos de un punto de datos para la predicción.
+Para la clasificación, el método vecino asigna la clase más común de los vecinos más cercanos de una instancia.
+Para la regresión, toma el promedio del resultado de los vecinos.
+Las partes difíciles son encontrar la k correcta y decidir cómo medir la distancia entre instancias, lo que finalmente define el vecindario.
+
+
+El modelo k vecino más cercano difiere de los otros modelos interpretables presentados en este libro porque es un algoritmo de aprendizaje basado en instancias.
+¿Cómo se pueden interpretar los vecinos k-más cercanos?
+En primer lugar, no hay parámetros para aprender, por lo que no hay interpretabilidad a nivel modular.
+Además, hay una falta de interpretación del modelo global porque el modelo es inherentemente local y no hay pesos o estructuras globales explícitamente aprendidas.
+¿Quizás es interpretable a nivel local?
+Para explicar una predicción, siempre puedes recuperar los k vecinos que se usaron para la predicción.
+Si el modelo es interpretable depende únicamente de la pregunta de si puede 'interpretar' una sola instancia en el conjunto de datos.
+Si una instancia consta de cientos o miles de características, entonces no es interpretable, argumentaría.
+Pero si tienes pocas características o una forma de reducir tu instancia a las características más importantes, presentar a los k vecinos más cercanos puede darte buenas explicaciones.

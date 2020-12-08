@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>5.8 Reglas de ámbito (Anclas) | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="5.8 Reglas de ámbito (Anclas) | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="5.8 Reglas de ámbito (Anclas) | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="lime.html"/>
+<link rel="next" href="shapley.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="anchors" class="section level2">
+<h2><span class="header-section-number">5.8</span> Reglas de ámbito (Anclas)</h2>
+<p><em>Autores: Tobias Goerke y Magdalena Lang</em></p>
+<p>Anchors (<em>anclas</em>) explica las predicciones individuales de cualquier modelo de clasificación de caja negra al encontrar una regla de decisión que “ancla” la predicción lo suficiente.
+Una regla ancla una predicción si los cambios en otros valores de características no afectan la predicción.
+Anchors utiliza técnicas de aprendizaje de refuerzo en combinación con un algoritmo de búsqueda de gráficos para reducir el número de llamadas de modelo (y, por lo tanto, el tiempo de ejecución requerido) a un mínimo mientras aún se puede recuperar de los óptimos locales. Ribeiro, Singh y Guestrin propusieron el algoritmo en 2018 <a href="#fn38" class="footnote-ref" id="fnref38"><sup>38</sup></a>, los mismos investigadores que introdujeron el algoritmo <a href="lime.html#lime">LIME</a>.</p>
+<p>Al igual que su predecesor, el enfoque de anclaje despliega una estrategia <em>basada en perturbaciones</em> para generar explicaciones <em>locales</em> para las predicciones de modelos de aprendizaje automático de caja negra. Sin embargo, en lugar de los modelos sustitutos utilizados por LIME, las explicaciones resultantes se expresan como reglas <em>SI-ENTONCES</em> fáciles de entender, llamadas <em>anchors</em>. Estas reglas son reutilizables ya que son <em>de ámbito</em>: los anclajes incluyen la noción de cobertura, indicando con precisión a qué otras instancias, posiblemente no vistas, se aplican. Encontrar anclas implica una exploración o un problema de bandido multibrazo, que se origina en la disciplina del aprendizaje por refuerzo. Con este fin, se crean y evalúan vecinos o perturbaciones para cada instancia que se está explicando. Hacerlo permite que el enfoque no tenga en cuenta la estructura de la caja negra y sus parámetros internos para que estos puedan permanecer sin ser observados ni alterados. Por lo tanto, el algoritmo es <em>modelo-agnóstico</em>, lo que significa que se puede aplicar a <strong>cualquier</strong> clase de modelo.</p>
+<p>En su artículo, los autores comparan sus dos algoritmos y visualizan cuán diferente estos consultan el vecindario de una instancia para obtener resultados. Para esto, la siguiente figura muestra tanto LIME como anclas localmente explicando un clasificador binario complejo (predice <strong>-</strong> o <strong>+</strong>) usando dos ejemplos de instancias. Los resultados de LIME no indican cuán fieles son, ya que LIME solo aprende un límite de decisión lineal que se aproxima mejor al modelo dado un espacio de perturbación <span class="math inline">\(D\)</span>. Dado el mismo espacio de perturbación, el enfoque de anclajes construye explicaciones cuya cobertura se adapta al comportamiento del modelo y expresa claramente sus límites. Por lo tanto, son fieles por diseño y establecen exactamente para qué instancias son válidas. Esta propiedad hace que las anclas sean particularmente intuitivas y fáciles de comprender.</p>
+<div class="figure" style="text-align: center"><span id="fig:unnamed-chunk-20"></span>
+<img src="images/anchors-visualization.jpg" alt="LIME vs. Anchors -- Una visualización. Figura de Ribeiro, Singh, and Guestrin (2018)." width="350" />
+<p class="caption">
+FIGURA 5.36: LIME vs. Anchors – Una visualización. Figura de Ribeiro, Singh, and Guestrin (2018).
+</p>
+</div>
+<p>Como se mencionó anteriormente, los resultados o las explicaciones del algoritmo vienen en forma de reglas, llamadas anclas. El siguiente ejemplo simple ilustra tal ancla. Por ejemplo, supongamos que se nos da un modelo bivariado de caja negra que predice si un pasajero sobrevive o no al desastre del Titanic. Ahora nos gustaría saber <em>por qué</em> el modelo predice para un individuo específico que sobrevive. El algoritmo de anclaje proporciona una explicación de resultados como la que se muestra a continuación.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Feature</th>
+<th align="center">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Edad</td>
+<td align="center">20</td>
+</tr>
+<tr class="even">
+<td>Sexo</td>
+<td align="center">femenino</td>
+</tr>
+<tr class="odd">
+<td>Clase</td>
+<td align="center">primera</td>
+</tr>
+<tr class="even">
+<td>Precio del ticket</td>
+<td align="center">300$</td>
+</tr>
+<tr class="odd">
+<td>Más atributos</td>
+<td align="center">…</td>
+</tr>
+<tr class="even">
+<td><strong>Sobrevive</strong></td>
+<td align="center"><strong>TRUE</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Y la explicación de anclajes correspondiente es:</p>
+<p>SI <code>SEXO = femenino</code><br />
+Y <code>Clase = primero</code><br />
+ENTONCES <code>Sobrevive = TRUE</code><br />
+CON PRECISIÓN <code>97%</code><br />
+Y COBERTURA <code>15%</code></p>
+<p>El ejemplo muestra cómo las anclas pueden proporcionar información esencial sobre la predicción de un modelo y su razonamiento subyacente. El resultado muestra qué atributos fueron tomados en cuenta por el modelo, que en este caso es el sexo femenino y la primera clase. Los seres humanos, siendo primordiales para la corrección, pueden usar esta regla para validar el comportamiento del modelo. El ancla adicionalmente nos dice que se aplica al 15% de las instancias del espacio de perturbación. En esos casos, la explicación es 97% precisa, lo que significa que los predicados mostrados son casi exclusivamente responsables del resultado predicho.</p>
+<p>Un ancla <span class="math inline">\(A\)</span> se define formalmente de la siguiente manera:</p>
+<p><span class="math display">\[\mathbb{E}_{\mathcal{D}_x(z|A)}[1_{f(x)=f(z)}]\geq\tau,A(x)=1\]</span></p>
+<p>Donde:</p>
+<ul>
+<li><span class="math inline">\(x\)</span> representa la instancia que se está explicando (por ejemplo, una fila en un conjunto de datos tabular).</li>
+<li><span class="math inline">\(A\)</span> es un conjunto de predicados, es decir, la regla o ancla resultante, de modo que <span class="math inline">\(A(x)=1\)</span> cuando todos los predicados de entidad definidos por <span class="math inline">\(A\)</span> corresponden a los valores de característica de <span class="math inline">\(x\)</span>.</li>
+<li><span class="math inline">\(f\)</span> denota el modelo de clasificación que se explicará (por ejemplo, un modelo de red neuronal artificial). Se puede consultar para predecir una etiqueta para <span class="math inline">\(x\)</span> y sus perturbaciones.</li>
+<li><span class="math inline">\(D_x(\cdot|A)\)</span> indica la distribución de vecinos de <span class="math inline">\(x\)</span>, que coincide con <span class="math inline">\(A\)</span>.</li>
+<li><span class="math inline">\(0\leq\tau\leq1\)</span> especifica un umbral de precisión. Solo las reglas que logran una fidelidad local de al menos <span class="math inline">\(\tau\)</span> se consideran un resultado válido.</li>
+</ul>
+<p>La descripción formal puede ser intimidante y puede expresarse en palabras:</p>
+<blockquote>
+<p>Dada una instancia <span class="math inline">\(x\)</span> para ser explicada, se debe encontrar una regla o un ancla <span class="math inline">\(A\)</span>, de modo que se aplique a <span class="math inline">\(x\)</span>, mientras que la misma clase que para <span class="math inline">\(x\)</span> se predice por una fracción de al menos <span class="math inline">\(\tau\)</span> de los vecinos de <span class="math inline">\(x\)</span> donde se aplica el mismo <span class="math inline">\(A\)</span>. La precisión de una regla resulta de la evaluación de vecinos o perturbaciones (siguiendo <span class="math inline">\(D_x(z|A)\)</span>) usando el modelo de aprendizaje automático proporcionado (indicado por la función de indicador <span class="math inline">\(1_{f(x)=f(z)}\)</span>).</p>
+</blockquote>
+<div id="encontrar-anclas" class="section level3">
+<h3><span class="header-section-number">5.8.1</span> Encontrar anclas</h3>
+<p>Aunque la descripción matemática de los anclajes puede parecer clara y directa, no es factible construir reglas particulares. Se requeriría evaluar <span class="math inline">\(1_{f(x)=f(z)}\)</span> para todos <span class="math inline">\(z\in\mathcal{D}_x(\cdot|A)\)</span> que no es posible en espacios de entrada continuos o grandes. Por lo tanto, los autores proponen introducir el parámetro <span class="math inline">\(0\leq\delta\leq1\)</span> para crear una definición probabilística. De esta forma, se extraen muestras hasta que haya una confianza estadística con respecto a su precisión. La definición probabilística dice lo siguiente:</p>
+<p><span class="math display">\[P(prec(A)\geq\tau)\geq{}1-\delta\quad\textrm{con}\quad{}prec(A)=\mathbb{E}_{\mathcal{D}_x(z|A)}[1_{f(x)=f(z)}]\]</span></p>
+<p>Las dos definiciones anteriores se combinan y amplían por la noción de cobertura. Su fundamento consiste en encontrar reglas que se apliquen a una parte preferiblemente grande del espacio de entrada del modelo. La cobertura se define formalmente como la probabilidad de un ancla de aplicar a sus vecinos, es decir, su espacio de perturbación:</p>
+<p><span class="math display">\[cov(A)=\mathbb{E}_{\mathcal{D}_{(z)}[A(z)]}\]</span></p>
+<p>La inclusión de este elemento lleva a la definición final de los anclajes teniendo en cuenta la maximización de la cobertura:</p>
+<p><span class="math display">\[\underset{A\:\textrm{s.t.}\;P(prec(A)\geq\tau)\geq{}1-\delta}{\textrm{max}}cov(A)\]</span></p>
+<p>Por lo tanto, el procedimiento busca una regla que tenga la cobertura más alta entre todas las reglas elegibles (todas aquellas que satisfacen el umbral de precisión dada la definición probabilística). Se cree que estas reglas son más importantes, ya que describen una parte más grande del modelo.
+Ten en cuenta que las reglas con más predicados tienden a tener mayor precisión que las reglas con menos predicados. En particular, una regla que corrige cada característica de <span class="math inline">\(x\)</span> reduce el vecindario evaluado a instancias idénticas. Por lo tanto, el modelo clasifica a todos los vecinos por igual, y la precisión de la regla es <span class="math inline">\(1\)</span>. Al mismo tiempo, una regla que corrige muchas características es demasiado específica y solo es aplicable en algunas instancias. Por lo tanto, existe una <em>compensación entre precisión y cobertura</em>.</p>
+<p>El enfoque de anclaje utiliza cuatro componentes principales para encontrar explicaciones, como se muestra en la figura a continuación.</p>
+<p><strong>Generación de candidatos</strong>: genera nuevos candidatos de explicación. En la primera ronda, se crea un candidato por función de <span class="math inline">\(x\)</span> y se corrige el valor respectivo de posibles perturbaciones. En cada otra ronda, los mejores candidatos de la ronda anterior se extienden por un predicado de característica que aún no está contenido en él.</p>
+<p><strong>Identificación del mejor candidato</strong>: Las reglas de los candidatos deben compararse con respecto a qué regla explica mejor <span class="math inline">\(x\)</span>. Para este fin, las perturbaciones que coinciden con la regla observada actualmente se crean evaluando llamando al modelo. Sin embargo, estas llamadas deben minimizarse para limitar la sobrecarga computacional. Es por eso que, en el núcleo de este componente, existe un Multi-Armed-Bandit de exploración pura (<em>MAB</em>; <em>KL-LUCB</em><a href="#fn39" class="footnote-ref" id="fnref39"><sup>39</sup></a>, para ser precisos). Los MAB se utilizan para explorar y explotar de manera eficiente diferentes estrategias (llamadas brazos en una analogía con las máquinas tragamonedas) mediante la selección secuencial. En el entorno dado, cada regla candidata se debe ver como un brazo que se puede tirar. Cada vez que se tira, se evalúa a los vecinos respectivos y, por lo tanto, obtenemos más información sobre el resultado de la regla del candidato (precisión en el caso de los anclajes). La precisión así establece qué tan bien la regla describe la instancia a ser explicada.</p>
+<p><strong>Validación de precisión del candidato</strong>: toma más muestras en caso de que aún no haya confianza estadística de que el candidato exceda el umbral de <span class="math inline">\(\tau\)</span>.</p>
+<p><strong>Búsqueda en haz modificada</strong>: Todos los componentes anteriores se ensamblan en una búsqueda de haz, que es un algoritmo de búsqueda gráfica y una variante del algoritmo de amplitud. Lleva a los <span class="math inline">\(B\)</span> mejores candidatos de cada ronda a la siguiente (donde <span class="math inline">\(B\)</span> se llama <em>Beam Width</em>). Estas mejores reglas de <span class="math inline">\(B\)</span> se utilizan para crear nuevas reglas. La búsqueda de haces realiza como máximo <span class="math inline">\(featureCount(x)\)</span> rondas, ya que cada característica solo se puede incluir en una regla como máximo una vez. Por lo tanto, en cada ronda <span class="math inline">\(i\)</span>, genera candidatos con exactamente <span class="math inline">\(i\)</span> predicados y selecciona el B mejor de los mismos. Por lo tanto, al establecer <span class="math inline">\(B\)</span> alto, es más probable que el algoritmo evite los óptimos locales. A su vez, esto requiere una gran cantidad de llamadas de modelo y, por lo tanto, aumenta la carga computacional.</p>
+<div class="figure"><span id="fig:unnamed-chunk-21"></span>
+<img src="images/anchors-process.jpg" alt="Los componentes del algoritmo de anclaje y sus interrelaciones (simplificadas)" width="800" />
+<p class="caption">
+FIGURA 5.37: Los componentes del algoritmo de anclaje y sus interrelaciones (simplificadas)
+</p>
+</div>
+<p>El enfoque es una receta aparentemente perfecta para derivar eficientemente información estadísticamente sólida sobre por qué cualquier sistema clasificó una instancia de la manera en que lo hizo. Experimenta sistemáticamente con la entrada del modelo y concluye observando las salidas respectivas. Se basa en métodos de aprendizaje automático (MAB) bien establecidos e investigados para reducir la cantidad de llamadas realizadas al modelo. Esto, a su vez, reduce drásticamente el tiempo de ejecución del algoritmo.</p>
+</div>
+<div id="complejidad-y-tiempo-de-ejecución" class="section level3">
+<h3><span class="header-section-number">5.8.2</span> Complejidad y tiempo de ejecución</h3>
+<p>Conocer el comportamiento asintótico del tiempo de ejecución del enfoque de anclaje ayuda a evaluar qué tan bien se espera que funcione en problemas específicos. Deja que <span class="math inline">\(B\)</span> denote el ancho del haz y <span class="math inline">\(p\)</span> el número de todas las características. Entonces el algoritmo de anclaje está sujeto a:</p>
+<p><span class="math display">\[\mathcal{O}(B\cdot{}p^2+p^2\cdot\mathcal{O}_{\textrm{MAB}\lbrack{}B\cdot{}p,B\rbrack})\]</span></p>
+<p>Este límite se extrae de hiperparámetros independientes del problema, como la confianza estadística <span class="math inline">\(\delta\)</span>. Ignorar los hiperparámetros ayuda a reducir la complejidad del límite (consulte el documento original para obtener más información). Como el MAB extrae los <span class="math inline">\(B\)</span> mejores de los candidatos <span class="math inline">\(B\cdotp\)</span> en cada ronda, la mayoría de los MAB y sus tiempos de ejecución multiplican el factor <span class="math inline">\(p^2\)</span> más que cualquier otro parámetro.</p>
+<p>Por lo tanto, se hace evidente: la eficiencia del algoritmo disminuye con problemas abundantes de características.</p>
+</div>
+<div id="ejemplo-de-datos-tabulares" class="section level3">
+<h3><span class="header-section-number">5.8.3</span> Ejemplo de datos tabulares</h3>
+<p>Los datos tabulares son datos estructurados representados por tablas, en donde las columnas incorporan características y las filas son instancias.
+Por ejemplo, utilizamos los <a href="bike-data.html#bike-data">datos de alquiler de bicicletas</a> para demostrar el potencial del enfoque de los anclajes para explicar las predicciones de LD para las instancias seleccionadas. Para esto, convertimos la regresión en un problema de clasificación y entrenamos un random forest como nuestro modelo de caja negra. Es para clasificar si el número de bicicletas alquiladas se encuentra por encima o por debajo de la línea de tendencia.</p>
+<p>Antes de crear explicaciones de anclaje, es necesario definir una función de perturbación. Una manera fácil de hacerlo es usar un espacio de perturbación intuitivo predeterminado para casos de explicación tabular que se pueden construir mediante el muestreo, por ejemplo, de los datos de entrenamiento.
+Al perturbar una instancia, este enfoque predeterminado mantiene los valores de las características que están sujetos a los predicados de los anclajes, mientras reemplaza las características no fijas con valores tomados de otra instancia muestreada al azar con una probabilidad específica. Este proceso produce nuevas instancias que son similares a las explicadas pero que han adoptado algunos valores de otras instancias aleatorias. Por lo tanto, se parecen a los vecinos.</p>
+<div class="figure"><span id="fig:unnamed-chunk-24"></span>
+<img src="images/unnamed-chunk-24-1.png" alt="Anclajes que explican seis instancias del conjunto de datos de alquiler de bicicletas. Cada fila representa una explicación o ancla, y cada barra representa los predicados de características que contiene. el eje muestra la precisión de una regla, y el grosor de una barra corresponde a su cobertura. La regla 'base' no contiene predicados. Estos anclajes muestran que el modelo considera principalmente la temperatura para las predicciones." width="1500" />
+<p class="caption">
+FIGURA 5.38: Anclajes que explican seis instancias del conjunto de datos de alquiler de bicicletas. Cada fila representa una explicación o ancla, y cada barra representa los predicados de características que contiene. el eje muestra la precisión de una regla, y el grosor de una barra corresponde a su cobertura. La regla ‘base’ no contiene predicados. Estos anclajes muestran que el modelo considera principalmente la temperatura para las predicciones.
+</p>
+</div>
+<p>Los resultados son instintivamente interpretables y muestran para cada instancia explicada, qué características son más importantes para la predicción del modelo. Como las anclas solo tienen unos pocos predicados, además tienen una alta cobertura y, por lo tanto, se aplican a otros casos.
+Las reglas que se muestran arriba se generaron con <span class="math inline">\(\tau=0.9\)</span>. Por lo tanto, solicitamos anclajes cuyas perturbaciones evaluadas respalden fielmente la etiqueta con una precisión de al menos <span class="math inline">\(90\%\)</span>. Además, se utilizó la discretización para aumentar la expresividad y la aplicabilidad de las características numéricas.</p>
+<p>Todas las reglas anteriores se generaron para instancias en las que el modelo decide con confianza en función de algunas características. Sin embargo, otras instancias no están tan claramente clasificadas por el modelo como más características son importantes. En tales casos, los anclajes se vuelven más específicos, comprenden más características y se aplican a menos instancias.</p>
+<div class="figure"><span id="fig:unnamed-chunk-25"></span>
+<img src="images/unnamed-chunk-25-1.png" alt="Explicar instancias cerca de los límites de decisión conduce a reglas específicas que comprenden un mayor número de predicados de características y menor cobertura. Además, la regla vacía, es decir, la característica base, se vuelve menos importante. Esto puede interpretarse como una señal para un límite de decisión, ya que la instancia se encuentra en un vecindario volátil." width="1500" />
+<p class="caption">
+FIGURA 5.39: Explicar instancias cerca de los límites de decisión conduce a reglas específicas que comprenden un mayor número de predicados de características y menor cobertura. Además, la regla vacía, es decir, la característica base, se vuelve menos importante. Esto puede interpretarse como una señal para un límite de decisión, ya que la instancia se encuentra en un vecindario volátil.
+</p>
+</div>
+<p>Si bien elegir el espacio de perturbación predeterminado es una opción cómoda, puede tener un gran impacto en el algoritmo y, por lo tanto, puede conducir a resultados sesgados. Por ejemplo, si el conjunto de trenes no está equilibrado (hay un número desigual de instancias de cada clase), el espacio de perturbación también lo está. Esta condición afecta aún más la búsqueda de reglas y la precisión del resultado.</p>
+<p>El conjunto de datos <a href="cervical.html#cervical">cáncer cervical</a> es un excelente ejemplo de esta situación. La aplicación del algoritmo de anclaje conduce a una de las siguientes situaciones:</p>
+<ul>
+<li>Al explicar las instancias etiquetadas como <em>saludable</em> se obtienen reglas vacías ya que todos los vecinos generados se evalúan como <em>saludables</em>.</li>
+<li>Las explicaciones para las instancias etiquetadas como <em>cancer</em> son demasiado específicas, es decir, comprenden muchos predicados de características, ya que el espacio de perturbación cubre principalmente valores de instancias <em>saludables</em>.</li>
+</ul>
+<div class="figure"><span id="fig:unnamed-chunk-28"></span>
+<img src="images/unnamed-chunk-28-1.png" alt="La construcción de anclajes dentro de espacios de perturbación desequilibrados conduce a resultados inexpresivos." width="1500" />
+<p class="caption">
+FIGURA 5.40: La construcción de anclajes dentro de espacios de perturbación desequilibrados conduce a resultados inexpresivos.
+</p>
+</div>
+<p>Este resultado puede ser no deseado y puede abordarse de múltiples maneras. Por ejemplo, se puede definir un espacio de perturbación personalizado que muestree de manera diferente, por ejemplo, de un conjunto de datos no balanceados o una distribución normal. Sin embargo, esto tiene un efecto secundario: los vecinos muestreados no son representativos y cambian el alcance de la cobertura. Alternativamente, podríamos modificar la confianza del MAB <span class="math inline">\(\delta\)</span> y los valores de los parámetros de error <span class="math inline">\(\epsilon\)</span>. Esto provocaría que el MAB extraiga más muestras, lo que en última instancia llevaría a la minoría a tomar muestras con mayor frecuencia en términos absolutos.</p>
+<p>Para este ejemplo, utilizamos un subconjunto del conjunto de cáncer de cuello uterino en el que la mayoría de los casos están etiquetados como <em>cáncer</em>. Luego tenemos el marco para crear un espacio de perturbación correspondiente a partir de él. Las perturbaciones ahora tienen más probabilidades de conducir a predicciones variables, y el algoritmo de anclaje puede identificar características importantes. Sin embargo, uno debe tener en cuenta la definición de cobertura: solo se define dentro del espacio de perturbación. En los ejemplos anteriores, utilizamos el conjunto de trenes como base del espacio de perturbación. Dado que aquí solo usamos un subconjunto, una cobertura alta no necesariamente indica una importancia de regla globalmente alta.</p>
+<div class="figure"><span id="fig:unnamed-chunk-29"></span>
+<img src="images/unnamed-chunk-29-1.png" alt="Balancear el dataset antes de construir anclas muestra el razonamiento del modelo para decidir en casos de minorías." width="1650" />
+<p class="caption">
+FIGURA 5.41: Balancear el dataset antes de construir anclas muestra el razonamiento del modelo para decidir en casos de minorías.
+</p>
+</div>
+</div>
+<div id="ventajas-12" class="section level3">
+<h3><span class="header-section-number">5.8.4</span> Ventajas</h3>
+<p>El enfoque de los anclajes ofrece múltiples ventajas sobre LIME. Primero, la salida del algoritmo es más fácil de entender, ya que las reglas son <strong>fáciles de interpretar</strong> (incluso para los laicos).</p>
+<p>Además, se <strong>pueden generar subconjuntos de anclajes</strong> e incluso establecen una medida de importancia al incluir la noción de cobertura. En segundo lugar, el enfoque de anclajes <strong>funciona cuando las predicciones del modelo son no lineales o complejas</strong> en el vecindario de una instancia. A medida que el enfoque despliega técnicas de aprendizaje por refuerzo en lugar de ajustar modelos sustitutos, es menos probable que no se ajuste al modelo.</p>
+<p>Aparte de eso, el algoritmo es <strong>modelo-agnóstico</strong> y, por lo tanto, aplicable a cualquier modelo.</p>
+<p>Además, es <strong>altamente eficiente, ya que se puede paralelizar</strong> mediante el uso de MAB que admiten el muestreo por lotes (por ejemplo, BatchSAR).</p>
+</div>
+<div id="desventajas-12" class="section level3">
+<h3><span class="header-section-number">5.8.5</span> Desventajas</h3>
+<p>El algoritmo tiene una configuración <strong>altamente configurable</strong> e impactante, al igual que la mayoría de los explicadores basados en perturbaciones. No solo los hiperparámetros, como el ancho del haz o el umbral de precisión, deben ajustarse para obtener resultados significativos, sino que también la función de perturbación debe diseñarse explícitamente para un dominio/caso de uso. Piensa en cómo se perturban los datos tabulares y piensa en cómo aplicar los mismos conceptos a los datos de imagen (Sugerencia: no se pueden aplicar). Afortunadamente, los enfoques predeterminados se pueden usar en algunos dominios (por ejemplo, tabular), lo que facilita una configuración de explicación inicial.</p>
+<p>Además, <strong>muchos escenarios requieren discretización</strong> ya que de lo contrario los resultados son demasiado específicos, tienen una cobertura baja y no contribuyen a comprender el modelo. Si bien la discretización puede ayudar, también puede difuminar los límites de decisión si se usa descuidadamente y, por lo tanto, tiene el efecto opuesto exacto. Dado que no existe la mejor técnica de discretización, los usuarios deben conocer los datos antes de decidir cómo discretizar los datos para no obtener malos resultados.</p>
+<p>La construcción de anclajes requiere <strong>muchas llamadas al modelo ML</strong>, al igual que todos los explicadores basados en perturbaciones. Si bien el algoritmo implementa MAB para minimizar el número de llamadas, su tiempo de ejecución aún depende en gran medida del rendimiento del modelo y, por lo tanto, es muy variable.</p>
+<p>Por último, la noción de <strong>cobertura no está definida en algunos dominios</strong>. Por ejemplo, no existe una definición obvia o universal de cómo los superpíxeles en una imagen se comparan con los de otras imágenes.</p>
+</div>
+<div id="software-y-alternativas-4" class="section level3">
+<h3><span class="header-section-number">5.8.6</span> Software y alternativas</h3>
+<p>Actualmente hay dos implementaciones disponibles: <a href="https://github.com/marcotcr/anchor">anchor, un paquete de Python</a> (también integrado por <a href="https://github.com/SeldonIO/alibi">Alibi</a>) y una <a href="https://github.com/viadee/javaAnchorExplainer">Implementación de Java</a>.
+El primero es la referencia de los autores del algoritmo de anclaje y el segundo una implementación de alto rendimiento que viene con una interfaz R, llamada <a href="https://github.com/viadee/anchorsOnR">anchors</a>, que se utilizó para los ejemplos en este capítulo.
+A partir de ahora, los anclajes solo admiten datos tabulares. Sin embargo, los anclajes pueden construirse teóricamente para cualquier dominio o tipo de datos.</p>
+
+<!--{pagebreak}-->
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="38">
+<li id="fn38"><p>Marco Tulio Ribeiro, Sameer Singh, Carlos Guestrin. “Anchors: High-Precision Model-Agnostic Explanations.” AAAI Conference on Artificial Intelligence (AAAI), 2018<a href="anchors.html#fnref38" class="footnote-back">↩</a></p></li>
+<li id="fn39"><p>Emilie Kaufmann and Shivaram Kalyanakrishnan. “Information Complexity in Bandit Subset Selection”. Proceedings of Machine Learning Research (2013).<a href="anchors.html#fnref39" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="lime.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="shapley.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/05.8.1-agnostic-Anchors.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

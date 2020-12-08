@@ -1,4 +1,4 @@
-```{r, message = FALSE, warning = FALSE, echo = FALSE}
+```{r, include=FALSE, message = FALSE, warning = FALSE, echo = FALSE}
 devtools::load_all()
 ```
 
@@ -11,10 +11,10 @@ Clasificación, regresión y clasificación de textos.
 
 ## Alquiler de bicicletas (Regresión) {#bike-data}
 Este conjunto de datos contiene recuentos diarios de bicicletas alquiladas de la empresa de alquiler de bicicletas [Capital-Bikeshare](https://www.capitalbikeshare.com/) en Washington D.C., junto con información meteorológica y estacional.
-Los datos se pusieron a disposición de Capital-Bikeshare.
+Los datos fueron puestos a disposición por Capital-Bikeshare.
 Fanaee-T y Gama (2013)[^Fanaee] agregaron datos meteorológicos e información sobre la temporada.
 El objetivo es predecir cuántas bicicletas se alquilarán dependiendo del clima y el día.
-Los datos se pueden descargar del [Depósito de aprendizaje automático de UCI](http://archive.ics.uci.edu/ml/datasets/Bike+Sharing+Dataset).
+Los datos se pueden descargar del [Repositorio de aprendizaje automático de UCI](http://archive.ics.uci.edu/ml/datasets/Bike+Sharing+Dataset).
 
 
 Se agregaron nuevas características al conjunto de datos y no se usaron todas las características originales para los ejemplos de este libro.
@@ -29,23 +29,23 @@ El recuento se utiliza como objetivo en la tarea de regresión.
 Esta característica se introdujo para tener en cuenta la tendencia a lo largo del tiempo.
 - Indicador de si el día fue un día laboral o un fin de semana.
 - La situación climática de ese día. Uno de:
-    - despejado, pocas nubes, parcialmente nublado, nublado
-    - niebla + nubes, niebla + nubes rotas, niebla + pocas nubes, niebla
-    - nieve ligera, lluvia ligera + tormenta eléctrica + nubes dispersas, lluvia ligera + nubes dispersas
-    - fuertes lluvias + paletas de hielo + tormenta eléctrica + niebla, nieve + niebla
+	- despejado, pocas nubes, parcialmente nublado, nublado
+	- niebla + muchas nubes, niebla + pocas nubes, niebla
+	- nieve ligera, lluvia ligera + tormenta eléctrica + nubes dispersas, lluvia ligera + nubes dispersas
+	- fuertes lluvias + granizo + tormenta eléctrica + niebla, nieve + niebla
 - Temperatura en grados Celsius.
 - Humedad relativa en porcentaje (0 a 100).
 - Velocidad del viento en km por hora.
 
 
 Para los ejemplos en este libro, los datos han sido ligeramente procesados.
-Puede encontrar el script R de procesamiento en el [repositorio de Github](https://github.com/christophM/interpretable-ml-book/blob/master/R/get-bike-sharing-dataset.R) junto con el [archivo RData final](https://github.com/christophM/interpretable-ml-book/blob/master/data/bike.RData).
+Puedes encontrar el script R de procesamiento en el [repositorio de Github](https://github.com/christophM/interpretable-ml-book/blob/master/R/get-bike-sharing-dataset.R) junto con el [archivo RData final](https://github.com/christophM/interpretable-ml-book/blob/master/data/bike.RData).
 
 
 <!--{pagebreak}-->
 
 ## Comentarios de spam de YouTube (clasificación de texto) {#spam-data}
-Como ejemplo de clasificación de texto, trabajamos con 1956 comentarios de 5 videos de YouTube diferentes.
+Como ejemplo de clasificación de texto, trabajamos con 1956 comentarios en inglés, de 5 videos de YouTube diferentes.
 Afortunadamente, los autores que utilizaron este conjunto de datos en un artículo sobre clasificación de spam hicieron que los datos estén [disponibles gratuitamente](http://dcomp.sor.ufscar.br/talmeida/youtubespamcollection/) (Alberto, Lochter y Almeida (2015)[^Alberto]).
 
 Los comentarios se recopilaron a través de la API de YouTube de cinco de los diez videos más vistos en YouTube en el primer semestre de 2015.
@@ -67,9 +67,9 @@ También puedes ir a YouTube y echar un vistazo a la sección de comentarios.
 Pero no te dejes atrapar en el infierno de YouTube, y por favor no termines viendo videos de monos robando y bebiendo cócteles de turistas en la playa.
 El detector de spam de Google también ha cambiado mucho desde 2015.
 
-[Vea el video de ruptura de récords "Gangnam Style" aquí](https://www.youtube.com/watch?v=9bZkp7q19f0&feature=player_embedded).
+[Mira el rompe-records 'Gangam Style' aquí](https://www.youtube.com/watch?v=9bZkp7q19f0&feature=player_embedded).
 
-Si deseas jugar con los datos, puedes encontrar el [archivo RData](https://github.com/christophM/interpretable-ml-book/blob/master/data/ycomments.RData) junto con [R -script](https://github.com/christophM/interpretable-ml-book/blob/master/R/get-SpamTube-dataset.R) con algunas funciones convenientes en el repositorio de Github del libro.
+Si deseas jugar con los datos, puedes encontrar el [archivo RData](https://github.com/christophM/interpretable-ml-book/blob/master/data/ycomments.RData) junto con el [R-script](https://github.com/christophM/interpretable-ml-book/blob/master/R/get-SpamTube-dataset.R) con algunas funciones convenientes en el repositorio de Github del libro.
 
 <!--{pagebreak}-->
 
@@ -97,18 +97,18 @@ El subconjunto de características utilizadas en los ejemplos del libro son:
 - Tiempo desde el último diagnóstico de ETS
 - La biopsia resulta "Saludable" o "Cáncer". Objetivo de clasificación.
 
-La biopsia sirve como estádndar para diagnosticar el cáncer cervical.
+La biopsia sirve como estándar para diagnosticar el cáncer cervical.
 Para los ejemplos en este libro, el resultado de la biopsia se utilizó como objetivo.
 Los valores faltantes para cada columna fueron imputados por la moda (valor más frecuente), que probablemente sea una mala solución, ya que la respuesta verdadera podría estar correlacionada con la probabilidad de que falte un valor.
 Probablemente hay un sesgo porque las preguntas son de naturaleza muy privada.
 Pero este no es un libro sobre la imputación de datos faltantes, por lo que la imputación por la moda tendrá que ser suficiente para los ejemplos.
 
 Para reproducir los ejemplos de este libro con este conjunto de datos, busque el
-[preprocesamiento de script R](https://github.com/christophM/interpretable-ml-book/blob/master/R/get-cervical-cancer-dataset.R) y el
+[script R de preprocesamiento](https://github.com/christophM/interpretable-ml-book/blob/master/R/get-cervical-cancer-dataset.R) y el
 [archivo RData final](https://github.com/christophM/interpretable-ml-book/blob/master/data/cervical.RData) en el repositorio de Github del libro.
 
-[^Fanaee]: Fanaee-T, Hadi y Joao Gama. "Etiquetado de eventos que combina detectores de conjunto y conocimientos básicos". Progreso en Inteligencia Artificial. Springer Berlin Heidelberg, 1–15. doi: 10.1007 / s13748-013-0040-3. (2013)
+[^Fanaee]: Fanaee-T, Hadi, and Joao Gama. "Event labeling combining ensemble detectors and background knowledge." Progress in Artificial Intelligence. Springer Berlin Heidelberg, 1–15. doi:10.1007/s13748-013-0040-3. (2013).
 
-[^Alberto]: Alberto, Túlio C, Johannes V Lochter y Tiago A Almeida. "Tubespam: filtro de spam de comentarios en YouTube". En Machine Learning and Applications (Icmla), Ieee 14th International Conference on, 138–43. IEEE (2015)
+[^Alberto]: Alberto, Túlio C, Johannes V Lochter, and Tiago A Almeida. "Tubespam: comment spam filtering on YouTube." In Machine Learning and Applications (Icmla), Ieee 14th International Conference on, 138–43. IEEE. (2015).
 
-[^Fernandes]: Fernandes, Kelwin, Jaime S Cardoso y Jessica Fernandes. "Transferir el aprendizaje con observabilidad parcial aplicada a la detección del cáncer cervical". Conferencia ibérica sobre reconocimiento de patrones y análisis de imágenes, 243–50. Saltador. (2017)
+[^Fernandes]: Fernandes, Kelwin, Jaime S Cardoso, and Jessica Fernandes. "Transfer learning with partial observability applied to cervical cancer screening." In Iberian Conference on Pattern Recognition and Image Analysis, 243–50. Springer. (2017).

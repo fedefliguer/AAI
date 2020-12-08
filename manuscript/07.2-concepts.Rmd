@@ -1,0 +1,116 @@
+## Detectando conceptos 
+
+<!--intro -->
+Este capítulo presenta técnicas para analizar qué conceptos aprendió una red neuronal.
+El concepto aquí significa una idea abstracta, que está predefinida por un humano.
+Mientras que [visualización de características](#visualización-características) intenta detectar características de las unidades de redes neuronales, que pueden coincidir con un concepto (por ejemplo, hocicos de perros) pero no es necesario, la detección de conceptos comienza con un concepto y analiza cómo se maneja la red neuronal este concepto.
+
+
+<!-- ¿Por qué son interesantes los conceptos? -->
+La visualización de características es más exploratoria:
+¿Qué detecta la red neuronal?
+Pero no ayuda cuando tenemos preguntas más concretas, como cuán importante fue el concepto de hocicos de perros para la clasificación.
+
+
+<!-- Enfoques que veremos -->
+Veremos dos enfoques: disección de red y vectores de activación de conceptos.
+Ambos enfoques requieren un etiquetado adicional de los datos, pero de diferentes maneras.
+
+### TCAV: Pruebas con vectores de activación de concepto.
+
+Pero ¿qué pasa con los conceptos más implícitos?
+¿Conceptos para los que no tenemos datos etiquetados previamente?
+
+TCAV por Kim et al. (2019)[^tcav] explica una predicción al mostrar la importancia de conceptos de más alto nivel (por ejemplo, textura, género, color) para la predicción o clasificación.
+
+Tienes que aprender los conceptos de los datos.
+Eso significa que si desea comprender si la red utiliza el concepto de "hembra" para la clasificación de, por ejemplo, imágenes, debe proporcionar algunos ejemplos de "femenino" (podrían ser imágenes con mujeres) y no femenino (imágenes sin mujeres).
+
+Envías todas esas imágenes a través de la red.
+
+Lo bueno es que TCAV no requiere cambiar la red que está utilizando, pero puede utilizar la red que ya tiene.
+
+
+
+
+TCAV utiliza derivados direccionales para cuantificar la importancia de un concepto para la clasificación o predicción.
+El usuario define el concepto y debe definirse a través de algunos ejemplos de datos positivos y negativos.
+Por ejemplo, para la clasificación de imágenes de una cebra, el concepto podría ser rayas.
+El concepto se define seleccionando imágenes de franjas y algunas imágenes muestreadas al azar sin franjas.
+
+```{r tcav, fig.cap = "Figura del documento TCAV, Been Kim et. al (2018)", out.width = 800}
+knitr::include_graphics("images/tcav.png")
+```
+
+
+Código para TCAV: https://github.com/tensorflow/tcav
+
+TODO: CONTINUAR DESCRIBIENDO TCAV
+
+Cosas buenas sobre TCAV:
+No es necesario que los conceptos se conozcan en el momento del entrenamiento.
+Realmente se puede analizar cualquier concepto, siempre que encuentre algunos ejemplos positivos y negativos.
+
+<!-- Visualización de características para RNNs -->
+Para RNN: https://medium.com/@plusepsilon/visualizations-of-recurrent-neural-networks-c18f07779d56
+https://distill.pub/2019/memorization-in-rnns/
+http://lstm.seas.harvard.edu/
+
+TODO: Checkout RNNVis y LSTMVis
+
+Lista de cuadernos:
+https://github.com/tensorflow/lucid
+Más una herramienta para obtener una mejor comprensión general de las CNN, pero no para el trabajo diario.
+
+### Incorporaciones de palabras
+
+**Incrustaciones de palabras**
+Las incrustaciones de palabras representan palabras como vectores que se pueden usar para calcular la similitud entre palabras.
+Como otra forma de visualizar los conceptos que se aprendieron son las incrustaciones de palabras.
+Una incrustación asigna una característica discreta (por ejemplo, una palabra) a un vector m-dimensional.
+Una palabra incrustada es el vector en algún espacio de incrustación en el que se asigna una palabra.
+El espacio de incrustación es aprendido por la red neuronal.
+Las direcciones en ese espacio a menudo se correlacionan con los conceptos.
+Esto significa que las palabras con vectores similares tienen alguna similitud, p. gato y perro.
+Esto también tiene el bonito efecto de que podemos hacer aritmética en ese espacio.
+por ejemplo,
+
+$$incrustación(rey)-incrustación(reina)=incrustación(hombre)-incrustación(mujer)$$
+
+Las incrustaciones son vectores de alta dimensión.
+Para la visualización, a menudo se asignan a 2 Dimensiones (por ejemplo, con tSNE) TODO: CITE
+
+¿Qué puedes hacer con las incrustaciones?
+Puedes visualizar los conceptos aprendidos.
+La incrustación nos permite analizar lo que aprendió la red neuronal.
+Por ejemplo, ¿aprendió algún tipo de sesgo?
+¿Cómo obtenemos incrustaciones de palabras?
+Otros casos de uso incluyen el uso de estas incrustaciones como transformaciones de características antes de, p. El texto se utiliza en un modelo de aprendizaje automático.
+
+¿Cómo se crean?
+Es un mapeo de características categóricas (por ejemplo, palabras) a algunos vectores.
+Se pueden inicializar con pesos aleatorios y las incrustaciones se aprenden junto con lo que intenta predecir, p. con una red neuronal recurrente.
+Una alternativa es usar una incrustación pre-entrenada como word2vec, GloVe o fasttext.
+Esos están entrenados sobre enormes corpus de texto para predecir palabras de sus palabras vecinas.
+
+
+ - los conceptos pueden transformarse al aprender, p. perro en cascada
+
+** Detección de conceptos durante el tiempo de entrenamiento **
+
+Hacia una sólida interpretabilidad con redes neuronales autoexplicativas
+
+
+**Software**
+
+- CAffee y con GANS https://github.com/Evolving-AI-Lab/synthesizing
+
+
+### Otros enfoques para conceptos
+
+- Incrustaciones de palabras https://papers.nips.cc/paper/5021-distributed-representations-of-words-and-phrases-and-their-compositionality.pdf
+-
+
+[^TCAV]: Kim, Been, et al. "Interpretability beyond feature attribution: Quantitative testing with concept activation vectors (tcav)." arXiv preprint arXiv:1711.11279 (2017).
+
+[^dissect]: Bau, David, et al. "Network dissection: Quantifying interpretability of deep visual representations." Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition. 2017.

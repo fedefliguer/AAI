@@ -1,0 +1,25 @@
+### Extracción de reglas y extracción de modelos
+
+Algunos métodos, que solo se prueban en redes de una sola capa oculta.
+- Método KT: extraer para cada neurona una regla
+- Extraer árbol de decisión (Hinton)
+- CRED (2001, Sato y Tsukimoto)
+- Trepan
+
+- Modelo de destilación de árboles (para CNN)
+
+Color rojo oscuro
+
+
+LIMA
+
+Tipos de extracción de reglas: descomposición, pedagógica, ecléctica
+Pedagógico es simplemente modelo agnóstico.
+
+También puedes ver diferentes niveles:
+Aproxima las reglas de una sola neurona
+Aproximar toda la clasificación de la red.
+
+TODO: Documento de resumen del enlace.
+
+

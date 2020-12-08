@@ -1,0 +1,483 @@
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+devtools::load_all()
+set.seed(42)
+```
+
+<!--{pagebreak}-->
+
+## Sustituto local (LIME) {#lime}
+
+Los modelos sustitutos locales son modelos interpretables que se utilizan para explicar las predicciones individuales de los modelos de aprendizaje automático de caja negra.
+En el artículo original, los autores proponen[^Ribeiro2016lime] una implementación concreta de modelos sustitutos locales.
+Los modelos sustitutos están entrenados para aproximar las predicciones del modelo de caja negra subyacente.
+En lugar de entrenar un modelo sustituto global, LIME se enfoca en entrenar modelos sustitutos locales para explicar las predicciones individuales.
+
+La idea es bastante intuitiva.
+Primero, olvida los datos de entrenamiento e imagina que solo tienes el modelo de caja negra donde puedes ingresar puntos de datos y obtener las predicciones del modelo.
+Puedes ingresar puntos de datos en la caja tantas veces como quieras.
+Tu objetivo es comprender por qué el modelo de aprendizaje automático hizo una cierta predicción.
+LIME prueba lo que sucede con las predicciones cuando proporcionas variaciones de tus datos al modelo de aprendizaje automático.
+LIME genera un nuevo conjunto de datos que consta de muestras permutadas y las correspondientes predicciones del modelo de caja negra.
+En este nuevo conjunto de datos, LIME luego entrena un modelo interpretable, que se pondera por la proximidad de las instancias muestreadas a la instancia de interés.
+El modelo interpretable puede ser cualquier [modelo interpretable](#simple), por ejemplo [Lasso](#lasso) o un [árbol de decisión](#arbol).
+El modelo aprendido debería ser una buena aproximación de las predicciones del modelo de aprendizaje automático en forma local, no necesariamente en forma global.
+Este tipo de precisión también se llama fidelidad local.
+
+Matemáticamente, los modelos sustitutos locales con restricción de interpretabilidad se pueden expresar de la siguiente manera:
+
+$$\text{explanation}(x)=\arg\min_{g\in{}G}L(f,g,\pi_x)+\Omega(g)$$
+
+El modelo de explicación para la observación x es el modelo g (por ejemplo, modelo de regresión lineal) que minimiza la pérdida L (por ejemplo, error cuadrático medio), que mide qué tan cerca está la explicación de la predicción del modelo original f (por ejemplo, un modelo xgboost), mientras que la complejidad del modelo $\Omega(g)$ se mantiene baja (por ejemplo, prefieres menos características).
+G es la familia de posibles explicaciones, por ejemplo, todos los posibles modelos de regresión lineal.
+La medida de proximidad $\pi_x$ define qué tan grande es el vecindario alrededor de la instancia x que consideramos para la explicación.
+En la práctica, LIME solo optimiza la parte de pérdida.
+El usuario tiene que determinar la complejidad p, seleccionando el número máximo de características que puede usar el modelo de regresión lineal.
+
+La receta para entrenar modelos locales sustitutos:
+
+- Selecciona tu instancia de interés para la que deseas tener una explicación de tu predicción de caja negra.
+- Perturba tu conjunto de datos y obtén las predicciones de caja negra para estos nuevos puntos.
+- Pondera las nuevas muestras según su proximidad a la instancia de interés.
+- Entrena un modelo ponderado e interpretable en el conjunto de datos con las variaciones.
+- Explica la predicción interpretando el modelo local.
+
+En las implementaciones actuales en [R](https://github.com/thomasp85/lime) y [Python](https://github.com/marcotcr/lime), por ejemplo, la regresión lineal se puede elegir como sustituto interpretable.
+De antemano, debes seleccionar K, la cantidad de características que deseas tener en tu modelo interpretable.
+Cuanto más baja es la K, más fácil es interpretar el modelo.
+Una K más alta potencialmente produce modelos con mayor fidelidad.
+Existen varios métodos para entrenar modelos con exactamente K características.
+Una buena opción es [Lasso](#lasso).
+Un modelo Lasso con un alto parámetro de regularización $\lambda$ produce un modelo sin ninguna característica.
+Al volver a entrenar los modelos Lasso con una disminución lenta de $\lambda$, una tras otra, las características obtienen estimaciones de peso que difieren de cero.
+Si hay K características en el modelo, has alcanzado la cantidad deseada de características.
+Otras estrategias son la selección de características hacia adelante o hacia atrás.
+Esto significa que comienza con el modelo completo (= que contiene todas las características) o con un modelo con solo el intercepto y luego prueba qué característica brindaría la mayor mejora cuando se agrega o elimina, hasta que se alcanza un modelo con K características.
+
+¿Cómo se obtienen las variaciones de los datos?
+Esto depende del tipo de datos, que pueden ser texto, imagen o datos tabulares.
+Para texto e imágenes, la solución es activar o desactivar palabras simples o superpíxeles.
+En el caso de los datos tabulares, LIME crea nuevas muestras al perturbar cada característica individualmente, dibujando a partir de una distribución normal con desviación estándar y media tomada de la característica.
+
+### LIME para datos tabulares
+
+Los datos tabulares son datos que vienen en tablas, cada fila representa una instancia y cada columna una característica.
+Las muestras de LIME no se toman alrededor de la instancia de interés, sino del centro de masa de los datos de entrenamiento, lo cual es problemático.
+Pero aumenta la probabilidad de que el resultado para algunas de las predicciones de puntos de muestra difiera del punto de datos de interés y que LIME pueda aprender al menos alguna explicación.
+
+Es mejor explicar visualmente cómo funciona el muestreo y el entrenamiento en modelos locales:
+
+```{r lime-fit, fig.cap = 'Algoritmo LIME para datos tabulares. A) Las predicciones aleatorias del random forest dan características x1 y x2. Clases previstas: 1 (oscuro) o 0 (claro). B) Instancia de interés (punto grande) y datos muestreados de una distribución normal (puntos pequeños). C) Asigna un mayor peso a los puntos cercanos a la instancia de interés. D) Los signos de la cuadrícula muestran las clasificaciones del modelo aprendido localmente de las muestras ponderadas. La línea blanca marca el límite de decisión (P (clase = 1) = 0.5).', fig.height=9, fig.width=9}
+## Creating dataset ###########################################################
+library("dplyr")
+library("ggplot2")
+
+# Define range of set
+lower_x1 = -2
+upper_x1 = 2
+lower_x2 = -2
+upper_x2 = 1
+
+# Size of the training set for the black box classifier
+n_training  = 20000
+# Size for the grid to plot the decision boundaries
+n_grid = 100
+# Number of samples for LIME explanations
+n_sample = 500
+
+
+# Simulate y ~ x1 + x2
+set.seed(1)
+x1 = runif(n_training, min = lower_x1, max = upper_x1)
+x2 = runif(n_training, min = lower_x2, max = upper_x2)
+y = get_y(x1, x2)
+# Add noise
+y_noisy = get_y(x1, x2, noise_prob = 0.01)
+lime_training_df = data.frame(x1=x1, x2=x2, y=as.factor(y), y_noisy=as.factor(y_noisy))
+
+# For scaling later on
+x_means = c(mean(x1), mean(x2))
+x_sd = c(sd(x1), sd(x2))
+
+
+# Learn model
+rf = randomForest::randomForest(y_noisy ~ x1 + x2, data = lime_training_df, ntree=100)
+lime_training_df$predicted = predict(rf, lime_training_df)
+
+
+# The decision boundaries
+grid_x1 = seq(from=lower_x1, to=upper_x1, length.out=n_grid)
+grid_x2 = seq(from=lower_x2, to=upper_x2, length.out=n_grid)
+grid_df = expand.grid(x1 = grid_x1, x2 = grid_x2)
+grid_df$predicted = as.numeric(as.character(predict(rf, newdata = grid_df)))
+
+
+# The observation to be explained
+explain_x1 = 1
+explain_x2 = -0.5
+explain_y_model = predict(rf, newdata = data.frame(x1=explain_x1, x2=explain_x2))
+df_explain = data.frame(x1=explain_x1, x2=explain_x2, y_predicted=explain_y_model)
+
+point_explain = c(explain_x1, explain_x2)
+point_explain_scaled = (point_explain - x_means) / x_sd
+
+# Drawing the samples for the LIME explanations
+x1_sample = rnorm(n_sample, x_means[1], x_sd[1])
+x2_sample = rnorm(n_sample, x_means[2], x_sd[2])
+df_sample = data.frame(x1 = x1_sample, x2 = x2_sample)
+# Scale the samples
+points_sample = apply(df_sample, 1, function(x){
+  (x - x_means) / x_sd
+}) %>% t
+
+
+
+# Add weights to the samples
+kernel_width = sqrt(dim(df_sample)[2]) * 0.15
+distances = get_distances(point_explain_scaled, 
+  points_sample = points_sample)
+
+df_sample$weights = kernel(distances, kernel_width=kernel_width)
+
+df_sample$predicted = predict(rf, newdata = df_sample)
+
+
+# Trees
+# mod = rpart(predicted ~ x1 + x2, data = df_sample,  weights = df_sample$weights)
+# grid_df$explained = predict(mod, newdata = grid_df, type='prob')[,2]
+
+# Logistic regression model
+mod = glm(predicted ~ x1 + x2, data = df_sample,  weights = df_sample$weights, family='binomial')
+grid_df$explained = predict(mod, newdata = grid_df, type='response')
+
+# logistic decision boundary
+coefs = coefficients(mod)
+logistic_boundary_x1 = grid_x1
+logistic_boundary_x2 = -  (1/coefs['x2']) * (coefs['(Intercept)'] + coefs['x1'] * grid_x1) 
+logistic_boundary_df = data.frame(x1 = logistic_boundary_x1, x2 = logistic_boundary_x2)  
+logistic_boundary_df = filter(logistic_boundary_df, x2 <= upper_x2, x2 >= lower_x2)
+
+
+# Create a smaller grid for visualization of local model boundaries
+x1_steps = unique(grid_df$x1)[seq(from=1, to=n_grid, length.out = 20)]
+x2_steps = unique(grid_df$x2)[seq(from=1, to=n_grid, length.out = 20)]
+grid_df_small = grid_df[grid_df$x1 %in% x1_steps & grid_df$x2 %in% x2_steps,]
+grid_df_small$explained_class = round(grid_df_small$explained)
+
+colors = c('#132B43', '#56B1F7')
+# Data with some noise
+p_data = ggplot(lime_training_df) +
+  geom_point(aes(x=x1,y=x2,fill=y_noisy, color=y_noisy), alpha =0.3, shape=21) +
+  scale_fill_manual(values = colors) +
+  scale_color_manual(values = colors) +
+  my_theme(legend.position = 'none')
+
+# The decision boundaries of the learned black box classifier
+p_boundaries = ggplot(grid_df) +
+  geom_raster(aes(x=x1,y=x2,fill=predicted), alpha = 0.3, interpolate=TRUE) +
+  my_theme(legend.position='none') +
+  ggtitle('A')
+
+
+# Drawing some samples
+p_samples = p_boundaries +
+  geom_point(data = df_sample, aes(x=x1, y=x2)) +
+  scale_x_continuous(limits = c(-2, 2)) +
+  scale_y_continuous(limits = c(-2, 1))
+# The point to be explained
+p_explain = p_samples +
+  geom_point(data = df_explain, aes(x=x1,y=x2), fill = 'yellow', shape = 21, size=4) +
+  ggtitle('B')
+
+p_weighted = p_boundaries +
+  geom_point(data = df_sample, aes(x=x1, y=x2, size=weights)) +
+  scale_x_continuous(limits = c(-2, 2)) +
+  scale_y_continuous(limits = c(-2, 1)) +
+  geom_point(data = df_explain, aes(x=x1,y=x2), fill = 'yellow', shape = 21, size=4) +
+  ggtitle('C')
+
+p_boundaries_lime = ggplot(grid_df)  +
+  geom_raster(aes(x=x1,y=x2,fill=predicted), alpha = 0.3, interpolate=TRUE) +
+  geom_point(aes(x=x1, y=x2, color=explained), size = 2, data = grid_df_small[grid_df_small$explained_class==1,], shape=3) +
+  geom_point(aes(x=x1, y=x2, color=explained), size = 2, data = grid_df_small[grid_df_small$explained_class==0,], shape=95) +
+  geom_point(data = df_explain, aes(x=x1,y=x2), fill = 'yellow', shape = 21, size=4) +
+  geom_line(aes(x=x1, y=x2), data =logistic_boundary_df, color = 'white') +
+  my_theme(legend.position='none') + ggtitle('D')
+
+
+gridExtra::grid.arrange(p_boundaries, p_explain, p_weighted, p_boundaries_lime, ncol=2)
+
+```
+
+Como siempre, el diablo está en los detalles.
+Definir un vecindario significativo alrededor de un punto es difícil.
+LIME actualmente utiliza un smoothing kernel (núcleo exponencial de suavizado) para definir el vecindario.
+Es una función que toma dos instancias de datos y devuelve una medida de proximidad.
+El ancho del kernel determina qué tan grande es el vecindario:
+Un ancho de kernel pequeño significa que una instancia debe estar muy cerca para influir en el modelo local, un ancho de kernel más grande significa que las instancias que están más lejos también influyen en el modelo.
+Si observas la [implementación de Python LIME (file lime/lime_tabular.py)](https://github.com/marcotcr/lime/tree/ce2db6f20f47c3330beb107bb17fd25840ca4606) verás que utiliza un kernel exponencial (en los datos normalizados) y el ancho del kernel es 0,75 veces la raíz cuadrada del número de columnas de los datos de entrenamiento.
+Parece una línea de código inocente, pero es como un elefante sentado en tu sala de estar al lado de la porcelana que te dieron tus abuelos.
+El gran problema es que no tenemos una buena manera de encontrar el mejor núcleo o ancho.
+¿Y de dónde viene el 0.75?
+En ciertos escenarios, puedes cambiar fácilmente tu explicación cambiando el ancho del núcleo, como se muestra en la siguiente figura:
+
+
+```{r lime-fail, fig.cap = "Explicación de la predicción de la instancia x = 1.6. Las predicciones del modelo de caja negra que dependen de una sola característica se muestran como una línea gruesa y se muestra la distribución de los datos con alfombras. Se calculan tres modelos sustitutos locales con diferentes anchos de núcleo. El modelo de regresión lineal resultante depende del ancho del kernel: ¿La característica tiene un efecto negativo, positivo o nulo para x = 1.6?"}
+set.seed(42)
+df = data.frame(x = rnorm(200, mean = 0, sd = 3))
+df$x[df$x < -5] = -5
+df$y = (df$x + 2)^2
+df$y[df$x > 1] = -df$x[df$x > 1] + 10 + - 0.05 * df$x[df$x > 1]^2
+#df$y = df$y + rnorm(nrow(df), sd = 0.05)
+explain.p = data.frame(x = 1.6, y = 8.5)
+
+w1 = kernel(get_distances(data.frame(x = explain.p$x), df), 0.1)
+w2 = kernel(get_distances(data.frame(x = explain.p$x), df), 0.75)
+w3 = kernel(get_distances(data.frame(x = explain.p$x), df), 2)
+
+lm.1 = lm(y ~ x, data = df, weights = w1)
+lm.2 = lm(y ~ x, data = df, weights = w2)
+lm.3 = lm(y ~ x, data = df, weights = w3)
+df.all = rbind(df, df, df)
+
+df.all$lime = c(predict(lm.1), predict(lm.2), predict(lm.3))
+df.all$width = factor(c(rep(c(0.1, 0.75, 2), each = nrow(df))))
+
+
+ggplot(df.all, aes(x = x, y = y)) + 
+  geom_line(size = 2.5) + 
+  geom_rug(sides = "b") + 
+  geom_line(aes(x = x, y = lime, group = width, color = width, linetype = width)) + 
+  geom_point(data = explain.p, aes(x = x, y = y), size = 12, shape = "x") + 
+  scale_color_viridis("Ancho del kernel", discrete = TRUE) + 
+  scale_linetype("Ancho del kernel") + 
+  scale_y_continuous("Predicción de caja negra")
+
+```
+
+El ejemplo muestra solo una característica.
+Empeora en espacios de características de alta dimensión.
+Tampoco está muy claro si la medida de distancia debe tratar todas las características por igual.
+¿Una unidad de distancia para la característica x1 es idéntica a una unidad para la característica x2?
+Las medidas de distancia son bastante arbitrarias y las distancias en diferentes dimensiones (también conocidas como características) podrían no ser comparables en absoluto.
+
+
+#### Ejemplo
+
+Veamos un ejemplo concreto.
+Volvemos a los [datos de alquiler de bicicletas](#bike-data) y convertimos el problema de predicción en uno de clasificación:
+Después de tener en cuenta la tendencia de que el alquiler de bicicletas se ha vuelto más popular con el tiempo, queremos saber en un día determinado si el número de bicicletas alquiladas será superior o inferior a la línea de tendencia.
+También puedes interpretar "arriba" como estar por encima del número promedio de bicicletas, pero ajustado por la tendencia.
+
+```{r lime-tabular-example-train-black-box, cache = TRUE}
+data("bike")
+ntree = 100
+bike.train.resid = factor(resid(lm(cnt ~ days_since_2011, data = bike)) > 0, levels = c(FALSE, TRUE), labels = c('below', 'above'))
+bike.train.x = bike[names(bike) != 'cnt']
+
+model <- caret::train(bike.train.x,
+  bike.train.resid,
+  method = 'rf', ntree=ntree, maximise = FALSE)
+n_features_lime = 2
+```
+
+Primero entrenamos un random forest con `r ntree` árboles en la tarea de clasificación.
+¿En qué día el número de bicicletas de alquiler estará por encima del promedio libre de tendencias, según la información del clima y el calendario?
+
+Las explicaciones se crean con `r n_features_lime` características.
+Los resultados de los escasos modelos lineales locales entrenados para dos instancias con diferentes clases predichas:
+
+```{r lime-tabular-example-explain-plot-1, fig.cap=sprintf('Explicaciones LIME para dos instancias del conjunto de datos de alquiler de bicicletas. La temperatura más cálida y la buena situación climática tienen un efecto positivo en la predicción. El eje x muestra el efecto de la entidad: el peso multiplicado por el valor real de la entidad.') }
+library("iml")
+library("gridExtra")
+instance_indices = c(295, 8)
+set.seed(44)
+bike.train.x$temp = round(bike.train.x$temp, 2)
+pred = Predictor$new(model, data = bike.train.x, class = "above", type = "prob")
+lim1 = LocalModel$new(pred, x.interest = bike.train.x[instance_indices[1],], k = n_features_lime)
+lim2= LocalModel$new(pred, x.interest = bike.train.x[instance_indices[2],], k = n_features_lime)
+wlim = c(min(c(lim1$results$effect, lim2$results$effect)), max(c(lim1$results$effect, lim2$results$effect)))
+a = plot(lim1) +
+  scale_y_continuous(limit = wlim) + 
+  geom_hline(aes(yintercept=0))   +
+  theme(axis.title.y=element_blank(),
+        axis.ticks.y=element_blank())
+b = plot(lim2) +
+    scale_y_continuous(limit = wlim) + 
+    geom_hline(aes(yintercept=0)) +
+  theme(axis.title.y=element_blank(),
+        axis.ticks.y=element_blank())
+grid.arrange(a, b, ncol = 1)
+```
+
+De la figura queda claro que es más fácil interpretar características categóricas que características numéricas.
+Una solución es transformar las variables numéricas en categóricas.
+
+
+### LIME para texto
+
+LIME para texto difiere de LIME para datos tabulares.
+Las variaciones de los datos se generan de manera diferente:
+A partir del texto original, se crean nuevos textos eliminando al azar palabras del texto original.
+El conjunto de datos se representa con características binarias para cada palabra.
+Una característica es 1 si se incluye la palabra correspondiente y 0 si se ha eliminado.
+
+#### Ejemplo
+
+En este ejemplo, clasificamos [comentarios de YouTube](#spam-data) como spam o normal.
+
+El modelo de caja negra es un árbol de decisión profundo entrenado en la matriz de palabras del documento.
+Cada comentario es un documento (= una fila) y cada columna es el número de apariciones de una palabra dada.
+Los árboles de decisión cortos son fáciles de entender, pero en este caso el árbol es muy profundo.
+También en lugar de este árbol podría haber habido una red neuronal recurrente o una SVM entrenada en incrustaciones de palabras (vectores abstractos).
+Veamos los dos comentarios de este conjunto de datos y las clases correspondientes (1 para spam, 0 para comentario normal):
+
+```{r load-text-classification-lime}
+data("ycomments")
+example_indices = c(267, 173)
+texts = ycomments$CONTENT[example_indices]
+```
+
+```{r show--data-TubeSpam}
+kable(ycomments[example_indices, c('CONTENT', 'CLASS')])
+```
+
+El siguiente paso es crear algunas variaciones de los conjuntos de datos utilizados en un modelo local.
+Por ejemplo, algunas variaciones de uno de los comentarios:
+
+```{r lime-text-variations}
+library("tm")
+
+labeledTerms = prepare_data(ycomments$CONTENT)
+labeledTerms$class = factor(ycomments$CLASS, levels = c(0,1), labels = c('no spam', 'spam'))
+labeledTerms2 = prepare_data(ycomments, trained_corpus = labeledTerms)
+
+rp = rpart::rpart(class ~ ., data = labeledTerms)
+predict_fun = get_predict_fun(rp, labeledTerms)
+tokenized = tokenize(texts[2])
+set.seed(2)
+variations = create_variations(texts[2], predict_fun, prob=0.7, n_variations = 5, class='spam')
+colnames(variations) = c(tokenized, 'prob', 'weight')
+example_sentence = paste(colnames(variations)[variations[2, ] == 1], collapse = ' ')
+```
+
+```{r lime-text-variations-output, results='asis'}
+kable(variations)
+```
+
+Cada columna corresponde a una palabra en la oración.
+Cada fila es una variación, 1 significa que la palabra es parte de esta variación y 0 significa que la palabra ha sido eliminada.
+La oración correspondiente para una de las variaciones es "```r example_sentence```".
+La columna "prob" muestra la probabilidad pronosticada de spam para cada una de las variaciones de la oración.
+La columna "weight" muestra la proximidad de la variación a la oración original, calculada como 1 menos la proporción de palabras que se eliminaron, por ejemplo, si se eliminó 1 de 7 palabras, la proximidad es 1 - 1/7 = 0.86.
+
+
+
+
+Aquí están las dos oraciones (una no deseada, una no deseada) con sus estimaciones de pesos locales encontradas por el algoritmo LIME:
+
+```{r lime-text-explicación, fig.cap = "Explicaciones LIME para la clasificación de texto."}
+set.seed(42)
+ycomments.predict = get.ycomments.classifier(ycomments)
+explanations  = data.table::rbindlist(lapply(seq_along(texts), function(i) {
+  explain_text(texts[i], ycomments.predict, class='spam', case=i, prob = 0.5)
+})
+)
+explanations = data.frame(explanations)
+kable(explanations[c("case", "label_prob", "feature", "feature_weight")])
+```
+
+La palabra "channel" indica una alta probabilidad de spam.
+Para el comentario que no es spam, no se estimó un peso distinto de cero, porque no importa qué palabra se elimine, la clase predicha sigue siendo la misma.
+
+### LIME para imágenes {#imagenes-lime}
+
+*Esta sección fue escrita por Verena Haunschmid.*
+
+LIME para imágenes funciona de manera diferente que LIME para datos tabulares y texto.
+Intuitivamente, no tendría mucho sentido perturbar píxeles individuales, ya que muchos más de un píxel contribuyen a una clase.
+El cambio aleatorio de píxeles individuales probablemente no cambiaría mucho las predicciones.
+Por lo tanto, las variaciones de las imágenes se crean segmentando la imagen en "superpíxeles" y activando o desactivando los superpíxeles.
+Los superpíxeles son píxeles interconectados con colores similares y se pueden apagar reemplazando cada píxel con un color definido por el usuario, como el gris.
+El usuario también puede especificar una probabilidad de apagar un superpíxel en cada permutación.
+
+#### Ejemplo
+
+Como el cálculo de las explicaciones de las imágenes es bastante lento, el [paquete Lime R](https://github.com/thomasp85/lime) contiene un ejemplo precalculado que también usaremos para mostrar el resultado del método.
+Las explicaciones se pueden mostrar directamente en las muestras de imagen.
+Como podemos tener varias etiquetas predichas por imagen (ordenadas por probabilidad), podemos explicar los principales `n_labels`.
+Para la siguiente imagen, las 3 predicciones principales fueron *guitarra eléctrica*; *guitarra acustica*; y *labrador*.
+
+
+```{r lime-images-package-example, eval = FALSE, fig.show = "hide"}
+# Having trouble to install imagemick in version 6.8.8 or higher on TravisCI, 
+# which would be required for this code. So running only locally and added the
+# image manually.
+# For running locally, set eval = TRUE and make sure lime is installed.
+library("lime")
+explanation <- .load_image_example()
+plot_image_explanation(explanation)
+```
+
+```{r lime-images-package-example-include, fig.cap = "Explicaciones LIME para las 3 clases principales de clasificación de imágenes realizadas por la red neuronal Inception de Google. El ejemplo está tomado del artículo LIME (Ribeiro et al. ., 2016).", out.width=500}
+knitr::include_graphics("images/lime-images-package-example-1.png")
+```
+
+La predicción y explicación en el primer caso son muy razonables.
+La primera predicción de *guitarra eléctrica* es, por supuesto, incorrecta, pero la explicación nos muestra que la red neuronal todavía se comportó razonablemente porque la parte de la imagen identificada sugiere que podría tratarse de una guitarra eléctrica.
+
+### Ventajas
+
+Incluso si **reemplazas el modelo de aprendizaje automático subyacente**, aún puedes usar el mismo modelo local e interpretable para la explicación.
+Supongamos que las personas que miran las explicaciones entienden mejor los árboles de decisión.
+Debido a que usas modelos sustitutos locales, usas árboles de decisión como explicaciones sin tener que usar un árbol de decisión para hacer las predicciones.
+Por ejemplo, puedes usar una SVM.
+Y si resulta que un modelo xgboost funciona mejor, puedes reemplazar el SVM y aún usarlo como árbol de decisión para explicar las predicciones.
+
+Los modelos sustitutos locales se benefician de la literatura y la experiencia de entrenamiento e interpretación de modelos interpretables.
+
+Cuando se usa Lasso o árboles cortos, las explicaciones resultantes **son cortas (= selectivas) y posiblemente contrastantes**.
+Por lo tanto, hacen [explicaciones amigables para los humanos](#buenaexplicación).
+Es por eso que veo LIME más en aplicaciones donde el destinatario de la explicación es un laico o alguien con muy poco tiempo.
+No es suficiente para las atribuciones completas, por lo que no veo LIME en escenarios de cumplimiento en los que legalmente se le puede exigir que explique completamente una predicción.
+También para depurar modelos de aprendizaje automático, es útil tener todas las razones en lugar de algunas.
+
+LIME es uno de los pocos métodos que **funciona para datos tabulares, texto e imágenes**.
+
+La **medida de fidelidad** (qué tan bien el modelo interpretable se aproxima a las predicciones de caja negra) nos da una buena idea de cuán confiable es el modelo interpretable para explicar las predicciones de caja negra en la vecindad de la instancia de datos de interés.
+
+LIME se implementa en Python ([biblioteca lime](https://github.com/marcotcr/lime)) y R ([paquete lime](https://cran.r-project.org/web/packages/lime/index.html) y [paquete iml](https://cran.r-project.org/web/packages/iml/index.html)) y es **muy fácil de usar**.
+
+Las explicaciones creadas con modelos sustitutos locales **pueden usar otras características (interpretables) que el modelo original en el que se entrenó**.
+Por supuesto, estas características interpretables deben derivarse de las instancias de datos.
+Un clasificador de texto puede confiar en la inserción de palabras abstractas como características, pero la explicación puede basarse en la presencia o ausencia de palabras en una oración.
+Un modelo de regresión puede basarse en una transformación no interpretable de algunos atributos, pero las explicaciones se pueden crear con los atributos originales.
+Por ejemplo, el modelo de regresión podría recibir entrenamiento sobre los componentes de un análisis de componentes principales (PCA) de las respuestas a una encuesta, pero LIME podría recibir entrenamiento sobre las preguntas originales de la encuesta.
+El uso de características interpretables para LIME puede ser una gran ventaja sobre otros métodos, especialmente cuando el modelo fue entrenado con características no interpretables.
+
+### Desventajas
+
+La definición correcta del vecindario es un gran problema sin resolver cuando se utiliza LIME con datos tabulares.
+En mi opinión, es el mayor problema con LIME y la razón por la que recomendaría usar LIME solo con mucho cuidado.
+Para cada aplicación, debes probar diferentes configuraciones de kernel y ver por tí mismo si las explicaciones tienen sentido.
+Desafortunadamente, este es el mejor consejo que puedo dar para encontrar buenos anchos de kernel.
+
+El muestreo podría mejorarse en la implementación actual de LIME.
+Los puntos de datos se muestrean a partir de una distribución gaussiana, ignorando la correlación entre las características.
+Esto puede conducir a puntos de datos poco probables que luego se pueden utilizar para aprender modelos de explicación local.
+
+La complejidad del modelo de explicación debe definirse de antemano.
+Esto es solo una pequeña queja, porque al final el usuario siempre tiene que definir el punto que quiere entre fidelidad y escasez.
+
+Otro gran problema es la inestabilidad de las explicaciones.
+En un artículo[^limerobustness] los autores mostraron que las explicaciones de dos puntos muy cercanos variaban mucho en un entorno simulado.
+Además, en mi experiencia, si repites el proceso de muestreo, las explicaciones que salen pueden ser diferentes.
+La inestabilidad significa que es difícil confiar en las explicaciones, por lo que debes ser muy crítico.
+
+Conclusión:
+Los modelos sustitutos locales, con LIME como una implementación concreta, son muy prometedores.
+Pero el método todavía está en fase de desarrollo y muchos problemas deben resolverse antes de que pueda aplicarse de forma segura.
+
+
+[^Ribeiro2016lime]: Ribeiro, Marco Tulio, Sameer Singh, and Carlos Guestrin. "Why should I trust you?: Explaining the predictions of any classifier." Proceedings of the 22nd ACM SIGKDD international conference on knowledge discovery and data mining. ACM (2016).
+
+[^limerobustness]: Alvarez-Melis, David, and Tommi S. Jaakkola. "On the robustness of interpretability methods." arXiv preprint arXiv:1806.08049 (2018).

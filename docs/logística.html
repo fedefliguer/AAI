@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4.2 Regresión logística | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4.2 Regresión logística | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4.2 Regresión logística | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="lineal.html"/>
+<link rel="next" href="extend-lm.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="logística" class="section level2">
+<h2><span class="header-section-number">4.2</span> Regresión logística</h2>
+<p>La regresión logística modela las probabilidades en problemas de clasificación con dos resultados posibles.
+Es una extensión del modelo de regresión lineal para problemas de clasificación.</p>
+<div id="qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación" class="section level3">
+<h3><span class="header-section-number">4.2.1</span> ¿Qué tiene de malo la regresión lineal para la clasificación?</h3>
+<p>El modelo de regresión lineal puede funcionar bien para la regresión, pero falla en la clasificación.
+¿Por qué?
+En el caso de dos clases, puedes etiquetar una de las clases con 0 y la otra con 1 y usar regresión lineal.
+Técnicamente funciona y la mayoría de los programas de modelos lineales devolverán pesos.
+Pero hay algunos problemas con este enfoque:</p>
+<p>Un modelo lineal no genera probabilidades, si no que trata las clases como números (0 y 1) y se ajusta al mejor hiperplano (para una sola característica, es una línea) que minimiza las distancias entre los puntos y el hiperplano.
+Por lo tanto, simplemente se interpola entre los puntos y no se puede interpretar como probabilidades.</p>
+<p>Un modelo lineal también extrapola, por lo que puede dar valores por debajo de cero y por encima de uno.
+Esta es una señal de que podría haber un enfoque más inteligente para la clasificación.</p>
+<p>Dado que el resultado previsto no es una probabilidad, sino una interpolación lineal entre puntos, no existe un umbral significativo en el que pueda distinguir una clase de la otra.
+Se ha dado una buena ilustración de este problema en <a href="https://stats.stackexchange.com/questions/22381/why-not-approach-classification-through-regression">Stackoverflow</a>.</p>
+<p>Los modelos lineales no se extienden a problemas de clasificación con múltiples clases.
+Tendrías que comenzar a etiquetar la siguiente clase con 2, luego 3, y así sucesivamente.
+Aunque es posible que las clases no tengan un orden significativo, el modelo lineal forzaría una estructura extraña en la relación entre las características y las predicciones de su clase.
+De esta forma, cuanto mayor sea el valor de una característica con un peso positivo, más contribuiria a la predicción de una clase con un número más alto, incluso si las clases que obtienen un número similar no están más cerca que otras clases.</p>
+<div class="figure"><span id="fig:linear-class-threshold"></span>
+<img src="images/linear-class-threshold-1.png" alt="Un modelo lineal clasifica los tumores como malignos (1) o benignos (0) dado su tamaño. Las líneas muestran la predicción del modelo lineal. Para los datos de la izquierda, podemos usar 0.5 como umbral de clasificación. Después de introducir algunos casos más de tumores malignos, un umbral de 0.5 ya no separa las clases. Los puntos se alteran ligeramente para reducir la sobreimpresión. " width="1050" />
+<p class="caption">
+FIGURA 4.5: Un modelo lineal clasifica los tumores como malignos (1) o benignos (0) dado su tamaño. Las líneas muestran la predicción del modelo lineal. Para los datos de la izquierda, podemos usar 0.5 como umbral de clasificación. Después de introducir algunos casos más de tumores malignos, un umbral de 0.5 ya no separa las clases. Los puntos se alteran ligeramente para reducir la sobreimpresión.
+</p>
+</div>
+</div>
+<div id="teoría" class="section level3">
+<h3><span class="header-section-number">4.2.2</span> Teoría</h3>
+<p>Una solución para la clasificación es la regresión logística.
+En lugar de ajustar una línea recta o un hiperplano, el modelo de regresión logística utiliza la función logística para forzar a que la salida de una ecuación lineal esté entre 0 y 1.
+La función logística se define como:</p>
+<p><span class="math display">\[\text{logistic}(\eta)=\frac{1}{1+exp(-\eta)}\]</span></p>
+<p>Y se ve así:</p>
+<div class="figure"><span id="fig:logistic-function"></span>
+<img src="images/logistic-function-1.png" alt="La función logística. Produce números entre 0 y 1. En la entrada 0, genera 0.5." width="1050" />
+<p class="caption">
+FIGURA 4.6: La función logística. Produce números entre 0 y 1. En la entrada 0, genera 0.5.
+</p>
+</div>
+<p>El paso de la regresión lineal a la regresión logística es algo sencillo.
+En el modelo de regresión lineal, hemos modelado la relación entre el resultado y las características con una ecuación lineal:</p>
+<p><span class="math display">\[\hat{y}^{(i)}=\beta_{0}+\beta_{1}x^{(i)}_{1}+\ldots+\beta_{p}x^{(i)}_{p}\]</span></p>
+<p>Para la clasificación, preferimos probabilidades entre 0 y 1, por lo que ajustamos el lado derecho de la ecuación a la función logística.
+Esto obliga a la salida a asumir solo valores entre 0 y 1.</p>
+<p><span class="math display">\[P(y^{(i)}=1)=\frac{1}{1+exp(-(\beta_{0}+\beta_{1}x^{(i)}_{1}+\ldots+\beta_{p}x^{(i)}_{p}))}\]</span></p>
+<p>Volvamos al ejemplo del tamaño del tumor nuevamente.
+Pero en lugar del modelo de regresión lineal, usamos el modelo de regresión logística:</p>
+<div class="figure"><span id="fig:logistic-class-threshold"></span>
+<img src="images/logistic-class-threshold-1.png" alt="El modelo de regresión logística encuentra el límite de decisión correcto entre maligno y benigno dependiendo del tamaño del tumor. La línea es la función logística desplazada y exprimida para ajustarse a los datos." width="1050" />
+<p class="caption">
+FIGURA 4.7: El modelo de regresión logística encuentra el límite de decisión correcto entre maligno y benigno dependiendo del tamaño del tumor. La línea es la función logística desplazada y exprimida para ajustarse a los datos.
+</p>
+</div>
+<p>La clasificación funciona mejor con la regresión logística y podemos usar 0.5 como umbral en ambos casos. La inclusión de puntos adicionales no afecta sustancialmente la curva estimada.</p>
+</div>
+<div id="interpretación-1" class="section level3">
+<h3><span class="header-section-number">4.2.3</span> Interpretación</h3>
+<p>La interpretación de los pesos en la regresión logística difiere de la interpretación de los pesos en la regresión lineal, ya que el resultado en la regresión logística es una probabilidad entre 0 y 1.
+Los pesos ya no influyen en la probabilidad linealmente.
+La suma ponderada se transforma mediante la función logística en una probabilidad.
+Por lo tanto, necesitamos reformular la ecuación para la interpretación, de modo que solo el término lineal esté en el lado derecho de la fórmula.</p>
+<p><span class="math display">\[log\left(\frac{P(y=1)}{1-P(y=1)}\right)=log\left(\frac{P(y=1)}{P(y=0)}\right)=\beta_{0}+\beta_{1}x_{1}+\ldots+\beta_{p}x_{p}\]</span></p>
+<p>Llamamos al término en la función log() “odds” (chances, probabilidad del evento dividido por probabilidad del no evento), y envuelto en el logaritmo se llama log-odds.</p>
+<p>Esta fórmula muestra que el modelo de regresión logística es un modelo lineal para las log-odds.
+¡Excelente!
+¡Eso no suena útil!
+Con una pequeña combinación de los términos, puedes descubrir cómo cambia la predicción cuando una de las características <span class="math inline">\(x_j\)</span> cambia en una unidad.
+Para hacer esto, primero podemos aplicar la función exp() a ambos lados de la ecuación:</p>
+<p><span class="math display">\[\frac{P(y=1)}{1-P(y=1)}=odds=exp\left(\beta_{0}+\beta_{1}x_{1}+\ldots+\beta_{p}x_{p}\right)\]</span></p>
+<p>Luego comparamos lo que sucede cuando aumentamos uno de los valores de la característica en 1.
+Pero en lugar de mirar la diferencia, miramos el ratio entre las dos predicciones:</p>
+<p><span class="math display">\[\frac{odds_{x_j+1}}{odds}=\frac{exp\left(\beta_{0}+\beta_{1}x_{1}+\ldots+\beta_{j}(x_{j}+1)+\ldots+\beta_{p}x_{p}\right)}{exp\left(\beta_{0}+\beta_{1}x_{1}+\ldots+\beta_{j}x_{j}+\ldots+\beta_{p}x_{p}\right)}\]</span></p>
+<p>Aplicamos la siguiente regla:</p>
+<p><span class="math display">\[\frac{exp(a)}{exp(b)}=exp(a-b)\]</span></p>
+<p>Y eliminamos muchos términos:</p>
+<p><span class="math display">\[\frac{odds_{x_j+1}}{odds}=exp\left(\beta_{j}(x_{j}+1)-\beta_{j}x_{j}\right)=exp\left(\beta_j\right)\]</span></p>
+<p>Al final, tenemos algo tan simple como la exponencial del peso de una característica.
+Un cambio de una característica en una unidad cambia la razón entre las posibilidades (multiplicativa) por un factor de <span class="math inline">\(\exp(\beta_j)\)</span>.
+También podríamos interpretarlo de esta manera:
+Un cambio de <span class="math inline">\(x_j\)</span> en una unidad aumenta la relación de log-odds en el valor del peso correspondiente.
+La mayoría de las personas interpretan el ratio de odds, porque se sabe que pensar en el logaritmo de algo es duro para el cerebro.
+Interpretar el ratio de odds ya requiere acostumbrarse.
+Por ejemplo, si tienes odds de 2, significa que la probabilidad de y=1 es el doble de y=0.
+Si tenés un peso (= ratio log-odds) de 0.7, al aumentar la característica respectiva en una unidad multiplica las probabilidades por exp (0.7) (aproximadamente 2) y las odds cambian a 4.
+Pero, por lo general, no manejas las probabilidades e interpretas los pesos solo como las razones de probabilidades.
+Porque para calcular realmente las probabilidades, necesitarías establecer un valor para cada característica, lo que solo tiene sentido si deseas ver una instancia específica de su conjunto de datos.</p>
+<p>Estas son las interpretaciones para el modelo de regresión logística con diferentes tipos de características:</p>
+<ul>
+<li>Característica numérica:
+Si aumenta el valor de la variable <span class="math inline">\(x_{j}\)</span> en una unidad, las probabilidades estimadas cambian en un factor de <span class="math inline">\(\exp(\beta_{j})\)</span></li>
+<li>Característica categórica binaria:
+Uno de los dos valores de la variable es la categoría de referencia o basal (en algunos idiomas, el codificado en 0).
+Cambiar la variable <span class="math inline">\(x_{j}\)</span> de la categoría de referencia a la otra categoría cambia las probabilidades estimadas por un factor de <span class="math inline">\(\exp(\beta_{j})\)</span>.</li>
+<li>Característica categórica con más de dos categorías:
+Una solución para lidiar con múltiples categorías es una hot encoding, lo que significa que cada categoría tiene su propia columna.
+Solo necesita L-1 columnas para una característica categórica con L categorías, de lo contrario está sobre-parametrizada.
+La categoría L-ésima es entonces la categoría de referencia.
+Puedes usar cualquier otra codificación que puedas usar en regresión lineal.
+La interpretación para cada categoría es equivalente a la interpretación de características binarias.</li>
+<li>Intercepto <span class="math inline">\(\beta_{0}\)</span>:
+Cuando todas las características numéricas son cero y las características categóricas están en la categoría de referencia, las probabilidades estimadas son <span class="math inline">\(\exp(\beta_{0})\)</span>.
+La interpretación del peso del intercepto generalmente no es relevante.</li>
+</ul>
+</div>
+<div id="ejemplo-1" class="section level3">
+<h3><span class="header-section-number">4.2.4</span> Ejemplo</h3>
+<p>Utilizamos el modelo de regresión logística para predecir <a href="cervical.html#cervical">cáncer cervical</a> en función de algunos factores de riesgo.
+La siguiente tabla muestra los pesos estimados, las razones de odds asociadas y el error estándar de las estimaciones.</p>
+<table>
+<caption><span id="tab:logistic-example">TABLA 4.1: </span>Los resultados de ajustar un modelo de regresión logística en el conjunto de datos de cáncer cervical. características utilizadas en el modelo, sus pesos estimados y sus correspondientes odds ratios, y los errores estándar de los pesos estimados.</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Weight</th>
+<th align="right">Odds ratio</th>
+<th align="right">Std. Error</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Intercept</td>
+<td align="right">2.91</td>
+<td align="right">18.36</td>
+<td align="right">0.32</td>
+</tr>
+<tr class="even">
+<td align="left">Hormonal contraceptives y/n</td>
+<td align="right">0.12</td>
+<td align="right">1.12</td>
+<td align="right">0.30</td>
+</tr>
+<tr class="odd">
+<td align="left">Smokes y/n</td>
+<td align="right">-0.26</td>
+<td align="right">0.77</td>
+<td align="right">0.37</td>
+</tr>
+<tr class="even">
+<td align="left">Num. of pregnancies</td>
+<td align="right">-0.04</td>
+<td align="right">0.96</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="odd">
+<td align="left">Num. of diagnosed STDs</td>
+<td align="right">-0.82</td>
+<td align="right">0.44</td>
+<td align="right">0.33</td>
+</tr>
+<tr class="even">
+<td align="left">Intrauterine device y/n</td>
+<td align="right">-0.62</td>
+<td align="right">0.54</td>
+<td align="right">0.40</td>
+</tr>
+</tbody>
+</table>
+<p>Interpretación de una característica numérica (“Num. of diagnosed STDs”):
+Un aumento en el número de ETS (enfermedades de transmisión sexual) diagnosticadas cambia (aumenta) las probabilidades de cáncer frente a ausencia de cáncer por un factor de 0.44, cuando todas las demás características siguen siendo las mismas.
+Ten en cuenta que la correlación no implica causalidad.</p>
+<p>Interpretación de una característica categórica (“Anticonceptivos hormonales si/no”):
+Para las mujeres que usan anticonceptivos hormonales, las probabilidades de cáncer versus no cáncer son por un factor 1.12 menor, en comparación con las mujeres sin anticonceptivos hormonales, dado que todas las demás características permanecen igual.</p>
+<p>Al igual que en el modelo lineal, las interpretaciones siempre vienen con la cláusula de que “todas las demás características permanecen igual”.</p>
+</div>
+<div id="ventajas-y-desventajas" class="section level3">
+<h3><span class="header-section-number">4.2.5</span> Ventajas y desventajas</h3>
+<p>Muchos de los pros y los contras del <a href="lineal.html#lineal">modelo de regresión lineal</a> también se aplican al modelo de regresión logística.
+La regresión logística ha sido ampliamente utilizada por muchas personas diferentes, pero lucha con su expresividad restrictiva (por ejemplo, las interacciones deben agregarse manualmente).
+Otros modelos pueden tener un mejor rendimiento predictivo.</p>
+<p>Otra desventaja del modelo de regresión logística es que la interpretación es más difícil porque la interpretación de los pesos es multiplicativa y no aditiva.</p>
+<p>La regresión logística puede sufrir de <strong>separación completa</strong>.
+Si hay una característica que separe perfectamente las dos clases, el modelo de regresión logística ya no puede ser entrenado.
+Esto se debe a que el peso de esa característica no convergería, porque el peso óptimo sería infinito.
+Esto parece ser un poco desafortunado, porque tal característica es realmente útil.
+Sin embargo, no necesitas aprendizaje automático si tienes una regla simple que separa ambas clases.
+El problema de la separación completa se puede resolver introduciendo la penalización de los pesos o definiendo una distribución de probabilidad previa de los pesos.</p>
+<p>En el lado bueno, el modelo de regresión logística no es solo un modelo de clasificación, sino que también brinda probabilidades.
+Esta es una gran ventaja sobre los modelos que solo pueden proporcionar la clasificación final.
+Saber que una observación tiene una probabilidad del 99% para una clase en comparación con el 51% hace una gran diferencia.</p>
+<p>La regresión logística también puede extenderse de la clasificación binaria a la clasificación multiclase.
+Entonces se llama Regresión Multinomial.</p>
+</div>
+<div id="software" class="section level3">
+<h3><span class="header-section-number">4.2.6</span> Software</h3>
+<p>Usé la función <code>glm</code> en R para todos los ejemplos.
+Puedes encontrar regresión logística en cualquier lenguaje de programación que pueda usarse para realizar análisis de datos, como Python, Java, Stata, Matlab, …</p>
+
+<!--{pagebreak}-->
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="lineal.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="extend-lm.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/04.3-interpretable-logistic.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

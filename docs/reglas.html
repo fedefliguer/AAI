@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4.5 Reglas de decisión | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4.5 Reglas de decisión | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4.5 Reglas de decisión | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="arbol.html"/>
+<link rel="next" href="rulefit.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="reglas" class="section level2">
+<h2><span class="header-section-number">4.5</span> Reglas de decisión</h2>
+<p>Una regla de decisión es una simple declaración SI-ENTONCES (IF-THEN) que consiste en una condición (también llamada antecedente) y una predicción.
+Por ejemplo:
+SI llueve Y SI es abril (condición), ENTONCES lloverá mañana (predicción).
+Se puede usar una sola regla de decisión o una combinación de varias reglas para hacer predicciones.</p>
+<!-- *Palabras clave: reglas de decisión, conjuntos de decisiones, listas de decisiones, reglas de asociación, reglas SI-ENTONCES * -->
+<p>Las reglas de decisión siguen una estructura general:
+SI se cumplen las condiciones, ENTONCES haga una cierta predicción.
+Las reglas de decisión son probablemente los modelos de predicción más interpretables.
+Su estructura SI-ENTONCES se asemeja semánticamente al lenguaje natural y a la forma en que pensamos, siempre que la condición se construya a partir de características inteligibles, la duración de la condición sea corta (pequeño número de pares <code>característica = valor</code> combinados con un Y) y hay no demasiadas reglas.
+En programación, es muy natural escribir reglas SI-ENTONCES.
+Lo nuevo en el aprendizaje automático es que las reglas de decisión se aprenden a través de un algoritmo.</p>
+<p>Imagina usar un algoritmo para aprender las reglas de decisión para predecir el valor de una casa (<code>bajo</code>, <code>medio</code> o <code>alto</code>).
+Una regla de decisión aprendida por este modelo podría ser:
+Si una casa es más grande que 100 metros cuadrados y tiene un jardín, entonces su valor es alto.
+Más formalmente:
+SI <code>tamaño&gt;100 Y jardín=1</code> ENTONCES <code>valor = alto</code>.</p>
+<p>Analicemos la regla de decisión:</p>
+<ul>
+<li><code>tamaño&gt;100</code> es la primera condición en la parte SI.</li>
+<li><code>jardín = 1</code> es la segunda condición en la parte SI.</li>
+<li>Las dos condiciones están conectadas con un ‘Y’ para crear una nueva condición.
+Ambas deben ser ciertas para que se aplique la regla.</li>
+<li>El resultado previsto (ENTONCES) es <code>valor = alto</code>.</li>
+</ul>
+<p>Una regla de decisión utiliza al menos una declaración <code>característica = valor</code> en la condición, sin límite superior de cuántas más se pueden agregar con un ‘AND’.
+Una excepción es la regla predeterminada que no tiene una parte IF explícita y que se aplica cuando no se aplica ninguna otra regla, pero veremos más sobre esto más adelante.</p>
+<p>La utilidad de una regla de decisión generalmente se resume en dos números: Soporte y precisión.</p>
+<p><strong>Soporte o cobertura de una regla</strong>:
+El porcentaje de instancias a las que se aplica la condición de una regla se denomina soporte.
+Tomemos, por ejemplo, la regla tamaño = grande Y ubicación = buena ENTONCES valor = alto para predecir los valores de la casa.
+Suponga que 100 de 1000 casas son grandes y están en una buena ubicación, entonces el respaldo de la regla es del 10%.
+La predicción (ENTONCES) no es importante para el cálculo del soporte.</p>
+<p><strong>Precisión o confianza de una regla</strong>:
+La precisión de una regla es una medida de cuán precisa es la regla para predecir la clase correcta para las instancias a las que se aplica la condición de la regla.
+Por ejemplo:
+Digamos de las 100 casas, donde la regla tamaño = grande Y ubicación = buena ENTONCES valor = alto, 85 tienen valor = alto, 14 tienen valor = medio y 1 tiene valor = bajo, entonces la precisión de la regla es del 85%.</p>
+<p>Por lo general, existe una compensación entre precisión y soporte:
+Al agregar más funciones a la condición, podemos lograr una mayor precisión, pero perdemos soporte.</p>
+<p>Para crear un buen clasificador para predecir el valor de una casa, es posible que necesites aprender no solo una regla, sino tal vez 10 o 20.
+Entonces las cosas pueden complicarse y puedes encontrarte con uno de los siguientes problemas:</p>
+<ul>
+<li>Las reglas pueden superponerse:
+¿Qué sucede si quiero predecir el valor de una casa y se aplican dos o más reglas y me dan predicciones contradictorias?</li>
+<li>No se aplica ninguna regla:
+¿Qué sucede si quiero predecir el valor de una casa y no se aplica ninguna de las reglas?</li>
+</ul>
+<p>Hay dos estrategias principales para combinar varias reglas:
+Listas de decisiones (ordenadas) y conjuntos de decisiones (sin ordenar).
+Ambas estrategias implican diferentes soluciones al problema de la superposición de reglas.</p>
+<p>Una <strong>lista de decisiones</strong> introduce un orden en las reglas de decisión.
+Si la condición de la primera regla es verdadera para una instancia, usamos la predicción de la primera regla.
+Si no, pasamos a la siguiente regla y verificamos si corresponde y así sucesivamente.
+Las listas de decisiones resuelven el problema de la superposición de reglas al devolver solo la predicción de la primera regla de la lista que se aplica.</p>
+<p>Un <strong>conjunto de decisiones</strong> se asemeja a una democracia de las reglas, excepto que algunas reglas pueden tener un mayor poder de voto.
+En un conjunto, las reglas son mutuamente excluyentes o hay una estrategia para resolver conflictos, como la votación por mayoría, que puede ser ponderada por la precisión de las reglas individuales u otras medidas de calidad.
+La interpretabilidad sufre potencialmente cuando se aplican varias reglas.</p>
+<p>Tanto las listas de decisiones como los conjuntos pueden sufrir el problema de que ninguna regla se aplica a una instancia.
+Esto se puede resolver mediante la introducción de una regla predeterminada.
+La regla predeterminada es la regla que se aplica cuando no se aplica ninguna otra regla.
+La predicción de la regla predeterminada suele ser la clase más frecuente de los puntos de datos que no están cubiertos por otras reglas.
+Si un conjunto o una lista de reglas cubre todo el espacio de características, lo llamamos exhaustivo.
+Al agregar una regla predeterminada, un conjunto o lista se vuelve exhaustivo automáticamente.</p>
+<p>Hay muchas maneras de aprender reglas de los datos y este libro está lejos de abarcarlas todas.
+Este capítulo te muestra tres de ellos.
+Los algoritmos se eligen para cubrir una amplia gama de ideas generales para reglas de aprendizaje, por lo que los tres representan enfoques muy diferentes.</p>
+<ol style="list-style-type: decimal">
+<li><strong>OneR</strong> aprende las reglas de una sola característica.
+OneR se caracteriza por su simplicidad, interpretabilidad y su uso como punto de referencia.</li>
+<li><strong>La cobertura secuencial</strong> es un procedimiento general que aprende de forma iterativa las reglas y elimina los puntos de datos cubiertos por la nueva regla.
+Este procedimiento es utilizado por muchos algoritmos de aprendizaje de reglas.</li>
+<li><strong>Listas de reglas bayesianas</strong> combinan patrones frecuentes previamente minados en una lista de decisiones utilizando estadísticas bayesianas.
+El uso de patrones minados es un enfoque común utilizado por muchos algoritmos de aprendizaje de reglas.</li>
+</ol>
+<p>Comencemos con el enfoque más simple: usar la mejor característica para aprender reglas.</p>
+<div id="aprender-las-reglas-de-una-sola-función-oner" class="section level3">
+<h3><span class="header-section-number">4.5.1</span> Aprender las reglas de una sola función (OneR)</h3>
+<p>El algoritmo OneR sugerido por Holte (1993)<a href="#fn18" class="footnote-ref" id="fnref18"><sup>18</sup></a> es uno de los algoritmos de inducción de reglas más simples.
+De todas las características, OneR selecciona la que lleva más información sobre el resultado de interés y crea reglas de decisión a partir de esta característica.</p>
+<p>A pesar del nombre OneR, que significa “Una regla”, el algoritmo genera más de una regla:
+En realidad, es una regla por valor de característica única de la mejor característica seleccionada.
+Un mejor nombre sería OneFeatureRules.</p>
+<p>El algoritmo es simple y rápido:</p>
+<ol style="list-style-type: decimal">
+<li>Discretiza las características continuas eligiendo los intervalos apropiados.</li>
+<li>Para cada característica:
+<ul>
+<li>Crea una tabla cruzada entre los valores de la característica y el resultado (categórico).</li>
+<li>Para cada valor de la característica, crea una regla que prediga la clase más frecuente de las instancias que tienen este valor de característica particular (puede leerse en la tabla cruzada).</li>
+<li>Calcula el error total de las reglas para la función.</li>
+</ul></li>
+<li>Selecciona la función con el error total más pequeño.</li>
+</ol>
+<p>OneR siempre cubre todas las instancias del conjunto de datos, ya que utiliza todos los niveles de la función seleccionada.
+Los valores faltantes pueden tratarse como un valor de característica adicional o imputarse de antemano.</p>
+<p>Un modelo OneR es un árbol de decisión con una sola división.
+La división no es necesariamente binaria como en CART, sino que depende del número de valores de características únicas.</p>
+<p>Veamos un ejemplo de cómo OneR elige la mejor característica.
+La siguiente tabla muestra un conjunto de datos artificiales sobre casas con información sobre su valor, ubicación, tamaño y si se permiten mascotas.
+Estamos interesados en aprender un modelo simple para predecir el valor de una casa.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">ubicación</th>
+<th align="left">tamaño</th>
+<th align="left">mascotas</th>
+<th align="left">valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">bueno</td>
+<td align="left">pequeño</td>
+<td align="left">sí</td>
+<td align="left">alto</td>
+</tr>
+<tr class="even">
+<td align="left">bueno</td>
+<td align="left">grande</td>
+<td align="left">no</td>
+<td align="left">alto</td>
+</tr>
+<tr class="odd">
+<td align="left">bueno</td>
+<td align="left">grande</td>
+<td align="left">no</td>
+<td align="left">alto</td>
+</tr>
+<tr class="even">
+<td align="left">malo</td>
+<td align="left">mediano</td>
+<td align="left">no</td>
+<td align="left">medio</td>
+</tr>
+<tr class="odd">
+<td align="left">bueno</td>
+<td align="left">mediano</td>
+<td align="left">solo gatos</td>
+<td align="left">medio</td>
+</tr>
+<tr class="even">
+<td align="left">bueno</td>
+<td align="left">pequeño</td>
+<td align="left">solo gatos</td>
+<td align="left">medio</td>
+</tr>
+<tr class="odd">
+<td align="left">malo</td>
+<td align="left">mediano</td>
+<td align="left">sí</td>
+<td align="left">medio</td>
+</tr>
+<tr class="even">
+<td align="left">malo</td>
+<td align="left">pequeño</td>
+<td align="left">sí</td>
+<td align="left">bajo</td>
+</tr>
+<tr class="odd">
+<td align="left">malo</td>
+<td align="left">mediano</td>
+<td align="left">sí</td>
+<td align="left">bajo</td>
+</tr>
+<tr class="even">
+<td align="left">malo</td>
+<td align="left">pequeño</td>
+<td align="left">no</td>
+<td align="left">bajo</td>
+</tr>
+</tbody>
+</table>
+<p>OneR crea las tablas cruzadas entre cada característica y el resultado:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">valor=bajo</th>
+<th align="right">valor=medio</th>
+<th align="right">valor=alto</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ubicación=bueno</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+<tr class="even">
+<td align="left">ubicación=malo</td>
+<td align="right">3</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">valor=bajo</th>
+<th align="right">valor=medio</th>
+<th align="right">valor=alto</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">tamaño=grande</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">tamaño=mediano</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">tamaño=pequeño</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">valor=bajo</th>
+<th align="right">valor=medio</th>
+<th align="right">valor=alto</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">mascotas=no</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">2</td>
+</tr>
+<tr class="even">
+<td align="left">mascotas=sí</td>
+<td align="right">2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">mascotas=solo gatos</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>Para cada característica, revisamos la tabla fila por fila:
+Cada valor de característica es la parte SI de una regla;
+La clase más común para las instancias con este valor de característica es la predicción, la parte ENTONCES de la regla.
+Por ejemplo, la función de tamaño con los niveles <code>pequeño</code>,<code>mediano</code> y <code>grande</code> da como resultado tres reglas.
+Para cada característica calculamos la tasa de error total de las reglas generadas, que es la suma de los errores.
+La función de ubicación tiene los valores posibles <code>malo</code> y<code>bueno</code>.
+El valor más frecuente para las casas en ubicaciones malas es <code>bajo</code> y cuando usamos<code>bajo</code> como predicción, cometemos dos errores, porque dos casas tienen un valor <code>medio</code>.
+El valor predicho de las casas en buenas ubicaciones es <code>alto</code> y nuevamente cometemos dos errores, porque dos casas tienen un valor<code>medio</code>.
+El error que cometemos al usar la función de ubicación es 4/10, para la función de tamaño es 3/10 y para la función de mascota es 4/10.
+La función de tamaño produce las reglas con el error más bajo y se utilizará para el modelo final de OneR:</p>
+<p>SI <code>tamaño = chico</code> ENTONCES <code>valor = bajo</code>
+SI <code>tamaño = medio</code> ENTONCES <code>value = medio</code> <code>SI</code>tamaño = grande<code>ENTONCES</code>value = grande`</p>
+<p>OneR prefiere características con muchos niveles posibles, porque esas características pueden sobreajustar el objetivo más fácilmente.
+Imagina un conjunto de datos que contiene solo ruido y ninguna señal, lo que significa que todas las características toman valores aleatorios y no tienen un valor predictivo para el objetivo.
+Algunas características tienen más niveles que otras.
+Las características con más niveles ahora pueden adaptarse más fácilmente.
+Una característica que tiene un nivel separado para cada instancia de los datos predeciría perfectamente todo el conjunto de datos de entrenamiento.
+Una solución sería dividir los datos en conjuntos de entrenamiento y validación, aprender las reglas sobre los datos de entrenamiento y evaluar el error total para elegir la función en el conjunto de validación.</p>
+<p>Los lazos son otro problema, es decir, cuando dos características dan como resultado el mismo error total.
+OneR resuelve los lazos al tomar la primera característica con el error más bajo o la que tiene el valor p más bajo de una prueba de chi-cuadrado.</p>
+<p><strong>Ejemplo</strong></p>
+<p>Probemos OneR con datos reales.
+Utilizamos la <a href="cervical.html#cervical">tarea de clasificación de cáncer cervical</a> para probar el algoritmo OneR.
+Todas las características de entrada continua se discretizaron en sus 5 cuantiles.
+Se crean las siguientes reglas:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Age</th>
+<th align="left">prediction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(12.9,27.2]</td>
+<td align="left">Healthy</td>
+</tr>
+<tr class="even">
+<td align="left">(27.2,41.4]</td>
+<td align="left">Healthy</td>
+</tr>
+<tr class="odd">
+<td align="left">(41.4,55.6]</td>
+<td align="left">Healthy</td>
+</tr>
+<tr class="even">
+<td align="left">(55.6,69.8]</td>
+<td align="left">Healthy</td>
+</tr>
+<tr class="odd">
+<td align="left">(69.8,84.1]</td>
+<td align="left">Healthy</td>
+</tr>
+</tbody>
+</table>
+<p>OneR eligió la función de edad como la mejor función predictiva.
+Dado que el cáncer es raro, para cada regla la clase mayoritaria y, por lo tanto, la etiqueta predicha es siempre Saludable, lo cual es bastante inútil.
+No tiene sentido usar la predicción de etiqueta en este caso desequilibrado.
+La tabla cruzada entre los intervalos de ‘Edad’ y Cáncer/Saludable junto con el porcentaje de mujeres con cáncer es más informativa:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right"># Cancer</th>
+<th align="right"># Healthy</th>
+<th align="right">P(Cancer)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Age=(12.9,27.2]</td>
+<td align="right">26</td>
+<td align="right">477</td>
+<td align="right">0.05</td>
+</tr>
+<tr class="even">
+<td align="left">Age=(27.2,41.4]</td>
+<td align="right">25</td>
+<td align="right">290</td>
+<td align="right">0.08</td>
+</tr>
+<tr class="odd">
+<td align="left">Age=(41.4,55.6]</td>
+<td align="right">4</td>
+<td align="right">31</td>
+<td align="right">0.11</td>
+</tr>
+<tr class="even">
+<td align="left">Age=(55.6,69.8]</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">Age=(69.8,84.1]</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0.00</td>
+</tr>
+</tbody>
+</table>
+<p>Pero antes de comenzar a interpretar:
+Dado que la predicción para cada característica y cada valor es Saludable, la tasa de error total es la misma para todas las características.
+Los vínculos en el error total se resuelven, de manera predeterminada, utilizando la primera función de las que tienen las tasas de error más bajas (aquí, todas las funciones tienen 55/858), que resulta ser la característica Edad.</p>
+<p>OneR no admite tareas de regresión.
+Pero podemos convertir una tarea de regresión en una tarea de clasificación cortando el resultado continuo en intervalos.
+Utilizamos este truco para predecir el número de <a href="bike-data.html#bike-data">bicicletas alquiladas</a> con OneR cortando el número de bicicletas en sus cuatro cuartiles (0-25%, 25-50%, 50-75% y 75-100%)
+La siguiente tabla muestra la función seleccionada después de ajustar el modelo OneR:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">mnth</th>
+<th align="left">prediction</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">JAN</td>
+<td align="left">[22,3152]</td>
+</tr>
+<tr class="even">
+<td align="left">FEB</td>
+<td align="left">[22,3152]</td>
+</tr>
+<tr class="odd">
+<td align="left">MAR</td>
+<td align="left">[22,3152]</td>
+</tr>
+<tr class="even">
+<td align="left">APR</td>
+<td align="left">(3152,4548]</td>
+</tr>
+<tr class="odd">
+<td align="left">MAY</td>
+<td align="left">(5956,8714]</td>
+</tr>
+<tr class="even">
+<td align="left">JUN</td>
+<td align="left">(4548,5956]</td>
+</tr>
+<tr class="odd">
+<td align="left">JUL</td>
+<td align="left">(5956,8714]</td>
+</tr>
+<tr class="even">
+<td align="left">AUG</td>
+<td align="left">(5956,8714]</td>
+</tr>
+<tr class="odd">
+<td align="left">SEP</td>
+<td align="left">(5956,8714]</td>
+</tr>
+<tr class="even">
+<td align="left">OKT</td>
+<td align="left">(5956,8714]</td>
+</tr>
+<tr class="odd">
+<td align="left">NOV</td>
+<td align="left">(3152,4548]</td>
+</tr>
+<tr class="even">
+<td align="left">DEZ</td>
+<td align="left">[22,3152]</td>
+</tr>
+</tbody>
+</table>
+<p>La función seleccionada es el mes.
+La función de mes tiene (¡sorpresa!) 12 niveles de funciones, que es más que la mayoría de las otras funciones.
+Por lo tanto, existe el peligro de sobreajustar.
+En el lado más optimista: la función del mes puede manejar la tendencia estacional (por ejemplo, bicicletas menos alquiladas en invierno) y las predicciones parecen ser sensatas.</p>
+<p>Ahora pasamos del simple algoritmo OneR a un procedimiento más complejo usando reglas con condiciones más complejas que consisten en varias características: Cobertura secuencial.</p>
+</div>
+<div id="cobertura-secuencial" class="section level3">
+<h3><span class="header-section-number">4.5.2</span> Cobertura secuencial</h3>
+<p>La cobertura secuencial es un procedimiento general que aprende repetidamente una sola regla para crear una lista de decisiones (o conjunto) que cubre todo el conjunto de datos regla por regla.
+Muchos algoritmos de aprendizaje de reglas son variantes del algoritmo de cobertura secuencial.
+Este capítulo presenta la receta principal y utiliza RIPPER, una variante del algoritmo de cobertura secuencial para los ejemplos.</p>
+<p>La idea es simple:
+Primero, encuentra una buena regla que se aplique a algunos de los puntos de datos.
+Eliminatodos los puntos de datos cubiertos por la regla.
+Se cubre un punto de datos cuando se aplican las condiciones, independientemente de si los puntos se clasifican correctamente o no.
+Repite el aprendizaje de reglas y la eliminación de los puntos cubiertos con los puntos restantes hasta que no queden más puntos o se cumpla otra condición de detención.
+El resultado es una lista de decisiones.
+Este enfoque de aprendizaje de reglas repetido y eliminación de puntos de datos cubiertos se denomina “dividir y conquistar”.</p>
+<p>Supongamos que ya tenemos un algoritmo que puede crear una sola regla que cubra parte de los datos.
+El algoritmo de cobertura secuencial para dos clases (una positiva, una negativa) funciona así:</p>
+<ul>
+<li>Comienza con una lista vacía de reglas (rlist).</li>
+<li>Aprende una regla r.</li>
+<li>Si bien la lista de reglas está por debajo de cierto umbral de calidad (o los ejemplos positivos aún no están cubiertos):
+<ul>
+<li>Agrega la regla r a rlist.</li>
+<li>Elimina todos los puntos de datos cubiertos por la regla r.</li>
+<li>Aprende otra regla sobre los datos restantes.</li>
+</ul></li>
+<li>Devuelve la lista de decisiones.</li>
+</ul>
+<div class="figure"><span id="fig:cover-algo"></span>
+<img src="images/cover-algo-1.png" alt="El algoritmo de cobertura funciona cubriendo secuencialmente el espacio de características con reglas individuales y eliminando los puntos de datos que ya están cubiertos por esas reglas. Para fines de visualización, las características x1 y x2 son continuas, pero la mayoría de los algoritmos de aprendizaje de reglas requieren caracteristicas categóricas." width="1050" />
+<p class="caption">
+FIGURA 4.18: El algoritmo de cobertura funciona cubriendo secuencialmente el espacio de características con reglas individuales y eliminando los puntos de datos que ya están cubiertos por esas reglas. Para fines de visualización, las características x1 y x2 son continuas, pero la mayoría de los algoritmos de aprendizaje de reglas requieren caracteristicas categóricas.
+</p>
+</div>
+<p>Por ejemplo:
+Tenemos una tarea y un conjunto de datos para predecir los valores de las casas por tamaño, ubicación y si se permiten mascotas.
+Aprendemos la primera regla, que resulta ser:
+Si <code>tamaño = grande</code> y <code>ubicación = buena</code>, entonces <code>valor = alto</code>.
+Luego eliminamos todas las casas grandes en buenas ubicaciones del conjunto de datos.
+Con los datos restantes aprendemos la siguiente regla.
+Quizás: si <code>ubicación = buena</code>, entonces <code>valor = medio</code>.
+Ten en cuenta que esta regla se aprende en datos sin grandes casas en buenas ubicaciones, dejando solo casas medianas y pequeñas en buenas ubicaciones.</p>
+<p>Para configuraciones de varias clases, el enfoque debe modificarse.
+Primero, las clases se ordenan aumentando la prevalencia.
+El algoritmo de cobertura secuencial comienza con la clase menos común, aprende una regla para ello, elimina todas las instancias cubiertas, luego pasa a la segunda clase menos común y así sucesivamente.
+La clase actual siempre se trata como la clase positiva y todas las clases con una prevalencia más alta se combinan en la clase negativa.
+La última clase es la regla predeterminada.
+Esto también se conoce como estrategia de uno contra todos en la clasificación.</p>
+<p>¿Cómo aprendemos una sola regla?
+El algoritmo OneR sería inútil aquí, ya que siempre cubriría todo el espacio de características.
+Pero hay muchas otras posibilidades.
+Una posibilidad es aprender una sola regla de un árbol de decisión con ‘beam search’ (búsqueda de haz):</p>
+<ul>
+<li>Aprende un árbol de decisión (con CART u otro algoritmo de aprendizaje de árbol).</li>
+<li>Comienza en el nodo raíz y selecciona recursivamente el nodo más puro (por ejemplo, con la tasa de clasificación errónea más baja).</li>
+<li>La clase mayoritaria del nodo terminal se usa como la predicción de la regla;
+la ruta que conduce a ese nodo se usa como condición de regla.</li>
+</ul>
+<p>La siguiente figura ilustra la búsqueda del haz en un árbol:</p>
+<div class="figure"><span id="fig:learn-one-rule"></span>
+<img src="images/learn-one-rule.png" alt="Aprender una regla buscando una ruta a través de un árbol de decisión. Comienza en el nodo raíz, con avidez e iteración sigue la ruta que produce localmente el subconjunto más puro (por ejemplo, la precisión más alta) y agrega todos los valores divididos a la condición de la regla. Termina con: Si `ubicación = buena` y `tamaño = grande`, entonces `valor = alto`." width="700" />
+<p class="caption">
+FIGURA 4.19: Aprender una regla buscando una ruta a través de un árbol de decisión. Comienza en el nodo raíz, con avidez e iteración sigue la ruta que produce localmente el subconjunto más puro (por ejemplo, la precisión más alta) y agrega todos los valores divididos a la condición de la regla. Termina con: Si <code>ubicación = buena</code> y <code>tamaño = grande</code>, entonces <code>valor = alto</code>.
+</p>
+</div>
+<p>Aprender una sola regla es un problema de búsqueda, donde el espacio de búsqueda es el espacio de todas las reglas posibles.
+El objetivo de la búsqueda es encontrar la mejor regla de acuerdo con algunos criterios.
+Existen muchas estrategias de búsqueda diferentes:
+hill-climbing, beam search, exhaustive search, búsqueda de primer orden, búsqueda ordenada, búsqueda estocástica, búsqueda de arriba hacia abajo, búsqueda de abajo hacia arriba, …</p>
+<p>RIPPER (poda incremental repetida para producir reducción de errores) por Cohen (1995)<a href="#fn19" class="footnote-ref" id="fnref19"><sup>19</sup></a> es una variante del algoritmo de cobertura secuencial.
+RIPPER es un poco más sofisticado y utiliza una fase de posprocesamiento (poda de reglas) para optimizar la lista de decisiones (o conjunto).
+RIPPER puede ejecutarse en modo ordenado o no ordenado y generar una lista de decisiones o un conjunto de decisiones.</p>
+<p><strong>Ejemplos</strong></p>
+<p>Usaremos RIPPER para los ejemplos.</p>
+<p>El algoritmo RIPPER no encuentra ninguna regla en la tarea de clasificación para <a href="cervical.html#cervical">cáncer cervical</a>.</p>
+<p>Cuando usamos RIPPER en la tarea de regresión para predecir <a href="bike-data.html#bike-data">recuento de bicicletas</a> se encuentran algunas reglas.
+Dado que RIPPER solo funciona para la clasificación, el conteo de bicicletas debe convertirse en un resultado categórico.
+Lo logré cortando los recuentos de bicicletas en los cuartiles.
+Por ejemplo (4548, 5956) es el intervalo que cubre el recuento previsto de bicicletas entre 4548 y 5956.
+La siguiente tabla muestra la lista de decisiones de las reglas aprendidas.</p>
+<table>
+<colgroup>
+<col width="100%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">rules</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(days_since_2011 &gt;= 438) and (temp &gt;= 17) and (temp &lt;= 27) and (hum &lt;= 67) =&gt; cnt=(5956,8714]</td>
+</tr>
+<tr class="even">
+<td align="left">(days_since_2011 &gt;= 443) and (temp &gt;= 12) and (weathersit = GOOD) and (hum &gt;= 59) =&gt; cnt=(5956,8714]</td>
+</tr>
+<tr class="odd">
+<td align="left">(days_since_2011 &gt;= 441) and (windspeed &lt;= 10) and (temp &gt;= 13) =&gt; cnt=(5956,8714]</td>
+</tr>
+<tr class="even">
+<td align="left">(temp &gt;= 12) and (hum &lt;= 68) and (days_since_2011 &gt;= 551) =&gt; cnt=(5956,8714]</td>
+</tr>
+<tr class="odd">
+<td align="left">(days_since_2011 &gt;= 100) and (days_since_2011 &lt;= 434) and (hum &lt;= 72) and (workingday = WORKING DAY) =&gt; cnt=(3152,4548]</td>
+</tr>
+<tr class="even">
+<td align="left">(days_since_2011 &gt;= 106) and (days_since_2011 &lt;= 323) =&gt; cnt=(3152,4548]</td>
+</tr>
+<tr class="odd">
+<td align="left">=&gt; cnt=[22,3152]</td>
+</tr>
+</tbody>
+</table>
+<p>La interpretación es simple:
+Si se aplican las condiciones, predecimos el intervalo en el lado derecho para el número de bicicletas.
+La última regla es la regla predeterminada que se aplica cuando ninguna de las otras reglas se aplica a una instancia.
+Para predecir una nueva instancia, comienza en la parte superior de la lista y verifica si se aplica una regla.
+Cuando una condición coincide, el lado derecho de la regla es la predicción para esta instancia.
+La regla predeterminada asegura que siempre haya una predicción.</p>
+</div>
+<div id="listas-de-reglas-bayesianas" class="section level3">
+<h3><span class="header-section-number">4.5.3</span> Listas de reglas bayesianas</h3>
+<p>En esta sección, se mostrará otro enfoque para aprender una lista de decisiones, que sigue esta receta aproximada:</p>
+<ol style="list-style-type: decimal">
+<li>Pre-mina los patrones frecuentes de los datos que pueden usarse como condiciones para las reglas de decisión.</li>
+<li>Aprende una lista de decisiones de una selección de las reglas previamente minadas.</li>
+</ol>
+<p>Un enfoque específico que utiliza esta receta se llama Listas de Reglas Bayesianas (Letham et. Al., 2015)<a href="#fn20" class="footnote-ref" id="fnref20"><sup>20</sup></a> o BRL para abreviar.
+BRL utiliza estadísticas bayesianas para aprender listas de decisiones de patrones frecuentes que se extraen previamente con el algoritmo FP-tree (Borgelt 2005)<a href="#fn21" class="footnote-ref" id="fnref21"><sup>21</sup></a></p>
+<p>Pero comencemos lentamente con el primer paso de BRL.</p>
+<p><strong>Pre-minería de patrones frecuentes</strong></p>
+<p>Un patrón frecuente es la aparición frecuente y conjunta de valores de características.
+Como un paso de preprocesamiento para el algoritmo BRL, utilizamos las características (no necesitamos el resultado objetivo en este paso) y extraemos patrones que ocurren con frecuencia de ellos.
+Un patrón puede ser un valor de entidad único como <code>peso = medio</code> o una combinación de valores de entidad como <code>peso = medio Y ubicación = mala</code>.</p>
+<p>La frecuencia de un patrón se mide con su soporte en el conjunto de datos:</p>
+<p><span class="math display">\[Support(x_j=A)=\frac{1}n{}\sum_{i=1}^nI(x^{(i)}_{j}=A)\]</span></p>
+<p>donde A es el valor de la característica, n el número de puntos de datos en el conjunto de datos e I la función de identidad que devuelve 1 si la función <span class="math inline">\(x_j\)</span> de la instancia i tiene el nivel A, de lo contrario 0.
+En un conjunto de datos de valores de casas, si el 20% de las casas no tiene balcón y el 80% tiene uno o más, entonces el soporte para el patrón <code>balcón = 0</code> es del 20%.
+El soporte también se puede medir para combinaciones de valores de características, por ejemplo para <code>balcón = 0 Y mascotas = permitido</code>.</p>
+<p>Existen muchos algoritmos para encontrar patrones tan frecuentes, por ejemplo, Apriori o FP-Growth.
+Lo que usa no importa mucho, solo la velocidad a la que se encuentran los patrones es diferente, pero los patrones resultantes son siempre los mismos.</p>
+<p>Daré una idea aproximada de cómo funciona el algoritmo Apriori para encontrar patrones frecuentes.
+En realidad, el algoritmo Apriori consta de dos partes, donde la primera parte encuentra patrones frecuentes y la segunda parte crea reglas de asociación a partir de ellos.
+Para el algoritmo BRL, solo estamos interesados en los patrones frecuentes que se generan en la primera parte de Apriori.</p>
+<p>En el primer paso, el algoritmo Apriori comienza con todos los valores de características que tienen un soporte mayor que el soporte mínimo definido por el usuario.
+Si el usuario dice que el soporte mínimo debe ser del 10% y solo el 5% de las casas tienen <code>peso = grande</code>, eliminaríamos ese valor de la característica y mantendríamos solo <code>peso = medio</code> y <code>peso = chico</code> como patrones.
+Esto no significa que las casas se eliminen de los datos, solo significa que <code>peso = grande</code> no se devuelve como un patrón frecuente.
+Basado en patrones frecuentes con un solo valor de característica, el algoritmo Apriori intenta iterativamente encontrar combinaciones de valores de característica de orden cada vez más alto.
+Los patrones se construyen combinando declaraciones <code>característica = valor</code> con un Y lógico, por ejemplo <code>peso = medio Y ubicación = mala</code>.
+Se eliminan los patrones generados con un soporte por debajo del soporte mínimo.
+Al final tenemos todos los patrones frecuentes.
+Cualquier subconjunto de un patrón frecuente es frecuente nuevamente, lo que se llama la propiedad Apriori.
+Tiene sentido intuitivamente:
+Al eliminar una condición de un patrón, el patrón reducido solo puede cubrir más o la misma cantidad de puntos de datos, pero no menos.
+Por ejemplo, si el 20% de las casas son <code>peso = medio Y ubicación = buena</code>, entonces el soporte de las casas que son solo <code>peso = medio</code> es 20% o más.
+La propiedad Apriori se usa para reducir el número de patrones que se inspeccionarán.
+Solo en el caso de patrones frecuentes tenemos que verificar patrones de orden superior.</p>
+<p>Ahora hemos terminado con las condiciones previas a la minería para las Listas de Reglas Bayesianas.
+Pero antes de pasar al segundo paso de BRL, me gustaría insinuar otra forma para el aprendizaje de reglas basado en patrones pre-minados.
+Otros enfoques sugieren incluir el resultado de interés en el proceso frecuente de minería de patrones y también ejecutar la segunda parte del algoritmo Apriori que construye las reglas SI-ENTONCES.
+Dado que el algoritmo no está supervisado, la parte ENTONCES también contiene valores de características que no nos interesan.
+Pero podemos filtrar por reglas que solo tienen el resultado de interés en la parte ENTONCES.
+Estas reglas ya forman un conjunto de decisiones, pero también sería posible organizar, podar, eliminar o recombinar las reglas.</p>
+</div>
+<div id="ventajas-3" class="section level3">
+<h3><span class="header-section-number">4.5.4</span> Ventajas</h3>
+<p>Esta sección discute los beneficios de las reglas SI-ENTONCES en general.</p>
+<p>Las reglas SI-ENTONCES son <strong>fáciles de interpretar</strong>.
+Son probablemente el más interpretable de los modelos interpretables.
+Esta declaración solo se aplica si el número de reglas es pequeño, las condiciones de las reglas son cortas (máximo 3, diría yo) y si las reglas están organizadas en una lista de decisiones o en un conjunto de decisiones que no se superponen.</p>
+<p>Las reglas de decisión pueden ser <strong>tan expresivas como los árboles de decisión, mientras que son más compactas</strong>.
+Los árboles de decisión a menudo también sufren de subárboles replicados, es decir, cuando las divisiones en un nodo secundario izquierdo y derecho tienen la misma estructura.</p>
+<p>La predicción <strong>con las reglas SI-ENTONCES es rápida</strong>, ya que solo se necesitan verificar unas pocas declaraciones binarias para determinar qué reglas se aplican.</p>
+<p>Las reglas de decisión son <strong>robustas</strong> contra las transformaciones monótonas de las características de entrada, sólo cambiará el umbral de las condiciones.
+También son robustas frente a los valores atípicos, ya que solo importa si una condición se aplica o no.</p>
+<p>Las reglas SI-ENTONCES generalmente generan modelos dispersos, lo que significa que no se incluyen muchas características.
+<strong>Seleccionan solo las características relevantes</strong> para el modelo.
+Por ejemplo, un modelo lineal asigna un peso a cada característica de entrada de forma predeterminada.
+Las características que son irrelevantes pueden simplemente ser ignoradas por las reglas SI-ENTONCES.</p>
+<p>Reglas simples como las de OneR <strong>pueden usarse como línea de base</strong> para algoritmos más complejos.</p>
+</div>
+<div id="desventajas-3" class="section level3">
+<h3><span class="header-section-number">4.5.5</span> Desventajas</h3>
+<p>Esta sección trata las desventajas de las reglas SI-ENTONCES en general.</p>
+<p>La investigación y la literatura para las reglas SI-ENTONCES se enfoca en la clasificación y casi <strong>descuida completamente la regresión</strong>.
+Si bien siempre puede dividir un objetivo continuo en intervalos y convertirlo en un problema de clasificación, siempre pierde información.
+En general, los enfoques son más atractivos si pueden usarse tanto para la regresión como para la clasificación.</p>
+<p>A menudo, las características <strong>también tienen que ser categóricas</strong>.
+Eso significa que las características numéricas deben clasificarse si desea usarlas.
+Hay muchas formas de cortar una característica continua en intervalos, pero esto no es trivial y viene con muchas preguntas sin respuestas claras.
+¿En cuántos intervalos debe dividirse la función?
+¿Cuál es el criterio de división: longitudes de intervalo fijas, cuantiles u otra cosa?
+La categorización de características continuas es un problema no trivial que a menudo se descuida y las personas simplemente usan el siguiente mejor método (como lo hice en los ejemplos).</p>
+<p>Muchos de los algoritmos de aprendizaje de reglas más antiguos son propensos al sobreajuste.
+Todos los algoritmos presentados aquí tienen al menos algunas garantías para evitar el sobreajuste:
+OneR es limitado porque solo puede usar una característica (solo problemático si la característica tiene demasiados niveles o si hay muchas características, lo que equivale al problema de prueba múltiple), RIPPER hace podas y las listas de reglas bayesianas imponen una distribución previa de la lista de decisión.</p>
+<p>Las reglas de decisión son <strong>malas al describir relaciones lineales</strong> entre características y resultados.
+Ese es un problema que comparten con los árboles de decisión.
+Los árboles de decisión y las reglas solo pueden producir funciones de predicción escalonadas, donde los cambios en la predicción siempre son pasos discretos y nunca curvas suaves.
+Esto está relacionado con el problema de que las entradas tienen que ser categóricas.
+En los árboles de decisión, se clasifican implícitamente dividiéndolos.</p>
+</div>
+<div id="software-y-alternativas" class="section level3">
+<h3><span class="header-section-number">4.5.6</span> Software y alternativas</h3>
+<p>OneR se implementa en el <a href="https://cran.r-project.org/web/packages/OneR/">paquete R OneR</a>, que se utilizó para los ejemplos en este libro.
+OneR también se implementa en la <a href="(https://www.eecs.yorku.ca/tdb/_doc.php/userg/sw/weka/doc/weka/classifiers/rules/package-summary.html)">librería de aprendizaje automático Weka</a> y, como tal, disponible en Java, R y Python.
+RIPPER también se implementa en Weka. Para los ejemplos, utilicé la implementación R de JRIP en el <a href="https://cran.r-project.org/web/packages/RWeka/index.html">paquete RWeka</a>.
+SBRL está disponible como <a href="https://cran.r-project.org/web/packages/sbrl/index.html">paquete R</a> (que utilicé para los ejemplos), en <a href="https://github.com/datascienceinc/Skater">Python</a> o como <a href="https://github.com/Hongyuy/sbrlmod">implementación C</a>.</p>
+<p>Ni siquiera intentaré enumerar todas las alternativas para aprender conjuntos de reglas de decisión y listas, sino que señalaré algunos trabajos de resumen.
+Recomiendo el libro “Fundamentos del aprendizaje de reglas” de Fuernkranz et. al (2012)<a href="#fn22" class="footnote-ref" id="fnref22"><sup>22</sup></a>.
+Es un trabajo extenso sobre reglas de aprendizaje, para aquellos que desean profundizar en el tema.
+Proporciona un marco holístico para pensar sobre las reglas de aprendizaje y presenta muchos algoritmos de aprendizaje de reglas.
+También recomiendo revisar los <a href="http://weka.sourceforge.net/doc.dev/weka/classifiers/rules/package-summary.html">Estudiantes de reglas de Weka</a>, que implementan RIPPER, M5Rules, OneR, PART y muchos más.
+Las reglas SI-ENTONCES pueden usarse en modelos lineales como se describe en este libro en el capítulo sobre el <a href="rulefit.html#rulefit">algoritmo RuleFit</a>.</p>
+
+<!--{pagebreak}-->
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="18">
+<li id="fn18"><p>Holte, Robert C. “Very simple classification rules perform well on most commonly used datasets.” Machine learning 11.1 (1993): 63-90.<a href="reglas.html#fnref18" class="footnote-back">↩</a></p></li>
+<li id="fn19"><p>Cohen, William W. “Fast effective rule induction.” Machine Learning Proceedings (1995). 115-123.<a href="reglas.html#fnref19" class="footnote-back">↩</a></p></li>
+<li id="fn20"><p>Letham, Benjamin, et al. “Interpretable classifiers using rules and Bayesian analysis: Building a better stroke prediction model.” The Annals of Applied Statistics 9.3 (2015): 1350-1371.<a href="reglas.html#fnref20" class="footnote-back">↩</a></p></li>
+<li id="fn21"><p>Borgelt, C. “An implementation of the FP-growth algorithm.” Proceedings of the 1st International Workshop on Open Source Data Mining Frequent Pattern Mining Implementations - OSDM ’05, 1–5. <a href="http://doi.org/10.1145/1133905.1133907" class="uri">http://doi.org/10.1145/1133905.1133907</a> (2005).<a href="reglas.html#fnref21" class="footnote-back">↩</a></p></li>
+<li id="fn22"><p>Fürnkranz, Johannes, Dragan Gamberger, and Nada Lavrač. “Foundations of rule learning.” Springer Science &amp; Business Media, (2012).<a href="reglas.html#fnref22" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="arbol.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="rulefit.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/04.6-interpretable-rules.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

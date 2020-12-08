@@ -1,0 +1,31 @@
+# Agradecimientos
+
+Escribir este libro fue (y sigue siendo) muy divertido.
+Pero también es mucho trabajo y estoy muy contento con el apoyo que recibí.
+
+Mi mayor agradecimiento a Katrin, que tuvo el trabajo más difícil en términos de horas y esfuerzo:
+ella corrigió el libro de principio a fin y descubrió muchos errores de ortografía e inconsistencias que nunca habría encontrado.
+Estoy muy agradecido por su apoyo.
+
+Muchas gracias a Verena Haunschmid por escribir la sección sobre [Explicaciones LIME para imágenes](#imagenes-lime).
+Ella trabaja en ciencia de datos y le recomiendo seguirla en Twitter: [\@ExpectAPatronum](https://twitter.com/ExpectAPatronum).
+¡También quiero agradecer a todos los [primeros lectores que contribuyeron con correcciones](https://github.com/christophM/interpretable-ml-book/graphs/contributors) en Github!
+
+Además, quiero agradecer a todos los que crearon ilustraciones:
+La portada fue diseñada por mi amigo [\@YvonneDoinel](https://twitter.com/YvonneDoinel).
+Los gráficos en el [Capítulo de Valores de Shapley](#shapley) fueron creados por [Abi Aryan](https://twitter.com/GoAbiAryan), utilizando iconos creados por [Freepik](http://www.freepik.com/) de [Flaticon](https://www.flaticon.com/).
+La [rana asombrosa con la bola de cristal](http://www.chojugiga.com/) en el capítulo sobre el [Futuro de la Interpretabilidad](#futuro) fue diseñada por [\@TopeconHeroes](https://twitter.com/topeconheroes).
+Verena Haunschmid creó el gráfico en el [capítulo RuleFit](#rulefit).
+Me gustaría agradecer a todos los investigadores que me permitieron usar imágenes de sus artículos de investigación.
+
+
+En al menos tres aspectos, la forma en que publiqué este libro es poco convencional.
+Primero, está disponible como sitio web y como libro electrónico / pdf.
+El software que utilicé para crear este libro se llama `bookdown`, escrito por [Yihui Xie](https://yihui.name/), quien creó muchos paquetes R que facilitan la combinación de código R y texto.
+¡Muchas gracias!
+En segundo lugar, este libro está publicado en la plataforma [Leanpub](https://leanpub.com/), en lugar de trabajar con una editorial tradicional.
+Y tercero, publiqué el libro como libro en progreso, lo que me ha ayudado enormemente a obtener comentarios y monetizarlos en el camino.
+Muchas gracias a leanpub por hacer esto posible y manejar las regalías de manera justa.
+También me gustaría agradecerte, querido lector, por leer este libro sin una gran editorial detrás.
+
+Estoy agradecido por la financiación de mi investigación sobre aprendizaje automático interpretable por parte del Ministerio de Ciencia y Artes del Estado de Baviera en el marco del Centro de Digitalización de Baviera (ZD.B).

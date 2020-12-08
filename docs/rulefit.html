@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4.6 RuleFit | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4.6 RuleFit | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4.6 RuleFit | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="reglas.html"/>
+<link rel="next" href="interpretables-otros.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="rulefit" class="section level2">
+<h2><span class="header-section-number">4.6</span> RuleFit</h2>
+<p>El algoritmo RuleFit de Friedman y Popescu (2008)<a href="#fn23" class="footnote-ref" id="fnref23"><sup>23</sup></a> aprende modelos lineales dispersos que incluyen efectos de interacción detectados automáticamente en forma de reglas de decisión.</p>
+<p>El modelo de regresión lineal no tiene en cuenta las interacciones entre las características.
+¿No sería conveniente tener un modelo que sea tan simple e interpretable como los modelos lineales, pero que también integre interacciones de características?
+RuleFit llena este vacío.
+RuleFit aprende un modelo lineal disperso con las características originales y también una serie de características nuevas que son reglas de decisión.
+Estas nuevas características capturan interacciones entre las características originales.
+RuleFit genera automáticamente estas características a partir de los árboles de decisión.
+Cada ruta a través de un árbol se puede transformar en una regla de decisión combinando las decisiones divididas en una regla.
+Las predicciones de nodo se descartan y solo las divisiones se utilizan en las reglas de decisión:</p>
+<div class="figure"><span id="fig:rulefit-split"></span>
+<img src="images/rulefit.jpg" alt=" Se pueden generar 4 reglas desde un árbol con 3 nodos terminales. " width="500" />
+<p class="caption">
+FIGURA 4.20:  Se pueden generar 4 reglas desde un árbol con 3 nodos terminales.
+</p>
+</div>
+<p>¿De dónde vienen esos árboles de decisión?
+Los árboles están entrenados para predecir el resultado de interés.
+Esto asegura que las divisiones sean significativas para la tarea de predicción.
+Cualquier algoritmo que genere muchos árboles se puede usar para RuleFit, por ejemplo, un random forest.
+Cada árbol se descompone en reglas de decisión que se utilizan como características adicionales en un modelo de regresión lineal disperso (Lasso).</p>
+<p>El artículo RuleFit utiliza los datos de vivienda de Boston para ilustrar esto:
+El objetivo es predecir el valor medio de la casa de un vecindario de Boston.
+Una de las reglas generadas por RuleFit es:
+SI <code>número de habitaciones &gt; 6.64</code> Y <code>concentración de óxido nítrico &lt; 0.67</code> ENTONCES 1 SI NO 0.</p>
+<p>RuleFit también viene con una medida de importancia de características que ayuda a identificar términos lineales y reglas que son importantes para las predicciones.
+La importancia de la característica se calcula a partir de los pesos del modelo de regresión.
+La medida de importancia se puede agregar para las características originales (que se utilizan en su forma “bruta” y posiblemente en muchas reglas de decisión).</p>
+<p>RuleFit también presenta gráficos de dependencia parcial para mostrar el cambio promedio en la predicción al cambiar una característica.
+El diagrama de dependencia parcial es un método independiente del modelo que se puede usar con cualquier modelo, y se explica en el <a href="pdp.html#pdp">capítulo del libro sobre diagramas de dependencia parcial</a>.</p>
+<div id="interpretación-y-ejemplo" class="section level3">
+<h3><span class="header-section-number">4.6.1</span> Interpretación y ejemplo</h3>
+<p>Dado que RuleFit estima un modelo lineal al final, la interpretación es la misma que para <a href="lineal.html#lineal">modelos lineales normales</a>.
+La única diferencia es que el modelo tiene nuevas características derivadas de las reglas de decisión.
+Las reglas de decisión son características binarias:
+Un valor de 1 significa que se cumplen todas las condiciones de la regla; de lo contrario, el valor es 0.
+Para términos lineales en RuleFit, la interpretación es la misma que en los modelos de regresión lineal:
+Si la característica aumenta en una unidad, el resultado previsto cambia según el peso de la característica correspondiente.</p>
+<p>En este ejemplo, usamos RuleFit para predecir el número de <a href="bike-data.html#bike-data">bicicletas alquiladas</a> en un día determinado.
+La tabla muestra cinco de las reglas generadas por RuleFit, junto con sus pesos e importancias en Lasso.
+El cálculo se explica más adelante en el capítulo.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Descripción</th>
+<th align="right">Peso</th>
+<th align="right">Importancia</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">days_since_2011 &gt; 111 &amp; weathersit in (“GOOD”, “MISTY”)</td>
+<td align="right">793</td>
+<td align="right">303</td>
+</tr>
+<tr class="even">
+<td align="left">37.25 &lt;= hum &lt;= 90</td>
+<td align="right">-20</td>
+<td align="right">272</td>
+</tr>
+<tr class="odd">
+<td align="left">temp &gt; 13 &amp; days_since_2011 &gt; 554</td>
+<td align="right">676</td>
+<td align="right">239</td>
+</tr>
+<tr class="even">
+<td align="left">4 &lt;= windspeed &lt;= 24</td>
+<td align="right">-41</td>
+<td align="right">202</td>
+</tr>
+<tr class="odd">
+<td align="left">days_since_2011 &gt; 428 &amp; temp &gt; 5</td>
+<td align="right">366</td>
+<td align="right">179</td>
+</tr>
+</tbody>
+</table>
+<p>La regla más importante era: “days_since_2011 &gt; 111 &amp; weathersit in (”GOOD“,”MISTY“)” y el peso correspondiente es 793.
+La interpretación es:
+Si days_since_2011 &gt; 111 &amp; weathersit in (“GOOD”, “MISTY”), entonces el número predicho de bicicletas aumenta en 793, cuando todos los demás valores de características permanecen fijos.
+En total, 278 reglas se crearon a partir de las 8 características originales.
+¡Bastante!
+Pero gracias a Lasso, solo 58 de esas 278 tienen un peso diferente de 0.</p>
+<p>Calcular la importancia de las características globales revela que la temperatura y la tendencia temporal son las características más importantes:</p>
+<div class="figure"><span id="fig:rulefit-importance"></span>
+<img src="images/rulefit-importance-1.png" alt="Importancia de características en un modelo RuleFit que predice cantidad de bicicletas. Las más importantes son la temperatura y la tendencia temporal." width="1050" />
+<p class="caption">
+FIGURA 4.21: Importancia de características en un modelo RuleFit que predice cantidad de bicicletas. Las más importantes son la temperatura y la tendencia temporal.
+</p>
+</div>
+<p>La medición de la importancia de la característica incluye la importancia del término de característica sin procesar y todas las reglas de decisión en las que aparece la característica.</p>
+<p><strong>Plantilla de interpretación</strong></p>
+<p>La interpretación es análoga a los modelos lineales:
+El resultado previsto cambia en <span class="math inline">\(\beta_j\)</span> si la función <span class="math inline">\(x_j\)</span> cambia en una unidad, siempre que todas las demás funciones permanezcan sin cambios.
+La interpretación del peso de una regla de decisión es un caso especial:
+Si se aplican todas las condiciones de una regla de decisión <span class="math inline">\(r_k\)</span>, el resultado previsto cambia en <span class="math inline">\(\alpha_k\)</span> (el peso aprendido de la regla <span class="math inline">\(r_k\)</span> en el modelo lineal).</p>
+<p>Para la clasificación (usando regresión logística en lugar de regresión lineal):
+Si se aplican todas las condiciones de la regla de decisión <span class="math inline">\(r_k\)</span>, las probabilidades de evento frente a no evento cambian por un factor de <span class="math inline">\(\alpha_k\)</span>.</p>
+</div>
+<div id="teoría-1" class="section level3">
+<h3><span class="header-section-number">4.6.2</span> Teoría</h3>
+<p>Profundicemos en los detalles técnicos del algoritmo RuleFit.
+RuleFit consta de dos componentes:
+El primer componente crea “reglas” a partir de árboles de decisión y el segundo componente ajusta un modelo lineal con las características originales y las nuevas reglas como entrada (de ahí el nombre “RuleFit”).</p>
+<p><strong>Paso 1: generación de reglas</strong></p>
+<p>¿Cómo se ve una regla?
+Las reglas generadas por el algoritmo tienen una forma simple.
+Por ejemplo:
+SI <code>x2 &lt; 3</code> Y<code>x5 &lt; 7</code> LUEGO 1 SI NO 0.
+Las reglas se construyen descomponiendo los árboles de decisión:
+Cualquier ruta a un nodo en un árbol se puede convertir en una regla de decisión.
+Los árboles utilizados para las reglas se ajustan para predecir el resultado objetivo.
+Por lo tanto, las divisiones y las reglas resultantes están optimizadas para predecir el resultado de interés.
+Simplemente encadena las decisiones binarias que conducen a un determinado nodo con “Y”, y listo, hay una regla.
+Es deseable generar muchas reglas diversas y significativas.
+El aumento de gradiente se utiliza para ajustar un conjunto de árboles de decisión al retroceder o clasificar y con sus características originales X.
+Cada árbol resultante se convierte en múltiples reglas.
+Se puede usar cualquier algoritmo de árboles para generar los de RuleFit.
+Un conjunto de árboles se puede describir con esta fórmula general:</p>
+<p><span class="math display">\[f(x)=a_0+\sum_{m=1}^M{}a_m{}f_m(X)\]</span></p>
+<p>M es el número de árboles y <span class="math inline">\(f_m(x)\)</span> es la función de predicción del m-ésimo árbol.
+Los <span class="math inline">\(\alpha\)</span> son los pesos.
+Bagged ensembles, Random forest, AdaBoost y MART producen conjuntos de árboles y se pueden usar para RuleFit.</p>
+<p>Creamos las reglas de todos los árboles del conjunto.
+Cada regla <span class="math inline">\(r_m\)</span> toma la forma de:</p>
+<p><span class="math display">\[r_m(x)=\prod_{j\in\text{T}_m}I(x_j\in{}s_{jm})\]</span></p>
+<p>donde <span class="math inline">\(\text{T}_{m}\)</span> es el conjunto de características utilizadas en el m-ésimo árbol, I es la función identitaria que es 1 cuando la característica <span class="math inline">\(x_j\)</span> está en el subconjunto especificado de valores s para la característica j (según lo especificado por las divisiones de árbol) y 0 de lo contrario.
+Para funciones numéricas, <span class="math inline">\(s_{jm}\)</span> es un intervalo en el rango de valores de la función.
+El intervalo se parece a uno de los dos casos:</p>
+<p><span class="math display">\[x_{s_{jm},\text{mínimo}}&lt;x_j\]</span></p>
+<p><span class="math display">\[x_j&lt;x_{s_{jm},upper}\]</span></p>
+<p>Las divisiones adicionales en esa característica posiblemente conduzcan a intervalos más complicados.
+Para las características categóricas, el subconjunto s contiene algunas categorías específicas de la característica.</p>
+<p>Un ejemplo inventado para el conjunto de datos de alquiler de bicicletas:</p>
+<p><span class="math display">\[r_{17}(x)=I(x_{\text{temp}}&lt;15)\cdot{}I(x_{\text{weather}}\in\{\text{good},\text{cloudy}\})\cdot{}I(10\leq{}x_{\text{windspeed}}&lt;20)\]</span></p>
+<p>Esta regla devuelve 1 si se cumplen las tres condiciones; de lo contrario, 0.
+RuleFit extrae todas las reglas posibles de un árbol, no solo de los nodos hoja.
+Entonces, otra regla que se crearía es:</p>
+<p><span class="math display">\[r_{18}(x)=I(x_{\text{temp}}&lt;15)\cdot{}I(x_{\text{weather}}\in\{\text{good},\text{cloudy}\}\]</span></p>
+<p>En total, el número de reglas creadas a partir de un conjunto de árboles M con nodos terminales <span class="math inline">\(t_m\)</span> cada uno es:</p>
+<p><span class="math display">\[K=\sum_{m=1}^M2(t_m-1)\]</span></p>
+<p>Un truco introducido por los autores de RuleFit es entrenar árboles con profundidad aleatoria para que se generen muchas reglas diversas con diferentes longitudes.
+Ten en cuenta que descartamos el valor predicho en cada nodo: solo mantenemos las condiciones que nos llevan a un nodo y luego creamos una regla a partir de él.
+La ponderación de las reglas de decisión se realiza en el paso 2 de RuleFit.</p>
+<p>Otra forma de ver el paso 1:
+RuleFit genera un nuevo conjunto de características a partir de sus características originales.
+Estas características son binarias y pueden representar interacciones bastante complejas de sus características originales.
+Las reglas se eligen para maximizar la tarea de predicción.
+Las reglas se generan automáticamente a partir de la matriz de covariables X.
+Simplemente puede ver las reglas como nuevas características basadas en sus características originales.</p>
+<p><strong>Paso 2: modelo lineal disperso</strong></p>
+<p>Obtienes MUCHAS reglas en el paso 1.
+Dado que el primer paso puede verse solo como una transformación de características, aún no has terminado de ajustar un modelo.
+Además, deseas reducir el número de reglas.
+Además de las reglas, todas tus características “brutas” de su conjunto de datos original también se utilizarán en el modelo lineal disperso.
+Cada regla y cada característica original se convierte en una característica en el modelo lineal, y por lo tanto obtiene una estimación de peso.
+Las características originales sin procesar se agregan porque los árboles no pueden representar relaciones lineales simples entre x e y.
+Antes de entrenar un modelo lineal disperso, clasificamos las características originales para que sean más robustas frente a los valores atípicos:</p>
+<p><span class="math display">\[l_j^*(x_j)=min(\delta_j^+,max(\delta_j^-,x_j))\]</span></p>
+<p>donde <span class="math inline">\(\delta_j^-\)</span> y <span class="math inline">\(\delta_j^+\)</span> son los cuantiles <span class="math inline">\(\delta\)</span> de la distribución de datos de la característica <span class="math inline">\(x_j\)</span>.
+Una opción de <span class="math inline">\(\delta\)</span> = 0.05 significa que cualquier valor de la característica <span class="math inline">\(x_j\)</span> que esté en los valores 5% más bajos o 5% más altos se establecerá en los cuantiles en 5% o 95% respectivamente.
+Como regla general, puedes elegir <span class="math inline">\(\delta\)</span> = 0.025.
+Además, los términos lineales deben normalizarse para que tengan la misma importancia previa que una regla de decisión típica:</p>
+<p><span class="math display">\[l_j(x_j)=0.4\cdot{}l^*_j(x_j)/std(l^*_j(x_j))\]</span></p>
+<p><span class="math inline">\(0.4\)</span> es la desviación estándar promedio de las reglas con una distribución uniforme de <span class="math inline">\(s_k\sim{}U(0,1)\)</span>.</p>
+<p>Combinamos ambos tipos de características para generar una nueva matriz de características y entrenar un modelo lineal disperso con Lasso, con la siguiente estructura:</p>
+<p><span class="math display">\[\hat{f}(x)=\hat{\beta}_0+\sum_{k=1}^K\hat{\alpha}_k{}r_k(x)+\sum_{j=1}^p\hat{\beta}_j{}l_j(x_j)\]</span></p>
+<p>donde <span class="math inline">\(\hat{\alpha}\)</span> es el vector de peso estimado para las características de la regla y <span class="math inline">\(\hat{\beta}\)</span> el vector de peso para las características originales.
+Dado que RuleFit usa Lasso, la función de pérdida obtiene la restricción adicional que obliga a algunos de los pesos a obtener una estimación cero:</p>
+<p><span class="math display">\[(\{\hat{\alpha}\}_1^K,\{\hat{\beta}\}_0^p)=argmin_{\{\hat{\alpha}\}_1^K,\{\hat{\beta}\}_0^p}\sum_{i=1}^n{}L(y^{(i)},f(x^{(i)}))+\lambda\cdot\left(\sum_{k=1}^K|\alpha_k|+\sum_{j=1}^p|b_j|\right)\]</span></p>
+<p>El resultado es un modelo lineal que tiene efectos lineales para todas las características originales y para las reglas.
+La interpretación es la misma que para los modelos lineales, la única diferencia es que algunas características son ahora reglas binarias.</p>
+<p><strong>Paso 3 (opcional): importancia de la característica</strong></p>
+<p>Para los términos lineales de las características originales, la importancia de la característica se mide con el predictor estandarizado:</p>
+<p><span class="math display">\[I_j=|\hat{\beta}_j|\cdot{}std(l_j(x_j))\]</span></p>
+<p>donde <span class="math inline">\(\beta_j\)</span> es el peso del modelo con Lasso, y <span class="math inline">\(std(l_j(x_j))\)</span> es la desviación estándar del término lineal sobre los datos.</p>
+<p>Para los términos de la regla de decisión, la importancia se calcula con la siguiente fórmula:</p>
+<p><span class="math display">\[I_k=|\hat{\alpha}_k|\cdot\sqrt{s_k(1-s_k)}\]</span></p>
+<p>donde <span class="math inline">\(\hat{\alpha}_k\)</span> es el peso de Lasso asociado de la regla de decisión y <span class="math inline">\(s_k\)</span> es el soporte de la característica en los datos, que es el porcentaje de puntos de datos a los que se aplica la regla de decisión (donde <span class="math inline">\(r_k(x)=0\)</span>):</p>
+<p><span class="math display">\[s_k=\frac{1}{n}\sum_{i=1}^n{}r_k(x^{(i)})\]</span></p>
+<p>Una característica ocurre como un término lineal y posiblemente también dentro de muchas reglas de decisión.
+¿Cómo medimos la importancia total de una característica?
+La importancia <span class="math inline">\(J_j(x)\)</span> de una característica se puede medir para cada predicción individual:</p>
+<p><span class="math display">\[J_j(x)=I_l(x)+\sum_{x_j\in{}r_k}I_k(x)/m_k\]</span></p>
+<p>donde <span class="math inline">\(I_l\)</span> es la importancia del término lineal y <span class="math inline">\(I_k\)</span> la importancia de las reglas de decisión en las que aparece <span class="math inline">\(x_j\)</span>, y <span class="math inline">\(m_k\)</span> es el número de características que constituyen la regla <span class="math inline">\(r_k\)</span>.
+Agregar la importancia de la característica de todas las instancias nos da la importancia de la característica global:</p>
+<p><span class="math display">\[J_j(X)=\sum_{i=1}^n{}J_j(x^{(i)})\]</span></p>
+<p>Es posible seleccionar un subconjunto de instancias y calcular la importancia de las características para este grupo.</p>
+</div>
+<div id="ventajas-4" class="section level3">
+<h3><span class="header-section-number">4.6.3</span> Ventajas</h3>
+<p>RuleFit agrega automáticamente <strong>interacciones de características</strong> a modelos lineales.
+Por lo tanto, resuelve el problema de los modelos lineales en los que debe agregar términos de interacción manualmente y ayuda un poco con el tema del modelado de relaciones no lineales.</p>
+<p>RuleFit puede manejar tareas de clasificación y regresión.</p>
+<p>Las reglas creadas son fáciles de interpretar, porque son reglas de decisión binarias.
+La regla se aplica a una instancia o no.
+La buena interpretación solo se garantiza si el número de condiciones dentro de una regla no es demasiado grande.
+Una regla con 1 a 3 condiciones me parece razonable.
+Esto significa una profundidad máxima de 3 para los árboles en el conjunto de árboles.</p>
+<p>Incluso si hay muchas reglas en el modelo, no se aplican a todas las instancias.
+Para una instancia individual, solo se aplican un puñado de reglas (= tienen pesos distintos de cero).
+Esto mejora la interpretabilidad local.</p>
+<p>RuleFit propone un montón de herramientas de diagnóstico útiles.
+Estas herramientas son independientes del modelo, por lo que puedes encontrarlas en la sección modelo-agnóstica: <a href="importanciadecaracteristicas.html#importanciadecaracteristicas">importancia de la característica</a>, <a href="pdp.html#pdp">gráficos de dependencia parcial</a> e <a href="interacción.html#interacción">interacciones de la característica</a></p>
+</div>
+<div id="desventajas-4" class="section level3">
+<h3><span class="header-section-number">4.6.4</span> Desventajas</h3>
+<p>A veces, RuleFit crea muchas reglas que obtienen un peso distinto de cero en el modelo Lasso.
+La interpretabilidad se degrada con el número creciente de características en el modelo.
+Una solución prometedora es forzar que los efectos de las características sean monótonos, lo que significa que un aumento de una característica tiene que conducir a un aumento de la predicción.</p>
+<p>Una anécdota personal: los artículos afirman un buen rendimiento de RuleFit, ¡a menudo cercano al rendimiento predictivo de random forests! pero en los pocos casos en que lo intenté, el rendimiento fue decepcionante.
+Simplemente pruébalo para tu problema y ve cómo funciona.</p>
+<p>El producto final del procedimiento RuleFit es un modelo lineal con características sofisticadas adicionales (las reglas de decisión).
+Pero dado que es un modelo lineal, la interpretación del peso aún no es intuitiva.
+Viene con la misma “nota al pie” que un modelo de regresión lineal habitual:
+“… dado que todas las características son fijas”.
+Se vuelve un poco más complicado cuando tienes reglas superpuestas.
+Por ejemplo, una regla de decisión (característica) para la predicción de la bicicleta podría ser: “temp&gt; 10” y otra regla podría ser “temp&gt; 15 &amp; weather = ‘GOOD’”.
+Si el clima es bueno y la temperatura es superior a 15 grados, la temperatura es automáticamente mayor que 10.
+En los casos en que se aplica la segunda regla, también se aplica la primera regla.
+La interpretación del peso estimado para la segunda regla es:
+“Suponiendo que todas las demás características permanezcan fijas, el número previsto de bicicletas aumenta en <span class="math inline">\(\beta_2\)</span> cuando el clima es bueno y la temperatura supera los 15 grados”.
+Pero, ahora queda muy claro que ‘todas las demás características fijas’ son problemáticas, porque si se aplica la regla 2, también se aplica la regla 1 y la interpretación no tiene sentido.</p>
+</div>
+<div id="software-y-alternativa" class="section level3">
+<h3><span class="header-section-number">4.6.5</span> Software y alternativa</h3>
+<p>El algoritmo RuleFit está implementado en R por Fokkema y Christoffersen (2017)<a href="#fn24" class="footnote-ref" id="fnref24"><sup>24</sup></a> y puede encontrar una <a href="https://github.com/christophM/rulefit">versión de Python en Github</a>.</p>
+<p>Un marco muy similar es <a href="https://github.com/scikit-learn-contrib/skope-rules">skope-rules</a>, un módulo de Python que también extrae reglas de conjuntos.
+Difiere en la forma en que aprende las reglas finales:
+Primero, las reglas de skope eliminan las reglas de bajo rendimiento, basadas en los umbrales de recuperación y precisión.
+Luego, las reglas duplicadas y similares se eliminan al realizar una selección basada en la diversidad de términos lógicos (variable + operador más grande / más pequeño) y el rendimiento (puntaje F1) de las reglas.</p>
+
+<!--{pagebreak}-->
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="23">
+<li id="fn23"><p>Friedman, Jerome H, and Bogdan E Popescu. “Predictive learning via rule ensembles.” The Annals of Applied Statistics. JSTOR, 916–54. (2008).<a href="rulefit.html#fnref23" class="footnote-back">↩</a></p></li>
+<li id="fn24"><p>Fokkema, Marjolein, and Benjamin Christoffersen. “Pre: Prediction rule ensembles”. <a href="https://CRAN.R-project.org/package=pre" class="uri">https://CRAN.R-project.org/package=pre</a> (2017).<a href="rulefit.html#fnref24" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="reglas.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="interpretables-otros.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/04.7-interpretable-rulefit.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

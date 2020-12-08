@@ -1,0 +1,38 @@
+```{r, message = FALSE, warning = FALSE, echo = FALSE}
+devtools::load_all()
+```
+
+# Interpretación de redes neuronales {#redes-neuronales}
+
+<!-- Introducción general -->
+Los siguientes capítulos se centran en los métodos de interpretación para redes neuronales.
+Los métodos visualizan características y conceptos aprendidos por una red neuronal, explican predicciones individuales y simplifican las redes neuronales.
+
+El aprendizaje profundo ha sido muy exitoso, especialmente en tareas que involucran imágenes y textos como la clasificación de imágenes y la traducción de idiomas.
+La historia de éxito de las redes neuronales profundas comenzó en 2012, cuando el desafío de clasificación de imágenes ImageNet[^imagenet] fue ganado por un enfoque de aprendizaje profundo.
+Desde entonces, hemos sido testigos de una explosión cámbrica de arquitecturas de redes neuronales profundas, con una tendencia hacia redes más profundas con más y más parámetros de peso.
+
+<!-- Por qué no interpretable -->
+Para hacer predicciones con una red neuronal, la entrada de datos se pasa a través de muchas capas de multiplicación con los pesos aprendidos y a través de transformaciones no lineales.
+Una sola predicción puede involucrar millones de operaciones matemáticas dependiendo de la arquitectura de la red neuronal.
+No hay posibilidad de que los humanos podamos seguir el mapeo exacto desde la entrada de datos hasta la predicción.
+Tendríamos que considerar millones de pesos que interactúan de manera compleja para comprender una predicción de una red neuronal.
+Para interpretar el comportamiento y las predicciones de las redes neuronales, necesitamos métodos de interpretación específicos.
+Los capítulos suponen que está familiarizado con el aprendizaje profundo, incluidas las redes neuronales convolucionales.
+
+<!-- Por qué interpretación específica -->
+Ciertamente, podemos usar [métodos modelo-agnósticos](#agnóstico), como [modelos locales](#LIME) o [gráficos de dependencia parcial](#pdp), pero hay dos razones por las cuales tiene sentido considerar los métodos de interpretación desarrollados específicamente para redes neuronales:
+Primero, las redes neuronales aprenden características y conceptos en sus capas ocultas y necesitamos herramientas especiales para descubrirlas.
+En segundo lugar, el gradiente puede utilizarse para implementar métodos de interpretación que sean más eficientes desde el punto de vista computacional que los métodos independientes del modelo que observan el modelo "desde afuera".
+Además, la mayoría de los otros métodos en este libro están destinados a la interpretación de modelos para datos tabulares.
+Los datos de imagen y texto requieren diferentes métodos.
+
+Los siguientes capítulos cubren los siguientes temas:
+
+- [Visualización de características](#visualización-características): ¿Qué características ha aprendido la red neuronal?
+  Los [ejemplos adversos](#adversarial) del [capítulo Explicaciones basadas en ejemplos](#basadoenejemplos) están estrechamente relacionados con la visualización de características: ¿Cómo podemos manipular las entradas para obtener una clasificación incorrecta?
+- [Conceptos](#conceptos-neuronales) (EN CURSO): ¿Qué conceptos más abstractos ha aprendido la red neuronal?
+- [Atribución de funciones](#atribución-funciones) (EN CURSO): ¿Cómo contribuyó cada entrada a una predicción particular?
+- [Destilación del modelo](#destilación-neural) (EN CURSO): ¿Cómo podemos explicar una red neuronal con un modelo más simple?
+
+

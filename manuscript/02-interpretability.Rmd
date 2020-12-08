@@ -1,6 +1,8 @@
-﻿```{r, message = FALSE, warning = FALSE, echo = FALSE}
+﻿
+```{r, include=FALSE}
 devtools::load_all()
 ```
+
 
 # Interpretabilidad {#interpretabilidad}
 
@@ -8,13 +10,13 @@ No existe una definición matemática de interpretabilidad.
 Una definición (no matemática) que me gusta de Miller (2017)[^Miller2017] es: 
 **Interpretabilidad es el grado en que un humano puede comprender la causa de una decisión.**
 Otra es: 
-**Interpretabilidad es el grado a lo que un humano puede predecir constantemente el resultado del modelo**[^crítica]. 
+**Interpretabilidad es el grado a lo que un humano puede predecir constantemente el resultado del modelo**[^critique]. 
 Cuanto mayor sea la interpretabilidad de un modelo de aprendizaje automático, más fácil será para alguien comprender por qué se han tomado ciertas decisiones o predicciones.
-Un modelo es más interpretable que otro si sus decisiones son más fáciles de comprender para un humano que las de otro modelo. 
+Un modelo es más interpretable que otro si, comparativamente, sus decisiones son más fáciles de comprender para un humano. 
 Usaré los términos interpretable y explicable en forma indistinta. 
 Al igual que Miller (2017), creo que tiene sentido distinguir entre los términos interpretabilidad / explicabilidad y explicación. 
 Usaré "explicación" para explicaciones de predicciones individuales. 
-Ve la [sección sobre explicaciones](#explicación) para aprender lo que los humanos vemos como una buena explicación. 
+Lee la [sección sobre explicaciones](#buenaexplicación) para aprender lo que los humanos vemos como una buena explicación. 
 
 ## Importancia de la interpretabilidad {#interpretabilidad-importancia} 
 
@@ -22,24 +24,24 @@ Si un modelo de aprendizaje automático funciona bien, **¿por qué no confiamos
 "El problema es que una sola métrica, como la precisión de la clasificación, es una descripción incompleta de la mayoría de las tareas del mundo real". (Doshi-Velez y Kim 2017[^Doshi2017])
 
 Profundicemos en las razones por las que la interpretabilidad es tan importante. 
-Cuando se trata de modelado predictivo, debe hacer una compensación: 
-¿solo desea saber **qué** se predice? 
+Cuando se trata de modelado predictivo, debes hacer una compensación: 
+¿solo deseas saber **qué** se predice? 
 Por ejemplo, la probabilidad de que un cliente abandone un servicio o qué tan efectivo será un medicamento para un paciente. 
-¿O quieres saber **por qué** se hizo la predicción y posiblemente pagar la interpretabilidad con una caída en el rendimiento predictivo? 
-En algunos casos, no le importa por qué se tomó una decisión, es suficiente saber que el rendimiento predictivo en un conjunto de datos de prueba fue bueno. 
+¿O quieres saber **por qué** se hizo la predicción, posiblemente pagando la interpretabilidad con una caída en el rendimiento predictivo? 
+En algunos casos, no te importa por qué se tomó una decisión, es suficiente saber que el rendimiento predictivo en un conjunto de datos de prueba fue bueno. 
 Pero en otros casos, conocer el 'por qué' puede ayudarlo a aprender más sobre el problema, los datos y la razón por la cual un modelo puede fallar. 
 Es posible que algunos modelos no requieran explicaciones porque se usan en un entorno de bajo riesgo, lo que significa que un error no tendrá consecuencias graves (por ejemplo, un sistema de recomendación de películas) o que el método ya ha sido ampliamente estudiado y evaluado (por ejemplo, reconocimiento óptico de caracteres).
 La necesidad de interpretabilidad surge de una incompletitud en la formalización del problema (Doshi-Velez y Kim 2017), lo que significa que para ciertos problemas o tareas no es suficiente obtener la predicción (el **qué**). 
 El modelo también debe explicar cómo llegó a la predicción (el **por qué**), porque una predicción correcta solo resuelve parcialmente su problema original.
 Las siguientes razones impulsan la demanda de interpretabilidad y explicaciones (Doshi-Velez y Kim 2017 y Miller 2017). 
 
-**Curiosidad y aprendizaje humanos**: los humanos tienen un modelo mental de su entorno que se actualiza cuando ocurre algo inesperado.
+**Curiosidad y aprendizaje humanos**: los humanos tenemos un modelo mental de nuestro entorno que se actualiza cuando ocurre algo inesperado.
 Esta actualización se realiza buscando una explicación para el evento inesperado.
 Por ejemplo, un humano se siente enfermo y pregunta: "¿Por qué me siento tan enfermo?".
 Se entera de que se enferma cada vez que come frutos rojos. Actualiza su modelo mental y decide que esos frutos causaron la enfermedad y, por lo tanto, deben evitarse. 
 Cuando se usan modelos opacos de aprendizaje automático en la investigación, los hallazgos científicos permanecen completamente ocultos si el modelo solo da predicciones sin explicaciones.
 Para facilitar el aprendizaje y satisfacer la curiosidad de por qué ciertas predicciones o comportamientos son creados por máquinas, la interpretación y las explicaciones son cruciales. 
-Por supuesto, los humanos no necesitan explicaciones para todo lo que sucede.
+Por supuesto, los humanos no necesitamos explicaciones para todo lo que sucede.
 Para la mayoría de las personas, no hay problemas en no entender cómo funciona una computadora.
 Eventos inesperados nos hacen curiosos.
 Por ejemplo: ¿Por qué mi computadora se apaga inesperadamente?
@@ -50,12 +52,12 @@ Queremos armonizar las contradicciones o inconsistencias entre los elementos de 
 "¿Por qué mi perro me mordió a pesar de que nunca antes lo había hecho?" Un humano podría preguntar. 
 Existe una contradicción entre el conocimiento del comportamiento pasado del perro y la experiencia desagradable recién hecha de la mordedura.
 La explicación del veterinario concilia la contradicción del dueño del perro: 
-"El perro estaba estresado y mordido". 
+"El perro estaba estresado y mordió". 
 Cuanto más la decisión de una máquina afecta la vida de una persona, más importante es que la máquina explique su comportamiento. 
 Si un modelo de aprendizaje automático rechaza una solicitud de préstamo, esto puede ser completamente inesperado para los solicitantes. 
 Solo pueden conciliar esta inconsistencia entre la expectativa y la realidad con algún tipo de explicación. 
 En realidad, las explicaciones no tienen que explicar completamente la situación, sino que deben abordar una causa principal. 
-Otro ejemplo es la recomendación algorítmica del producto. 
+Otro ejemplo es la recomendación algorítmica de productos. 
 Personalmente, siempre pienso en por qué ciertos productos o películas me han sido recomendados algorítmicamente. 
 A menudo es bastante claro: 
 la publicidad me sigue en Internet porque recientemente compré una lavadora, y sé que en los próximos días me seguirán anuncios de lavadoras. 
@@ -64,12 +66,12 @@ El algoritmo recomienda esta película, porque los usuarios a quienes les gustar
 Cada vez más, las compañías de Internet están agregando explicaciones a sus recomendaciones. 
 Un buen ejemplo es la recomendación de productos de Amazon, que se basa en combinaciones de productos que se compran con frecuencia: 
 
-```{r amazon-recommendation, fig.cap='Productos recomendados cuando se compra pintura en Amazon.', out.width=500}
+```{r amazon-recommendation, echo = FALSE, fig.cap='Productos recomendados cuando se compra pintura en Amazon.', out.width=500}
 knitr::include_graphics("images/amazon-freq-bought-together.png")
 ```
 
 
-En muchas disciplinas científicas hay un cambio de métodos cualitativos a cuantitativos (por ejemplo, sociología, psicología), y también hacia el aprendizaje automático (biología, genómica)
+En muchas disciplinas científicas hay un cambio de métodos cualitativos a cuantitativos (por ejemplo, sociología, psicología), y también hacia el aprendizaje automático (biología, genómica).
 El **objetivo de la ciencia** es obtener conocimiento, pero muchos problemas se resuelven con grandes conjuntos de datos y modelos de aprendizaje automático de caja negra.
 El modelo en sí se convierte en la fuente de conocimiento en lugar de los datos.
 La interpretabilidad hace posible extraer este conocimiento adicional capturado por el modelo.
@@ -77,14 +79,14 @@ La interpretabilidad hace posible extraer este conocimiento adicional capturado 
 
 Los modelos de aprendizaje automático asumen tareas del mundo real que requieren **medidas de seguridad** y pruebas. 
 Imagina que un automóvil autónomo detecta automáticamente a los ciclistas en función de un sistema de aprendizaje profundo.
-Deseas estar 100% seguro de que la abstracción que ha aprendido el sistema está libre de errores, porque atropellar a los ciclistas es bastante malo.
+Deseas estar 100% seguro de que la abstracción que ha aprendido el sistema está libre de errores, porque no podrías tolerar ni un atropello.
 Una explicación podría revelar que la característica aprendida más importante es reconocer las dos ruedas de una bicicleta, pero existen casos de borde, como bicicletas con bolsas laterales que cubren parcialmente las ruedas. 
 
 
 Por defecto, los modelos de aprendizaje automático recogen sesgos de los datos de entrenamiento.
 Esto puede convertir sus modelos de aprendizaje automático en racistas que discriminan determinados grupos.
 La interpretabilidad es una herramienta de depuración útil para **detectar sesgos** en modelos de aprendizaje automático.
-Puede suceder que el modelo de aprendizaje automático que usted haya entrenado para la aprobación automática o el rechazo de las solicitudes de crédito discrimine a una minoría.
+Puede suceder que el modelo de aprendizaje automático que hayas entrenado para la aprobación automática o el rechazo de las solicitudes de crédito discrimine a una minoría.
 Su objetivo principal es otorgar préstamos solo a personas que eventualmente los pagarán.
 Lo incompleto de la formulación del problema en este caso radica en el hecho de que no solo desea minimizar los impagos de préstamos, sino que también está obligado a no discriminar sobre la base de ciertos datos demográficos.
 Esta es una restricción adicional que forma parte de la formulación de su problema (otorgar préstamos de manera riesgosa y conforme) que no está cubierta por la función de pérdida para la que se optimizó el modelo de aprendizaje automático. 
@@ -118,7 +120,7 @@ Estas razones (y algunas más) hicieron que el robot se atascara, aunque algo es
 Por cierto, Doge se quedó atascado en el baño nuevamente.
 Tenemos que quitar las alfombras cada vez antes de dejar que Doge aspire. 
 
-```{r doge-stuck, fig.cap="Doge, nuestra aspiradora, se atascó. Como explicación del accidente, Doge nos dijo que debe estar en una superficie plana.", out.width=800}
+```{r doge-stuck, echo = FALSE, fig.cap="Doge, nuestra aspiradora, se atascó. Como explicación del accidente, Doge nos dijo que debe estar en una superficie plana.", out.width=800}
 knitr::include_graphics("images/doge-stuck.jpg")
 ```
 
@@ -127,25 +129,25 @@ Incluso en entornos de bajo riesgo, como las recomendaciones de películas, la c
 Más tarde, cuando se usa un modelo en un producto, las cosas pueden salir mal.
 Una interpretación para una predicción errónea ayuda a comprender la causa del error.
 Ofrece una dirección sobre cómo arreglar el sistema.
-Considere un ejemplo de un clasificador entre perros siberianos y lobos, que clasifica erróneamente a algunos siberianos como lobos.
-Al utilizar métodos de aprendizaje automático interpretables, descubrirá que la clasificación errónea se debió a la nieve en la imagen.
+Considera un ejemplo de un clasificador entre perros siberianos y lobos, que clasifica erróneamente a algunos siberianos como lobos.
+Al utilizar métodos de aprendizaje automático interpretables, descubrirás que la clasificación errónea se debió a la nieve en la imagen.
 El clasificador aprendió a usar la nieve como una característica para clasificar las imágenes como "lobo", lo que podría tener sentido en términos de separar a los lobos de los siberianos en el conjunto de datos de entrenamiento, pero no en el uso en el mundo real. 
 
-Si puede asegurarse de que el modelo de aprendizaje automático pueda explicar las decisiones, también puede verificar los siguientes rasgos con mayor facilidad (Doshi-Velez y Kim 2017): 
+Si puedes asegurarte de que el modelo de aprendizaje automático pueda explicar las decisiones, también puedes verificar los siguientes rasgos con mayor facilidad (Doshi-Velez y Kim 2017): 
 
-- Equidad: garantizar que las predicciones sean imparciales y no discriminen implícita o explícitamente a ciertos grupos.
-Un modelo interpretable puede decirle por qué ha decidido que cierta persona no debería obtener un préstamo, y es más fácil para un humano juzgar si la decisión se basa en un sesgo demográfico aprendido (por ejemplo, racial).
-- Privacidad: garantizar que la información confidencial de los datos esté protegida. 
-- Fiabilidad o robustez: garantizar que pequeños cambios en la entrada no conduzcan a grandes cambios en la predicción. 
-- Causalidad: compruebe que solo se recogen las relaciones causales. 
+- Equidad: garantiza que las predicciones sean imparciales y no discriminen implícita o explícitamente a ciertos grupos.
+Un modelo interpretable puede decirte por qué ha decidido que cierta persona no debería obtener un préstamo, y es más fácil para un humano juzgar si la decisión se basa en un sesgo demográfico aprendido (por ejemplo, racial).
+- Privacidad: garantiza que la información confidencial de los datos esté protegida. 
+- Fiabilidad o robustez: garantiza que pequeños cambios en la entrada no conduzcan a grandes cambios en la predicción. 
+- Causalidad: comprueba que solo se recogen las relaciones causales. 
 - Confianza: es más fácil para los humanos confiar en un sistema que explica sus decisiones en comparación con una caja negra. 
 
 **Cuando no necesitamos interpretabilidad.** 
 
-Los siguientes escenarios ilustran cuando no necesitamos o incluso no queremos la interpretabilidad de los modelos de aprendizaje automático. 
+Los siguientes escenarios ilustran los casos en que no necesitamos o incluso no queremos la interpretabilidad de los modelos de aprendizaje automático. 
 
 La interpretabilidad no es necesaria si el modelo **no tiene un impacto significativo**.
-Imagine a alguien llamado Mike trabajando en un proyecto paralelo de aprendizaje automático para predecir a dónde irán sus amigos para sus próximas vacaciones en base a datos de Facebook.
+Imagina a alguien llamado Mike trabajando en un proyecto paralelo de aprendizaje automático para predecir a dónde irán sus amigos para sus próximas vacaciones en base a datos de Facebook.
 A Mike le gusta sorprender a sus amigos con suposiciones educadas sobre dónde irán de vacaciones.
 No hay ningún problema real si el modelo está equivocado (en el peor de los casos, solo un poco de vergüenza para Mike), ni hay un problema si Mike no puede explicar el resultado de su modelo.
 Está perfectamente bien no tener interpretabilidad en este caso. 
@@ -168,8 +170,8 @@ Si bien su puntaje mejoró, la probabilidad real de pagar el préstamo se mantuv
 El sistema solo se puede manipular si las entradas son representantes de una característica causal, pero en realidad no causan el resultado.
 Siempre que sea posible, se deben evitar las funciones de proxy ya que hacen que los modelos sean manipulables.
 Por ejemplo, Google desarrolló un sistema llamado Google Flu Trends para predecir los brotes de gripe.
-El sistema correlacionó las búsquedas de Google con los brotes de gripe, y ha tenido un mal desempeño.
-La distribución de las consultas de búsqueda cambió y Google Flu Trends perdió muchos brotes de gripe.
+El sistema correlacionó las búsquedas de Google con los brotes de gripe, y tuvo un mal desempeño.
+La distribución de las consultas de búsqueda cambió y Google Flu Trends se perdió muchos brotes de gripe.
 Las búsquedas en Google no causan la gripe.
 Cuando las personas buscan síntomas como "fiebre", se trata simplemente de una correlación con los brotes de gripe reales.
 Idealmente, los modelos solo usarían características causales porque no serían manipulables. 
@@ -187,14 +189,14 @@ La interpretabilidad post hoc se refiere a la aplicación de métodos de interpr
 La importancia de la característica de permutación es, por ejemplo, un método de interpretación post hoc.
 Los métodos post hoc también se pueden aplicar a modelos intrínsecamente interpretables.
 Por ejemplo, la importancia de la característica de permutación se puede calcular para los árboles de decisión.
-La organización de los capítulos de este libro está determinada por la distinción entre [modelos intrínsecamente interpretables] (#simple) y [métodos de interpretación post hoc (y modelo-agnósticos)] (#agnóstico). 
+La organización de los capítulos de este libro está determinada por la distinción entre [modelos intrínsecamente interpretables](#simple) y [métodos de interpretación post hoc (y modelo-agnósticos)](#agnostico). 
 
 **Resultado del método de interpretación** 
 Los diversos métodos de interpretación pueden diferenciarse aproximadamente de acuerdo con sus resultados. 
 
-- **Estadística de resumen de características**:
+- **Estadísticas de resumen de características**:
 Muchos métodos de interpretación proporcionan estadísticas de resumen para cada covariable.
-Algunos métodos devuelven un solo número por característica, como la importancia de la característica, o un resultado más complejo, como las fortalezas de interacción de features por pares.
+Algunos métodos devuelven un solo número por característica, como la importancia de la característica, o un resultado más complejo, como las fortalezas de interacción de características por pares.
 - **Visualización de resumen de características**:
 La mayoría de las estadísticas de resumen de características también se pueden visualizar.
 Algunos resúmenes de características en realidad solo tienen sentido si se visualizan y una tabla sería una elección incorrecta.
@@ -205,7 +207,7 @@ La interpretación de modelos intrínsecamente interpretables entra en esta cate
 Algunos ejemplos son los pesos en modelos lineales o la estructura de árbol aprendida (las características y los umbrales utilizados para las divisiones) de los árboles de decisión.
 Las líneas se desdibujan entre las partes internas del modelo y la estadística de resumen de características en, por ejemplo, modelos lineales, porque los pesos son tanto las partes internas del modelo como las estadísticas de resumen de las características al mismo tiempo.
 Otro método que genera modelos internos es la visualización de detectores de características aprendidos en redes neuronales convolucionales. Los métodos de interpretación que generan elementos internos del modelo son, por definición, específicos del modelo (consulte el siguiente criterio). 
-- **Punto de datos **: 
+- **Punto de datos**: 
 Esta categoría incluye todos los métodos que devuelven observaciones (ya existentes o recién creados) para hacer que un modelo sea interpretable.
 Un método se llama explicaciones contrafácticas.
 Para explicar la predicción de una instancia de datos, el método encuentra una observación similar al cambiar algunas de las características para las cuales el resultado predicho cambia de manera relevante.
@@ -217,8 +219,8 @@ Una solución para interpretar modelos de caja negra es aproximarlos (global o l
 El modelo interpretable en sí mismo se interpreta mirando los parámetros internos del modelo o las estadísticas de resumen de sus características. 
 
 
-**Modelo específico o modelo agnóstico?**
-Las herramientas de interpretación modelo-específicas están limitadas a esos modelos.
+**¿Modelo específico o modelo agnóstico?**
+Las herramientas de interpretación modelo-específicas están limitadas a ciertos modelos.
 La interpretación de los pesos de regresión en un modelo lineal es una interpretación de este tipo ya que, por definición, siempre es específica del modelo.
 Herramientas que solo funcionan para la interpretación de, por ejemplo, las redes neuronales son específicas del modelo.
 Las herramientas independientes del modelo se pueden usar en cualquier modelo de aprendizaje automático y se aplican después de que el modelo haya sido entrenado (post hoc). 
@@ -227,7 +229,7 @@ Por definición, estos métodos no pueden tener acceso a los modelos internos, c
 
 **¿Local o global?**
 ¿El método de interpretación explica una predicción individual o el comportamiento completo del modelo?
-¿O algún punto intermedio? Lea más sobre el criterio de alcance en la siguiente sección. 
+¿O algún punto intermedio? Lee más sobre el criterio de alcance en la siguiente sección. 
 
 <!--{pagebreak}-->
 
@@ -246,13 +248,13 @@ La transparencia del algoritmo solo requiere el conocimiento del algoritmo y no 
 Este libro se centra en la interpretabilidad del modelo y no en la transparencia del algoritmo.
 Algoritmos como el método de mínimos cuadrados para modelos lineales están bien estudiados y entendidos.
 Se caracterizan por una alta transparencia.
-Los enfoques de aprendizaje profundo (empujar un gradiente a través de una red con millones de pesos) se entienden menos y el funcionamiento interno es el foco de la investigación en curso.
+Los enfoques de aprendizaje profundo (empujar un gradiente a través de redes con millones de pesos) se entienden menos y el funcionamiento interno es el foco de la investigación en curso.
 Se consideran menos transparentes. 
 
 ### Interpretabilidad global y holística del modelo 
 *¿Cómo hace predicciones el modelo entrenado?* 
 
-Podrías describir un modelo como interpretable si puedes comprender todo el modelo de una vez (Lipton 2016[^Lipton2016]).
+Puedes describir un modelo como interpretable si puedes comprender todo el modelo de una vez (Lipton 2016[^Lipton2016]).
 Para explicar el resultado del modelo global necesitas el modelo entrenado, el conocimiento del algoritmo y los datos.
 Este nivel de interpretabilidad se trata de comprender cómo toma decisiones el modelo, en función de una visión holística de sus características y de cada uno de los componentes aprendidos, como los pesos, parámetros y estructuras.
 ¿Qué características son importantes y qué tipo de interacciones entre ellas tienen lugar? 
@@ -266,7 +268,7 @@ Por lo general, cuando las personas intentan comprender un modelo, solo consider
 ### Interpretabilidad del modelo global en un nivel modular 
 *¿Cómo afectan las predicciones las partes del modelo?* 
 
-Un modelo de Naive Bayes con cientos de características sería demasiado grande para mantenerlo en nuestra memoria de trabajo.
+Un modelo de Naive Bayes -*clasificador bayesiano ingenuo*- con cientos de características sería demasiado grande para mantenerlo en nuestra memoria de trabajo.
 E incluso si logramos memorizar todos los pesos, no podríamos hacer predicciones rápidamente para nuevas observaciones.
 Además, debes tener la distribución conjunta de todas las características en su cabeza para estimar la importancia de cada característica y cómo las características afectan las predicciones en promedio.
 Una tarea imposible.
@@ -275,7 +277,7 @@ Si bien la interpretación global del modelo generalmente está fuera del alcanc
 No todos los modelos son interpretables a nivel de parámetro.
 Para los modelos lineales, las partes interpretables son los pesos, para los árboles serían las divisiones (características seleccionadas más puntos de corte) y las predicciones de los nodos foliares.
 Los modelos lineales, por ejemplo, se ven como si pudieran interpretarse perfectamente en un nivel modular, pero la interpretación de un solo peso está entrelazada con todos los demás pesos.
-La interpretación de un solo peso siempre viene con la nota al pie de página de que las otras características de entrada permanecen en el mismo valor, que no es el caso con muchas aplicaciones reales.
+La interpretación de un solo peso siempre viene con la nota al pie de página de que las otras características de entrada permanecen en el mismo valor, que no es el caso en muchas aplicaciones reales.
 Un modelo lineal que predice el valor de una casa, que tiene en cuenta tanto el tamaño de la casa como el número de habitaciones, puede tener un peso negativo para la característica de la cantidad de habitaciones.
 Puede suceder porque ya existe la característica de tamaño de la casa altamente correlacionada.
 En un mercado donde la gente prefiere habitaciones más grandes, una casa con menos habitaciones podría valer más que una casa con más habitaciones si ambas tienen el mismo tamaño.
@@ -289,30 +291,30 @@ Puedes ampliar una sola instancia y examinar lo que el modelo predice para esta 
 Si observas una predicción individual, el comportamiento del modelo complejo podría comportarse de manera más agradable.
 Localmente, la predicción podría depender solo linealmente o monotónicamente de algunas características, en lugar de tener una dependencia compleja de ellas.
 Por ejemplo, el valor de una casa puede depender no linealmente de su tamaño.
-Pero si solo estás mirando una casa particular de 100 metros cuadrados, existe la posibilidad de que para ese subconjunto de datos, la predicción de su modelo dependa linealmente del tamaño.
+Pero si solo estás mirando una casa particular de 100 metros cuadrados, existe la posibilidad de que para ese subconjunto de datos, la predicción del modelo dependa linealmente del tamaño.
 Puedes descubrir esto simulando cómo cambia el precio previsto cuando aumenta o disminuye el tamaño en 10 metros cuadrados.
 Por lo tanto, las explicaciones locales pueden ser más precisas que las explicaciones globales.
-Este libro presenta métodos que pueden hacer que las predicciones individuales sean más interpretables en la [sección sobre métodos modelo-agnósticos] (#agnostico). 
+Este libro presenta métodos que pueden hacer que las predicciones individuales sean más interpretables en la [sección sobre métodos modelo-agnósticos](#agnostico). 
 
 ### Interpretabilidad local para un grupo de predicciones 
 *¿Por qué el modelo hizo predicciones específicas para un grupo de instancias?* 
 
 Las predicciones del modelo para varias observaciones pueden explicarse con métodos de interpretación de modelos globales (a nivel modular) o con explicaciones particulares por observación.
-Los métodos globales se pueden aplicar tomando el grupo de observaciones, tratándolos como si fuera el conjunto de datos completo y utilizando los métodos globales con este subconjunto.
+Los métodos globales se pueden aplicar tomando un grupo de observaciones, tratándolo como si fuera el conjunto de datos completo y utilizando los métodos globales en este subconjunto.
 Los métodos de explicación individuales se pueden utilizar en cada instancia y luego enumerar o agregar para todo el grupo. 
 
 <!--{pagebreak}-->
 
 ## Evaluación de la interpretabilidad 
 
-No existe un consenso real sobre qué interpretabilidad es en el aprendizaje automático.
+No existe un consenso real sobre qué es la interpretabilidad en el aprendizaje automático.
 Tampoco está claro cómo medirla.
 Pero hay una investigación inicial sobre esto y un intento de formular algunos enfoques para la evaluación, como se describe en la siguiente sección.
 Doshi-Velez y Kim (2017) proponen tres niveles principales para la evaluación de la interpretabilidad: 
 
 **Evaluación del nivel de aplicación (tarea real)**:
-Ponga la explicación en el producto y haga que el usuario final lo pruebe.
-Imagine un software de detección de fracturas con un componente de aprendizaje automático que localiza y marca fracturas en rayos X.
+Pon la explicación en el producto y haz que el usuario final lo pruebe.
+Imagina un software de detección de fracturas con un componente de aprendizaje automático que localiza y marca fracturas en rayos X.
 A nivel de aplicación, los radiólogos probarían el software de detección de fracturas directamente para evaluar el modelo.
 Esto requiere una buena configuración experimental y una comprensión de cómo evaluar la calidad.
 Una buena base para esto es siempre qué tan bueno sería un humano para explicar la misma decisión. 
@@ -328,9 +330,9 @@ Esto funciona mejor cuando la clase de modelo utilizada ya ha sido evaluada por 
 Por ejemplo, podría saberse que los usuarios finales entienden los árboles de decisión.
 En este caso, un proxy para la calidad de la explicación puede ser la profundidad del árbol.
 Los árboles más cortos obtendrían una mejor puntuación de explicabilidad.
-Tendría sentido agregar la restricción de que el rendimiento predictivo del árbol sigue siendo bueno y no disminuye demasiado en comparación con un árbol más grande.
+Tendría sentido agregar la restricción de que el rendimiento predictivo del árbol siga siendo bueno y no disminuzca demasiado en comparación con un árbol más grande.
 
-El próximo capítulo se centra en la evaluación de explicaciones para predicciones individuales en el nivel de función.
+El próximo capítulo se centra en la evaluación de explicaciones para predicciones individuales.
 ¿Cuáles son las propiedades relevantes de las explicaciones que consideraríamos para su evaluación? 
 
 <!--{pagebreak}-->
@@ -351,7 +353,7 @@ No está claro para todas estas propiedades cómo medirlas correctamente, por lo
 **Propiedades de los métodos de explicación** 
 
 - **Poder expresivo** es el "lenguaje" o estructura de las explicaciones que el método puede generar.
-Un método de explicación podría generar reglas IF-THEN, árboles de decisión, una suma ponderada, lenguaje natural u otra cosa. 
+Un método de explicación podría generar reglas SI-ENTONCES (*IF-THEN*), árboles de decisión, una suma ponderada, lenguaje natural u otra cosa. 
 - **Translucidez** describe cuánto se basa el método de explicación en analizar el modelo de aprendizaje automático, como sus parámetros.
 Por ejemplo, los métodos de explicación que se basan en modelos intrínsecamente interpretables como el modelo de regresión lineal (específico del modelo) son altamente translúcidos.
 Los métodos que solo se basan en manipular entradas y observar las predicciones tienen cero translucidez.
@@ -371,10 +373,10 @@ Es importante tener en cuenta esta propiedad cuando el tiempo de cálculo es un 
 La alta precisión es especialmente importante si la explicación se usa para las predicciones, y no para el modelo en sí.
 La baja precisión puede estar bien si la precisión del modelo de aprendizaje automático también es baja, y si el objetivo es explicar lo que hace el modelo de caja negra.
 En este caso, solo la fidelidad es importante. 
-- **Fidelity**: ¿Qué tan bien se aproxima la explicación a la predicción del modelo de caja negra?
+- **Fidelidad**: ¿Qué tan bien se aproxima la explicación a la predicción del modelo de caja negra?
 La alta fidelidad es una de las propiedades más importantes de una explicación, porque una explicación con baja fidelidad es inútil para explicar el modelo de aprendizaje automático.
 La precisión y la fidelidad están estrechamente relacionadas.
-Si el modelo de caja negra tiene una alta precisión y la explicación tiene una alta fidelidad, la explicación también tiene una alta precisión. Algunas explicaciones ofrecen solo fidelidad local, lo que significa que la explicación solo se aproxima bien a la predicción del modelo para un subconjunto de datos (por ejemplo, [modelos sustitutos locales](# LIME)) o incluso solo para una observación individual (por ejemplo, [Valores de Shapley] ( # shapley)). 
+Si el modelo de caja negra tiene una alta precisión y la explicación tiene una alta fidelidad, la explicación también tiene una alta precisión. Algunas explicaciones ofrecen solo fidelidad local, lo que significa que la explicación solo se aproxima bien a la predicción del modelo para un subconjunto de datos (por ejemplo, [modelos sustitutos locales](#lime)) o incluso solo para una observación individual (por ejemplo, [Valores de Shapley](#shapley)). 
 - **Consistencia**: ¿Cuánto difiere una explicación entre los modelos que han sido entrenados en la misma tarea y que producen predicciones similares?
 Por ejemplo, entreno una SVM y un modelo de regresión lineal en la misma tarea y ambos producen predicciones muy similares.
 Calculo explicaciones usando un método de mi elección y analizo cuán diferentes son las explicaciones.
@@ -387,9 +389,9 @@ Mientras que la coherencia compara explicaciones entre modelos, la estabilidad c
 Alta estabilidad significa que ligeras variaciones en las características de una observación no cambian sustancialmente la explicación (a menos que estas ligeras variaciones también cambien fuertemente la predicción).
 La falta de estabilidad puede ser el resultado de una alta variación del método de explicación.
 En otras palabras, el método de explicación se ve fuertemente afectado por ligeros cambios en los valores de las características de la observación a explicar.
-La falta de estabilidad también puede ser causada por componentes no deterministas del método de explicación, como un paso de muestreo de datos, como el uso del [método sustituto local](#local).
+La falta de estabilidad también puede ser causada por componentes no deterministas del método de explicación, como un paso de muestreo de datos: un ejemplo de esto es el uso del [método sustituto local](#lime).
 La alta estabilidad siempre es deseable. 
-- **Comprensibilidad**: ¿Qué tan bien entienden los humanos las explicaciones?
+- **Comprensibilidad**: ¿Qué tan bien entendemos los humanos las explicaciones?
 Esto se parece a una propiedad más entre muchas, pero es el elefante en la habitación.
 Difícil de definir y medir, pero extremadamente importante para acertar.
 Muchas personas están de acuerdo en que la comprensión depende de la audiencia.
@@ -401,7 +403,7 @@ Si el modelo predice un 4% de probabilidad de cáncer para un paciente, ¿es igu
 Una explicación que incluye la certeza del modelo es muy útil. 
 - **Grado de importancia**: ¿Qué tan bien refleja la explicación la importancia de las características o partes de la explicación?
 Por ejemplo, si se genera una regla de decisión como explicación para una predicción individual, ¿está claro cuál de las condiciones de la regla fue la más importante? 
-- **Novedad**: ¿La explicación refleja si una instancia de datos a explicar proviene de una "nueva" región muy alejada de la distribución de datos de capacitación?
+- **Novedad**: ¿La explicación refleja si una instancia de datos a explicar proviene de una "nueva" región muy alejada de la distribución de datos de entrenamiento?
 En tales casos, el modelo puede ser inexacto y la explicación puede ser inútil.
 El concepto de novedad está relacionado con el concepto de certeza.
 Cuanto mayor sea la novedad, más probable es que el modelo tenga poca certeza debido a la falta de datos. 
@@ -414,17 +416,17 @@ Las explicaciones pueden abarcar todo el modelo (p. Ej., Interpretación de peso
 
 Profundicemos y descubramos lo que los humanos vemos como "buenas" explicaciones y cuáles son las implicaciones para el aprendizaje automático interpretable.
 La investigación en humanidades puede ayudarnos a descubrirlo.
-Miller (2017) ha realizado una gran encuesta de publicaciones sobre explicaciones, y este capítulo se basa en su resumen. 
+Miller (2017) ha realizado un gran estudio de publicaciones sobre explicaciones, y este capítulo se basa en su resumen. 
 
-En este capítulo quiero convencerlo de lo siguiente:
-Como explicación de un evento, los humanos prefieren explicaciones cortas (solo 1 o 2 causas) que contrastan la situación actual con una situación en la que el evento no hubiera ocurrido.
+En este capítulo quiero convencerte de lo siguiente:
+Como explicación de un evento, los humanos preferimos explicaciones cortas (solo 1 o 2 causas) que contrastan la situación actual con una situación en la que el evento no hubiera ocurrido.
 Las causas especialmente anormales proporcionan buenas explicaciones. 
 Las explicaciones son interacciones sociales entre el explicador y el explicado (receptor de la explicación) y, por lo tanto, el contexto social tiene una gran influencia en el contenido real de la explicación.
 
 Cuando necesitas explicaciones con TODOS los factores para una predicción o comportamiento particular, no deseas una explicación amigable para los humanos, sino una atribución causal completa.
 Probablemente desees una atribución causal si estás legalmente obligado a especificar todas las características influyentes o si depuras el modelo de aprendizaje automático.
 En este caso, ignora los siguientes puntos.
-En todos los demás casos, donde los 'laicos' o las personas con poco tiempo son los destinatarios de la explicación, las siguientes secciones deberían de serte interesantes. 
+En todos los demás casos, donde los destinatarios de la explicación son 'laicos' o tienen poco tiempo tiempo, las siguientes secciones te deberían resultar interesantes. 
 
 ### ¿Qué es una explicación? 
 
@@ -447,14 +449,14 @@ El explicador puede ser un ser humano o una máquina.
 Esta sección condensa aún más el resumen de Miller sobre explicaciones "buenas" y agrega implicaciones concretas para el aprendizaje automático interpretable. 
 
 **Las explicaciones son contrastantes** (Lipton 1990[^lipton2]).
-Los humanos generalmente no preguntan por qué se hizo una determinada predicción, sino por qué se hizo esta predicción *en lugar de otra predicción*.
+Los humanos generalmente no preguntamos por qué se hizo una determinada predicción, sino por qué se hizo esta predicción *en lugar de otra predicción*.
 Tendemos a pensar en casos contrafácticos, es decir, "¿Cómo habría sido la predicción si la entrada X hubiera sido diferente?".
 Para una predicción del precio de la vivienda, el propietario podría estar interesado en saber por qué el precio previsto fue alto, en comparación con el precio más bajo que esperaba.
 Si mi solicitud de préstamo es rechazada, no me importa escuchar todos los factores que generalmente hablan a favor o en contra de un rechazo.
 Estoy interesado en los factores en mi solicitud que tendrían que cambiar para obtener el préstamo.
 Quiero saber el contraste entre mi aplicación y la versión de mi solicitud que sería aceptada.
 El reconocimiento de que las explicaciones contrastantes importan es un hallazgo importante para el aprendizaje automático explicable.
-De la mayoría de los modelos interpretables, puede extraer una explicación que contrasta implícitamente una predicción de una instancia con la predicción de una instancia de datos artificiales o un promedio de instancias.
+De la mayoría de los modelos interpretables, es posible extraer una explicación que contrasta implícitamente una predicción de una instancia con la predicción de una instancia de datos artificiales o un promedio de instancias.
 Los médicos podrían preguntar: "¿Por qué el medicamento no funcionó para mi paciente?".
 Y podrían querer una explicación que contraste a su paciente con un paciente para quien el medicamento funcionó y que sea similar al paciente que no responde.
 Las explicaciones contrastantes son más fáciles de entender que explicaciones completas.
@@ -464,7 +466,7 @@ Una explicación contrastante podría ser mucho más simple:
 en contraste con el paciente que responde, el paciente que no responde tiene una cierta combinación de genes que hacen que el medicamento sea menos efectivo.
 La mejor explicación es la que destaca la mayor diferencia entre el objeto de interés y el objeto de referencia. 
 **Lo que significa para el aprendizaje automático interpretable**:
-los humanos no quieren una explicación completa para una predicción, sino comparar las diferencias con la predicción de otra observación (que puede ser artificial).
+los humanos no queremos una explicación completa para una predicción, sino comparar las diferencias con la predicción de otra observación (que puede ser artificial).
 La creación de explicaciones contrastantes depende de la aplicación, porque requiere un punto de referencia para la comparación.
 Y esto puede depender del punto de datos a explicar, pero también del usuario que recibe la explicación. 
 Un usuario de un sitio web de predicción del precio de la vivienda puede querer tener una explicación de una predicción del precio de la vivienda en contraste con su propia casa o tal vez con otra casa en el sitio web o tal vez con una casa promedio en el vecindario.
@@ -482,7 +484,7 @@ Para los modelos de aprendizaje automático, es ventajoso si se puede hacer una 
 Los métodos de conjunto que combinan múltiples modelos con diferentes características (diferentes explicaciones) generalmente funcionan bien porque promediar esas "historias" hace que las predicciones sean más sólidas y precisas.
 Pero también significa que hay más de una explicación selectiva de por qué se hizo una determinada predicción. 
 **Lo que significa para el aprendizaje automático interpretable**:
-Haga la explicación muy breve, dé solo 1 a 3 razones, incluso si el mundo es más complejo.
+Haz la explicación muy breve, dé solo 1 a 3 razones, incluso si el mundo es más complejo.
 El [método LIME](#lime) hace un buen trabajo con esto. 
 
 **Las explicaciones son sociales**.
@@ -493,7 +495,7 @@ Si quisiera explicarle a una persona técnica por qué las criptomonedas digital
 Pero a mi abuela le diría:
 "Mira, abuela: las criptomonedas son un poco como el oro de la computadora. A la gente le gusta y paga mucho por el oro, y a los jóvenes les gusta y pagan mucho por el oro de la computadora". 
 **Lo que significa para el aprendizaje automático interpretable**:
-Presta atención al entorno social de su aplicación de aprendizaje automático y al público objetivo.
+Presta atención al entorno social de tu aplicación de aprendizaje automático y al público objetivo.
 Obtener la parte social del modelo de aprendizaje automático correcto depende completamente de su aplicación específica.
 Encuentra expertos de las humanidades (por ejemplo, psicólogos y sociólogos) para que te ayuden. 
 
@@ -501,9 +503,9 @@ Encuentra expertos de las humanidades (por ejemplo, psicólogos y sociólogos) p
 Las personas se enfocan más en causas anormales para explicar los eventos (Kahnemann y Tversky, 1981[^Kahnemann]).
 Estas son causas que tenían una pequeña probabilidad pero que, sin embargo, ocurrieron.
 La eliminación de estas causas anormales habría cambiado mucho el resultado (explicación contrafáctica).
-Los humanos consideran este tipo de causas "anormales" como buenas explicaciones.
+Los humanos consideramos este tipo de causas "anormales" como buenas explicaciones.
 Un ejemplo de Štrumbelj y Kononenko (2011)[^Strumbelj2011] es:
-Supongamos que tenemos un conjunto de datos de situaciones de prueba entre profesores y alumnos.
+supongamos que tenemos un conjunto de datos de situaciones de prueba entre profesores y alumnos.
 Los estudiantes asisten a un curso y lo aprueban directamente después de una presentación exitosa.
 El maestro tiene la opción de hacer preguntas adicionales al alumno para evaluar su conocimiento.
 Los estudiantes que no puedan responder estas preguntas reprobarán el curso.
@@ -538,7 +540,7 @@ Entonces, si decimos que un segundo balcón aumenta el precio de una casa, eso t
 Para los humanos, la fidelidad de una explicación no es tan importante como su selectividad, su contraste y su aspecto social. 
 
 **Las buenas explicaciones son consistentes con las creencias previas del explicado**.
-Los humanos tienden a ignorar la información que es inconsistente con sus creencias anteriores.
+Los humanos tendemos a ignorar la información que es inconsistente con sus creencias anteriores.
 Este efecto se llama sesgo de confirmación (Nickerson 1998 [^Nickerson]).
 Las explicaciones no se salvan de este tipo de sesgo.
 La gente tenderá a devaluar o ignorar explicaciones que no concuerden con sus creencias.
@@ -565,20 +567,20 @@ La generalidad se puede medir fácilmente con el soporte de la función, que es 
 
 [^Miller2017]: Miller, Tim. "Explanation in artificial intelligence: Insights from the social sciences." arXiv Preprint arXiv:1706.07269. (2017).
 
-[^Doshi2017]: Doshi-Velez, Finale, y Been Kim. "Towards a rigorous science of interpretable machine learning," nu. Ml: 1–13. http://arxiv.org/abs/1702.08608 ( 2017).
+[^Doshi2017]: Doshi-Velez, Finale, and Been Kim. "Towards a rigorous science of interpretable machine learning," no. Ml: 1–13. http://arxiv.org/abs/1702.08608 ( 2017).
 
-[^Heider]: Heider, Fritz, y Marianne Simmel. "An experimental study of apparent behavior." The American Journal of Psychology 57 (2). JSTOR: 243–59. (1944).
+[^Heider]: Heider, Fritz, and Marianne Simmel. "An experimental study of apparent behavior." The American Journal of Psychology 57 (2). JSTOR: 243–59. (1944).
 
 [^Lipton2016]: Lipton, Zachary C. "The mythos of model interpretability." arXiv preprint arXiv:1606.03490, (2016).
 
-[^Kahnemann]: Kahneman, Daniel, y Amos Tversky. "The Simulation Heuristic." Stanford Univ CA Dept of Psychology. (1981).
+[^Kahnemann]: Kahneman, Daniel, and Amos Tversky. "The Simulation Heuristic." Stanford Univ CA Dept of Psychology. (1981).
 
-[^Strumbelj2011]: Štrumbelj, Erik, y Igor Kononenko. "A general method for visualizing and explaining black-box regression models." En International Conference on Adaptive and Natural Computing Algorithms, 21–30. Springer. (2011).
+[^Strumbelj2011]: Štrumbelj, Erik, and Igor Kononenko. "A general method for visualizing and explaining black-box regression models." In International Conference on Adaptive and Natural Computing Algorithms, 21–30. Springer. (2011).
 
 [^Nickerson]: Nickerson, Raymond S. "Confirmation Bias: A ubiquitous phenomenon in many guises." Review of General Psychology 2 (2). Educational Publishing Foundation: 175. (1998).
 
-[^critique]: Kim, Been, Rajiv Khanna, y Oluwasanmi O. Koyejo. "Examples are not enough, learn to criticize! Criticism for interpretability." Advances in Neural Information Processing Systems (2016).
+[^critique]: Kim, Been, Rajiv Khanna, and Oluwasanmi O. Koyejo. "Examples are not enough, learn to criticize! Criticism for interpretability." Advances in Neural Information Processing Systems (2016).
 
-[^human-ml]: Robnik-Sikonja, Marko, y Marko Bohanec. "Perturbation-based explanations of prediction models." Human and Machine Learning. Springer, Cham. 159-175. (2018).
+[^human-ml]: Robnik-Sikonja, Marko, and Marko Bohanec. "Perturbation-based explanations of prediction models." Human and Machine Learning. Springer, Cham. 159-175. (2018).
 
 [^lipton2]: Lipton, Peter. "Contrastive explanation." Royal Institute of Philosophy Supplements 27 (1990): 247-266.

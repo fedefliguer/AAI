@@ -1,0 +1,61 @@
+# Explicaciones basadas en ejemplos {#basadoenejemplos}
+
+Los métodos de explicación basados en ejemplos seleccionan instancias particulares del conjunto de datos para explicar el comportamiento de los modelos de aprendizaje automático o para explicar la distribución de datos subyacente.
+
+<!-- *Palabras clave: explicaciones basadas en ejemplos, razonamiento basado en casos (CBR), resolución por analogía* -->
+
+Las explicaciones basadas en ejemplos son en su mayoría independientes del modelo, porque hacen que cualquier modelo de aprendizaje automático sea más interpretable.
+La diferencia con los métodos independientes del modelo es que los métodos basados en ejemplos explican un modelo seleccionando instancias del conjunto de datos y no creando resúmenes de características (como [importancia de la característica](#importanciadecaracteristicas) o [dependencia parcial](#pdp)).
+Las explicaciones basadas en ejemplos solo tienen sentido si podemos representar una instancia de los datos de una manera humanamente comprensible.
+Esto funciona bien para las imágenes, porque podemos verlas directamente.
+En general, los métodos basados en ejemplos funcionan bien si los valores de características de una instancia tienen más contexto, lo que significa que los datos tienen una estructura, como lo hacen las imágenes o los textos.
+Es más difícil representar datos tabulares de manera significativa, porque una instancia puede constar de cientos o miles de características (menos estructuradas).
+Enumerar todos los valores de características para describir una instancia generalmente no es útil.
+Funciona bien si solo hay un puñado de características o si tenemos una manera de resumir una instancia.
+
+
+Las explicaciones basadas en ejemplos ayudan a los humanos a construir modelos mentales del modelo de aprendizaje automático y los datos sobre los que se ha entrenado el modelo de aprendizaje automático.
+Especialmente ayuda a comprender distribuciones de datos complejas.
+Pero, ¿qué quiero decir con explicaciones basadas en ejemplos?
+A menudo los usamos en nuestros trabajos y en nuestra vida diaria.
+Comencemos con algunos ejemplos[^cbr].
+
+Un médico atiende a un paciente con tos inusual y fiebre leve.
+Los síntomas del paciente le recuerdan a otro paciente que tuvo años atrás con síntomas similares.
+Ella sospecha que su paciente actual podría tener la misma enfermedad y toma una muestra de sangre para detectar esta enfermedad específica.
+
+Un científico de datos trabaja en un nuevo proyecto para uno de sus clientes:
+Análisis de los factores de riesgo que conducen a la falla de las máquinas de producción para teclados.
+El científico de datos recuerda un proyecto similar en el que trabajó y reutiliza partes del código del proyecto anterior porque cree que el cliente desea el mismo análisis.
+
+Un gatito se sienta en la parte baja de la ventana de una casa en llamas y deshabitada.
+El departamento de bomberos ya llegó y uno de los bomberos reflexiona por un segundo si puede arriesgarse a entrar al edificio para salvar al gatito.
+Él recuerda casos similares en su vida como bombero:
+Las viejas casas de madera que han estado ardiendo lentamente durante algún tiempo a menudo eran inestables y finalmente colapsaron.
+Debido a la similitud de este caso, decide no ingresar, porque el riesgo de que la casa se derrumbe es demasiado grande.
+Afortunadamente, el gatito salta por la ventana, aterriza con seguridad y nadie resulta herido en el fuego. Final feliz.
+
+Estas historias ilustran cómo los humanos pensamos en ejemplos o analogías.
+El modelo de explicaciones basadas en ejemplos es:
+La cosa B es similar a la cosa A y A causó Y, así que predigo que B también causará Y.
+Implícitamente, algunos enfoques de aprendizaje automático funcionan basados en ejemplos.
+Los [árboles de decisión](#arbol) dividen los datos en nodos según las similitudes de los puntos de datos en las características que son importantes para predecir el objetivo.
+Un árbol de decisión obtiene la predicción para una nueva instancia de datos al encontrar las instancias que son similares (= en el mismo nodo terminal) y devolver el promedio de los resultados de esas instancias como la predicción.
+El método de vecinos más cercanos a k (knn) funciona explícitamente con predicciones basadas en ejemplos.
+Para una nueva instancia, un modelo knn localiza los k vecinos más cercanos (por ejemplo, k = 3 instancias más cercanas) y devuelve el promedio de los resultados de esos vecinos como predicción.
+La predicción de un knn puede explicarse devolviendo los k vecinos, lo cual, nuevamente, solo es significativo si tenemos una buena manera de representar una sola instancia.
+
+Los capítulos de esta parte cubren los siguientes métodos de interpretación basados en ejemplos:
+
+- [Explicaciones contrafactuales](#contrafactual) nos dice cómo debe cambiar una instancia para cambiar significativamente su predicción.
+Al crear instancias contrafácticas, aprendemos cómo el modelo hace sus predicciones y puede explicar predicciones individuales.
+- [Ejemplos adversos](#adversarial) son contrafactuales utilizados para engañar a los modelos de aprendizaje automático.
+El énfasis está en voltear la predicción y no explicarla.
+- [Prototipos](#proto) son una selección de instancias representativas de los datos y las excepciones son instancias que no están bien representadas por esos prototipos.
+- [Instancias influyentes](#influyente) son los puntos de datos de entrenamiento que fueron los más influyentes para los parámetros de un modelo de predicción o las predicciones mismas.
+Identificar y analizar instancias influyentes ayuda a encontrar problemas con los datos, depurar el modelo y comprender mejor el comportamiento del modelo.
+- [k-modelo de vecinos más cercanos](#interpretables-otros): un modelo de aprendizaje automático (interpretable) basado en ejemplos.
+
+
+[^cbr]: Aamodt, Agnar, and Enric Plaza. "Case-based reasoning: Foundational issues, methodological variations, and system approaches." AI communications 7.1 (1994): 39-59.
+

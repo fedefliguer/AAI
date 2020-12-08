@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>5.10 SHAP (explicaciones aditivas SHapley) | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="5.10 SHAP (explicaciones aditivas SHapley) | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="5.10 SHAP (explicaciones aditivas SHapley) | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="shapley.html"/>
+<link rel="next" href="basadoenejemplos.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="shap" class="section level2">
+<h2><span class="header-section-number">5.10</span> SHAP (explicaciones aditivas SHapley)</h2>
+<p>SHAP (explicaciones aditivas SHapley) de Lundberg y Lee (2016)<a href="#fn43" class="footnote-ref" id="fnref43"><sup>43</sup></a> es un método para explicar las predicciones individuales.
+SHAP se basa en los <a href="shapley.html#shapley">valores de Shapley</a>.</p>
+<p>Hay dos razones por las que SHAP tiene su propio capítulo y no es un subcapítulo de <a href="shapley.html#shapley">valores de Shapley</a>.
+Primero, los autores de SHAP propusieron KernelSHAP, un enfoque de estimación alternativo basado en el núcleo para los valores de Shapley inspirados en <a href="lime.html#lime">modelos sustitutos locales</a>.
+Y propusieron TreeSHAP, un enfoque de estimación eficiente para modelos basados en árboles.
+En segundo lugar, SHAP viene con muchos métodos de interpretación global basados en agregaciones de valores de Shapley.
+Este capítulo explica tanto los nuevos enfoques de estimación como los métodos de interpretación global.</p>
+<p>Recomiendo leer los capítulos sobre <a href="shapley.html#shapley">valores de Shapley</a> y <a href="lime.html#lime">modelos locales (LIME)</a> primero.</p>
+<div id="definición" class="section level3">
+<h3><span class="header-section-number">5.10.1</span> Definición</h3>
+<p>El objetivo de SHAP es explicar la predicción de una instancia x calculando la contribución de cada característica a la predicción.
+El método de explicación SHAP calcula los valores de Shapley a partir de la teoría de juegos de coalición.
+Los valores de características de una instancia de datos actúan como jugadores en una coalición.
+Los valores de Shapley nos dicen cómo distribuir equitativamente el “pago” (= la predicción) entre las características.
+Un jugador puede ser un valor de característica individual, por ejemplo en datos tabulares.
+Un jugador también puede ser un grupo de valores de características.
+Por ejemplo, para explicar una imagen, los píxeles se pueden agrupar en superpíxeles y la predicción se puede distribuir entre ellos.
+Una innovación que SHAP trae a la mesa es que la explicación del valor de Shapley se representa como un método de atribución de características aditivas, un modelo lineal.
+Esa vista conecta los valores Shapley y LIME.
+SHAP especifica la explicación como:</p>
+<p><span class="math display">\[g(z&#39;)=\phi_0+\sum_{j=1}^M\phi_jz_j&#39;\]</span></p>
+<p>donde g es el modelo de explicación, <span class="math inline">\(z&#39;\in\{0,1\}^M\)</span> es el vector de coalición, M es el tamaño máximo de la coalición y <span class="math inline">\(\phi_j\in\mathbb{R}\)</span> es la atribución de características para una característica j, los valores de Shapley.
+Lo que llamo “vector de coalición” se llama “características simplificadas” en el paper SHAP.
+Creo que este nombre fue elegido porque, por ejemplo, en datos de imágenes estas no se representan en el nivel de píxeles, sino que se agregan a superpíxeles.
+Creo que es útil pensar en las z como descripciones de coaliciones:
+En el vector de coalición, una entrada de 1 significa que el valor de la característica correspondiente está “presente” y 0 que está “ausente”.
+Esto debería sonarte familiar si conoces los valores de Shapley.
+Para calcular los valores de Shapley, simulamos que solo se están reproduciendo algunos valores de características (“presente”) y otros no (“ausentes”).
+La representación como modelo lineal de coaliciones es un truco para el cálculo de los <span class="math inline">\(\phi\)</span>’s.
+Para x, la instancia de interés, el vector de coalición x’ es un vector de todos los 1, es decir, todos los valores de características están “presentes”.
+La fórmula se simplifica a:</p>
+<p><span class="math display">\[g(x&#39;)=\phi_0+\sum_{j=1}^M\phi_j\]</span></p>
+<p>Puedes encontrar esta fórmula en notación similar en el capítulo <a href="shapley.html#shapley">Valor de Shapley</a>.
+Más tarde veremos más información sobre la estimación real.
+Hablemos primero sobre las propiedades de los <span class="math inline">\(\phi\)</span>’s antes de entrar en los detalles de su estimación.</p>
+<!-- Propiedades deseables -->
+<p>Los valores de Shapley son la única solución que satisface las propiedades de eficiencia, simetría, simulación y aditividad.
+SHAP también los satisface, ya que calcula los valores de Shapley.
+En el trabajo SHAP, encontrarás discrepancias entre las propiedades SHAP y las propiedades Shapley.
+SHAP describe las siguientes tres propiedades deseables:</p>
+<p><strong>1) Precisión local</strong></p>
+<p><span class="math display">\[f(x)=g(x&#39;)=\phi_0+\sum_{j=1}^M\phi_jx_j&#39;\]</span></p>
+<p>Si defines <span class="math inline">\(\phi_0=E_X(\hat{f}(x))\)</span> y estableces todos <span class="math inline">\(x_j&#39;\)</span> en 1, esta es la propiedad de eficiencia Shapley.
+Solo con un nombre diferente y usando el vector de coalición.</p>
+<p><span class="math display">\[f(x)=\phi_0+\sum_{j=1}^M\phi_jx_j&#39;=E_X(\hat{f}(X))+\sum_{j=1}^M\phi_j\]</span></p>
+<p><strong>2) Ausencia</strong></p>
+<p><span class="math display">\[x_j&#39;=0\Rightarrow\phi_j=0\]</span></p>
+<p>La ausencia dice que una característica faltante obtiene una atribución de cero.
+Ten en cuenta que <span class="math inline">\(x_j&#39;\)</span> se refiere a las coaliciones, donde un valor de 0 representa la ausencia de un valor de característica.
+En la notación de coalición, todos los valores de características <span class="math inline">\(x_j&#39;\)</span> de la instancia a explicar deben ser ‘1’.
+La presencia de un 0 significaría que falta el valor de la característica para la instancia de interés.
+Esta propiedad no se encuentra entre las propiedades de los valores Shapley “normales”.
+Entonces, ¿por qué lo necesitamos para SHAP?
+Lundberg lo llama una <a href="https://github.com/slundberg/shap/issues/175#issuecomment-407134438">“propiedad menor de contabilidad”</a>.
+Una característica faltante podría, en teoría, tener un valor de Shapley arbitrario sin dañar la propiedad de precisión local, ya que se multiplica por <span class="math inline">\(x_j&#39;= 0\)</span>.
+La propiedad de ausencia exige que las características faltantes obtengan un valor Shapley de 0.
+En la práctica, esto solo es relevante para las características que son constantes.</p>
+<p><strong>3) Consistencia</strong></p>
+<p>Deja que <span class="math inline">\(f_x(z&#39;)=f(h_x(z&#39;))\)</span> y <span class="math inline">\(z_{\setminus{}j&#39;}\)</span> indiquen que <span class="math inline">\(z_j&#39;=0\)</span>.
+Para cualquiera de los dos modelos f y f’ que satisfacen:</p>
+<p><span class="math display">\[f_x&#39;(z&#39;)-f_x&#39;(z_{\setminus{}j}&#39;)\geq{}f_x(z&#39;)-f_x(z_{\setminus{}j}&#39;)\]</span></p>
+<p>para todas las entradas <span class="math inline">\(z&#39;\in\{0,1\}^M\)</span>, entonces:</p>
+<p><span class="math display">\[\phi_j(f&#39;,x)\geq\phi_j(f,x)\]</span></p>
+<p>La propiedad de consistencia dice que cuando un modelo cambie de modo que la contribución marginal de un valor de entidad aumente o permanezca igual (independientemente de otras características), el valor de Shapley también debe aumentar o permanecer igual.
+A partir de la consistencia, siguen las propiedades de Shapley Linealidad, Dummies y Simetría, como se describe en el Apéndice de Lundberg y Lee.</p>
+</div>
+<div id="kernelshap" class="section level3">
+<h3><span class="header-section-number">5.10.2</span> KernelSHAP</h3>
+<!-- La idea general del modelo lineal -->
+<p>KernelSHAP estima para una instancia x las contribuciones de cada valor de característica a la predicción.
+KernelSHAP consta de 5 pasos:</p>
+<ul>
+<li>Ejemplos de coaliciones <span class="math inline">\(z_k&#39;\in\{0,1\}^M,\quad{}k\in\{1,\ldots,K\}\)</span> (1 = característica presente en la coalición, 0 = característica ausente).</li>
+<li>Obtiene las predicciones para cada <span class="math inline">\(z_k&#39;\)</span> convirtiendo primero <span class="math inline">\(z_k&#39;\)</span> en el espacio de características original y luego aplicando el modelo f: <span class="math inline">\(f(h_x(z_k&#39;))\)</span></li>
+<li>Calcula el peso de cada <span class="math inline">\(z_k&#39;\)</span> con el kernel SHAP.</li>
+<li>Ajusta el modelo lineal ponderado.</li>
+<li>Devuelva los valores de Shapley <span class="math inline">\(\phi_k\)</span>, los coeficientes del modelo lineal.</li>
+</ul>
+<p>Podemos crear una coalición aleatoria mediante lanzamientos de monedas repetidos hasta que tengamos una cadena de 0 y 1.
+Por ejemplo, el vector de (1,0,1,0) significa que tenemos una coalición de las características primera y tercera.
+Las coaliciones de muestra K se convierten en el conjunto de datos para el modelo de regresión.
+El objetivo del modelo de regresión es la predicción para una coalición.
+(“¡Espera!”, Dirás, “El modelo no ha sido entrenado en estos datos de coalición binaria y no puede hacer predicciones para ellos”).
+Para pasar de coaliciones de valores de entidades a instancias de datos válidas, necesitamos una función <span class="math inline">\(h_x(z&#39;)=z\)</span> donde <span class="math inline">\(h_x:\{0,1\}^M\rightarrow\mathbb{R}^p\)</span>.
+La función <span class="math inline">\(h_x\)</span> asigna 1’s al valor correspondiente de la instancia x que queremos explicar.
+Para los datos tabulares, asigna los 0 a los valores de otra instancia que tomamos de los datos.
+Esto significa que equiparamos “el valor de la característica está ausente” con “el valor de la característica se reemplaza por el valor de la característica aleatorio de los datos”.
+Para datos tabulares, la siguiente figura visualiza la asignación de coaliciones a valores de características:</p>
+<div class="figure"><span id="fig:shap-simplified-feature"></span>
+<img src="images/shap-simplified-features.jpg" alt="La función $h_x$ asigna una coalición a una instancia válida. Para las características actuales (1), $h_x$ asigna a los valores de característica de x. Para características ausentes (0), $h_x$ se asigna a los valores de una instancia de datos muestreados aleatoriamente." width="800" />
+<p class="caption">
+FIGURA 5.47: La función <span class="math inline">\(h_x\)</span> asigna una coalición a una instancia válida. Para las características actuales (1), <span class="math inline">\(h_x\)</span> asigna a los valores de característica de x. Para características ausentes (0), <span class="math inline">\(h_x\)</span> se asigna a los valores de una instancia de datos muestreados aleatoriamente.
+</p>
+</div>
+<p>En un mundo perfecto, <span class="math inline">\(h_x\)</span> muestrea los valores de características ausentes condicionales a los valores de características actuales:</p>
+<p><span class="math display">\[f(h_x(z&#39;))=E_{X_C|X_S}[f(x)|x_S]\]</span></p>
+<p>donde <span class="math inline">\(X_C\)</span> es el conjunto de características ausentes y <span class="math inline">\(X_S\)</span> es el conjunto de características actuales.
+Sin embargo, como se definió anteriormente, <span class="math inline">\(h_x\)</span> para datos tabulares trata a <span class="math inline">\(X_C\)</span> y <span class="math inline">\(X_S\)</span> como independientes e integra sobre la distribución marginal:</p>
+<p><span class="math display">\[f(h_x(z&#39;))=E_{X_C}[f(x)]\]</span></p>
+<p>El muestreo de la distribución marginal significa ignorar la estructura de dependencia entre las características presentes y ausentes.
+Por lo tanto, KernelSHAP sufre el mismo problema que todos los métodos de interpretación basados en permutación.
+La estimación pone demasiado peso en casos improbables.
+Los resultados pueden volverse poco confiables.
+Como veremos más adelante, TreeSHAP para los conjuntos de árboles no se ve afectado por este problema.</p>
+<p>Para las imágenes, la siguiente figura describe una posible función de mapeo:</p>
+<div class="figure"><span id="fig:unnamed-chunk-32"></span>
+<img src="images/shap-superpixel.jpg" alt="La función $h_x$ asigna coaliciones de superpíxeles (sp) a imágenes. Los superpíxeles son grupos de píxeles. Para las características actuales (1), $h_x$ devuelve la parte correspondiente del original imagen. Para las funciones ausentes (0), $h_x$ atenúa el área correspondiente. Asignar el color promedio de los píxeles circundantes o similar también sería una opción." width="800" />
+<p class="caption">
+FIGURA 5.48: La función <span class="math inline">\(h_x\)</span> asigna coaliciones de superpíxeles (sp) a imágenes. Los superpíxeles son grupos de píxeles. Para las características actuales (1), <span class="math inline">\(h_x\)</span> devuelve la parte correspondiente del original imagen. Para las funciones ausentes (0), <span class="math inline">\(h_x\)</span> atenúa el área correspondiente. Asignar el color promedio de los píxeles circundantes o similar también sería una opción.
+</p>
+</div>
+<!-- Kernel -->
+<p>La gran diferencia con LIME es la ponderación de las instancias en el modelo de regresión.
+LIME pondera las instancias según lo cerca que estén de la instancia original.
+Cuantos más ceros haya en el vector de coalición, menor será el peso en LIME.
+SHAP pondera las instancias muestreadas de acuerdo con el peso que obtendría la coalición en la estimación del valor de Shapley.
+Las coaliciones pequeñas (pocos 1) y las coaliciones grandes (es decir, muchos 1) obtienen los mayores pesos.
+La intuición detrás de esto es:
+Aprendemos más sobre las características individuales si podemos estudiar sus efectos de forma aislada.
+Si una coalición consta de una sola característica, podemos aprender sobre el efecto principal aislado de las características en la predicción.
+Si una coalición consta de todas las características menos una, podemos aprender sobre el efecto total de esta característica (efecto principal más interacciones de características).
+Si una coalición consta de la mitad de las características, aprendemos poco acerca de una contribución de características individuales, ya que hay muchas coaliciones posibles con la mitad de las características.
+Para lograr la ponderación compatible con Shapley, Lundberg et. Al proponen el núcleo SHAP:</p>
+<p><span class="math display">\[\pi_{x}(z&#39;)=\frac{(M-1)}{\binom{M}{|z&#39;|}|z&#39;|(M-|z&#39;|)}\]</span></p>
+<p>Aquí, M es el tamaño máximo de la coalición y <span class="math inline">\(|z&#39;|\)</span> el número de características presentes en la instancia z’.
+Lundberg y Lee muestran que la regresión lineal con este peso del Kernel produce valores de Shapley.
+Si usa el núcleo SHAP con LIME en los datos de la coalición, LIME también estimaría los valores de Shapley.</p>
+<!-- Truco de muestreo -->
+<p>Podemos ser un poco más inteligentes sobre el muestreo de coaliciones:
+Las coaliciones más pequeñas y más grandes ocupan la mayor parte del peso.
+Obtenemos mejores estimaciones del valor de Shapley utilizando parte del presupuesto de muestreo K para incluir estas coaliciones de alto peso en lugar de muestrear a ciegas.
+Comenzamos con todas las coaliciones posibles con características 1 y M-1, lo que hace 2 veces más coaliciones M en total.
+Cuando nos queda suficiente presupuesto (el presupuesto actual es K - 2M), podemos incluir coaliciones con dos características y con características M-2 y así sucesivamente.
+De los tamaños de coalición restantes, tomamos muestras con pesos reajustados.</p>
+<!-- Modelo lineal -->
+<p>Tenemos los datos, el objetivo y los pesos.
+Todo para construir nuestro modelo de regresión lineal ponderado:</p>
+<p><span class="math display">\[g(z&#39;)=\phi_0+\sum_{j=1}^M\phi_jz_j&#39;\]</span></p>
+<p>Entrenamos el modelo lineal g optimizando la siguiente función de pérdida L:</p>
+<p><span class="math display">\[L(f,g,\pi_{x})=\sum_{z&#39;\in{}Z}[f(h_x(z&#39;))-g(z&#39;)]^2\pi_{x}(z&#39;)\]</span></p>
+<p>donde Z son los datos de entrenamiento.
+Esta es la vieja y aburrida suma de errores al cuadrado que generalmente optimizamos para los modelos lineales.
+Los coeficientes estimados del modelo, los <span class="math inline">\(\phi_j\)</span>’s son los valores de Shapley.</p>
+<p>Como estamos en una configuración de regresión lineal, también podemos hacer uso de las herramientas estándar para la regresión.
+Por ejemplo, podemos agregar términos de regularización para que el modelo sea escaso.
+Si agregamos una penalización L1 a la pérdida L, podemos crear explicaciones dispersas.
+(No estoy tan seguro de si los coeficientes resultantes seguirían siendo valores válidos de Shapley)</p>
+</div>
+<div id="treeshap" class="section level3">
+<h3><span class="header-section-number">5.10.3</span> TreeSHAP</h3>
+<p>Lundberg et. al (2018)<a href="#fn44" class="footnote-ref" id="fnref44"><sup>44</sup></a> propuso TreeSHAP, una variante de SHAP para modelos de aprendizaje automático basados en árboles, como árboles de decisión, random forest y gradient boosted trees.
+TreeSHAP es rápido, calcula los valores exactos de Shapley y calcula correctamente los valores de Shapley cuando las características dependen.
+En comparación, KernelSHAP es costoso de calcular y solo se aproxima a los valores reales de Shapley.</p>
+<p>¿Cuánto más rápido es TreeSHAP?
+Para los valores exactos de Shapley, reduce la complejidad computacional de <span class="math inline">\(O(TL2^M)\)</span> a <span class="math inline">\(O(TLD^2)\)</span>, donde T es el número de árboles, L es el número máximo de hojas en cualquier árbol y D la profundidad máxima de cualquier árbol.</p>
+<!-- Para explicar una predicción individual con valores exactos de Shapley, tenemos que estimar $E(f(x)|x_S)$ para todos los posibles subconjuntos de valores de características S.-->
+<p>TreeSHAP estima la expectativa condicional correcta <span class="math inline">\(E_{X_S|X_C}(f(x)|x_S)\)</span>.
+Te daré una idea de cómo podemos calcular la predicción esperada para un solo árbol, una instancia xy un subconjunto de características S.
+Si condicionáramos todas las características (si S fuera el conjunto de todas las características) entonces la predicción del nodo en el que cae la instancia x sería la predicción esperada.
+Si no condicionáramos ninguna característica (si S estuviera vacío) usaríamos el promedio ponderado de las predicciones de todos los nodos terminales.
+Si S contiene algunas, pero no todas las características, ignoramos las predicciones de nodos inalcanzables.
+Inalcanzable significa que la ruta de decisión que conduce a este nodo contradice los valores en <span class="math inline">\(x_S\)</span>.
+A partir de los nodos terminales restantes, promediamos las predicciones ponderadas por el tamaño de los nodos (es decir, el número de muestras de entrenamiento en ese nodo).
+La media de los nodos terminales restantes, ponderada por el número de instancias por nodo, es la predicción esperada para x dada S.
+El problema es que tenemos que aplicar este procedimiento para cada posible subconjunto S de los valores de la característica.
+<!--
+¡Esto significa $\sum_{i=1}{p}\frac{(p-i)!i!}{i!}$ Veces.
+Aquí, cada sumando es el conjunto de todos los subconjuntos posibles S con la misma cardinalidad (por ejemplo, todos los subconjuntos posibles con 2 características).
+-->
+Afortunadamente, TreeSHAP calcula en tiempo polinómico en lugar de exponencial.
+La idea básica es empujar todos los subconjuntos posibles S hacia abajo en el árbol al mismo tiempo.
+Para cada nodo de decisión tenemos que hacer un seguimiento de la cantidad de subconjuntos.
+Esto depende de los subconjuntos en el nodo principal y de la función de división.
+Por ejemplo, cuando la primera división en un árbol está en la característica x3, todos los subconjuntos que contienen la característica x3 irán a un nodo (el que va x).
+Los subconjuntos que no contienen la característica x3 van a ambos nodos con un peso reducido.
+Desafortunadamente, los subconjuntos de diferentes tamaños tienen diferentes pesos.
+El algoritmo debe realizar un seguimiento del peso general de los subconjuntos en cada nodo.
+Esto complica el algoritmo.
+Me refiero al trabajo original para obtener detalles de TreeSHAP.
+El cálculo se puede ampliar a más árboles:
+Gracias a la propiedad de Aditividad de los valores Shapley, los valores Shapley de un conjunto de árboles son el promedio (ponderado) de los valores Shapley de los árboles individuales.</p>
+<p>A continuación, veremos las explicaciones de SHAP en acción.</p>
+</div>
+<div id="ejemplos-4" class="section level3">
+<h3><span class="header-section-number">5.10.4</span> Ejemplos</h3>
+<p>Entrené a un clasificador random forest con 100 árboles para predecir el <a href="cervical.html#cervical">riesgo de cáncer cervical</a>.
+Usaremos SHAP para explicar las predicciones individuales.
+Podemos utilizar el método de estimación rápido TreeSHAP en lugar del método más lento KernelSHAP, ya que un random forest es un conjunto de árboles.</p>
+<p>Como SHAP calcula los valores de Shapley, la interpretación es la misma que en el <a href="shapley.html#shapley">capítulo del valor de Shapley</a>.
+Pero con el paquete Python shap viene una visualización diferente:
+Puedes visualizar las atribuciones de características como los valores de Shapley como “fuerzas”.
+Cada valor de característica es una fuerza que aumenta o disminuye la predicción.
+La predicción comienza desde la línea de base.
+La línea de base para los valores de Shapley es el promedio de todas las predicciones.
+En la gráfica, cada valor de Shapley es una flecha que empuja para aumentar (valor positivo) o disminuir (valor negativo) la predicción.
+Estas fuerzas se equilibran entre sí en la predicción real de la instancia de datos.</p>
+<p>La siguiente figura muestra gráficos de fuerza de explicación SHAP para dos mujeres del conjunto de datos de cáncer cervical:</p>
+<div class="figure"><span id="fig:unnamed-chunk-33"></span>
+<img src="images/unnamed-chunk-33-1.png" alt="Valores SHAP para explicar las probabilidades pronosticadas de cáncer de dos personas. La línea de base -la probabilidad pronosticada promedio- es 0.066. La primera mujer tiene un riesgo bajo predicho de 0.06. Efectos que aumentan el riesgo tales como las ETS se compensan con la disminución de los efectos, como la edad. La segunda mujer tiene un alto riesgo previsto de 0,71. La edad de 51 y 34 años de fumar aumenta su riesgo de cáncer previsto" width="800" />
+<p class="caption">
+FIGURA 5.49: Valores SHAP para explicar las probabilidades pronosticadas de cáncer de dos personas. La línea de base -la probabilidad pronosticada promedio- es 0.066. La primera mujer tiene un riesgo bajo predicho de 0.06. Efectos que aumentan el riesgo tales como las ETS se compensan con la disminución de los efectos, como la edad. La segunda mujer tiene un alto riesgo previsto de 0,71. La edad de 51 y 34 años de fumar aumenta su riesgo de cáncer previsto
+</p>
+</div>
+<p>Estas fueron explicaciones para las predicciones individuales.</p>
+<p>Los valores de Shapley se pueden combinar en explicaciones globales.
+Si ejecutamos SHAP para cada instancia, obtenemos una matriz de valores de Shapley.
+Esta matriz tiene una fila por instancia de datos y una columna por entidad.
+Podemos interpretar todo el modelo analizando los valores de Shapley en esta matriz.</p>
+<p>Comenzamos con la importancia de la función SHAP.</p>
+</div>
+<div id="importancia-de-la-función-shap" class="section level3">
+<h3><span class="header-section-number">5.10.5</span> Importancia de la función SHAP</h3>
+<p>La idea detrás de la importancia de la función SHAP es simple:
+Las características con grandes valores absolutos de Shapley son importantes.
+Como queremos la importancia global, promediamos los valores absolutos de Shapley por característica en los datos:</p>
+<p><span class="math display">\[I_j=\sum_{i=1}^n{}|\phi_j^{(i)}|\]</span></p>
+<p>A continuación, clasificamos las características disminuyendo la importancia y las graficamos.
+La siguiente figura muestra la importancia de la característica SHAP para el random forest entrenado antes para predecir el cáncer cervical.</p>
+<div class="figure"><span id="fig:unnamed-chunk-34"></span>
+<img src="images/shap-importance.png" alt="Importancia de la característica SHAP medida como los valores medios absolutos de Shapley. El número de años con anticonceptivos hormonales fue la característica más importante, cambiando la probabilidad absoluta pronosticada de cáncer en un promedio de 2.4 puntos porcentuales (0.024 en x -axis)." width="800" />
+<p class="caption">
+FIGURA 5.50: Importancia de la característica SHAP medida como los valores medios absolutos de Shapley. El número de años con anticonceptivos hormonales fue la característica más importante, cambiando la probabilidad absoluta pronosticada de cáncer en un promedio de 2.4 puntos porcentuales (0.024 en x -axis).
+</p>
+</div>
+<p>La importancia de la característica SHAP es una alternativa a <a href="importanciadecaracteristicas.html#importanciadecaracteristicas">importancia de la característica de permutación</a>.
+Hay una gran diferencia entre ambas medidas de importancia:
+La importancia de la característica de permutación se basa en la disminución del rendimiento del modelo.
+La importancia de la característica de permutación se basa en la disminución del rendimiento del modelo.
+SHAP se basa en la magnitud de las atribuciones de características.</p>
+<p>El diagrama de importancia de la característica es útil, pero no contiene información más allá de las importancias.
+Para una trama más informativa, veremos a continuación la trama de resumen.</p>
+</div>
+<div id="gráfico-de-resumen-shap" class="section level3">
+<h3><span class="header-section-number">5.10.6</span> Gráfico de resumen SHAP</h3>
+<p>La gráfica de resumen combina la importancia de la característica con los efectos de la característica.
+Cada punto en el diagrama de resumen es un valor de Shapley para una entidad y una instancia.
+La posición en el eje y está determinada por la característica y en el eje x por el valor de Shapley.
+El color representa el valor de la característica de menor a mayor.
+Los puntos superpuestos se fluctúan en la dirección del eje y, por lo que tenemos una idea de la distribución de los valores de Shapley por entidad.
+Las características se ordenan según su importancia.</p>
+<div class="figure"><span id="fig:unnamed-chunk-35"></span>
+<img src="images/shap-importance-extended.png" alt="Gráfico de resumen SHAP. El bajo número de años con anticonceptivos hormonales reduce el riesgo de cáncer previsto, un gran número de años aumenta el riesgo. Recordatorio habitual: Todos los efectos describen el comportamiento del modelo y son no necesariamente causales en el mundo real" width="800" />
+<p class="caption">
+FIGURA 5.51: Gráfico de resumen SHAP. El bajo número de años con anticonceptivos hormonales reduce el riesgo de cáncer previsto, un gran número de años aumenta el riesgo. Recordatorio habitual: Todos los efectos describen el comportamiento del modelo y son no necesariamente causales en el mundo real
+</p>
+</div>
+<p>En el gráfico de resumen, vemos las primeras indicaciones de la relación entre el valor de una característica y el impacto en la predicción.
+Pero para ver la forma exacta de la relación, tenemos que mirar las gráficas de dependencia SHAP.</p>
+</div>
+<div id="shap-gráfico-de-dependencia" class="section level3">
+<h3><span class="header-section-number">5.10.7</span> SHAP Gráfico de dependencia</h3>
+<p>La dependencia de la función SHAP podría ser la trama de interpretación global más simple:
+1) Elige una característica.
+2) Para cada instancia de datos, traza un punto con el valor de la característica en el eje xy el valor de Shapley correspondiente en el eje y.
+3) Hecho.</p>
+<p>Matemáticamente, la gráfica contiene los siguientes puntos: <span class="math inline">\(\{(x_j^{(i)},\phi_j^{(i)})\}_{i=1}^n\)</span></p>
+<p>La siguiente figura muestra la dependencia de la función SHAP para la variable años de los anticonceptivos hormonales:</p>
+<div class="figure"><span id="fig:unnamed-chunk-36"></span>
+<img src="images/shap-dependence.png" alt="Gráfico de dependencia SHAP para la variable años de anticonceptivos hormonales. En comparación con 0 años, 1 años disminuyen la probabilidad pronosticada y un alto número de años aumenta la probabilidad pronosticada de cáncer" width="800" />
+<p class="caption">
+FIGURA 5.52: Gráfico de dependencia SHAP para la variable años de anticonceptivos hormonales. En comparación con 0 años, 1 años disminuyen la probabilidad pronosticada y un alto número de años aumenta la probabilidad pronosticada de cáncer
+</p>
+</div>
+<p>Las gráficas de dependencia SHAP son una alternativa a las <a href="pdp.html#pdp">gráficas de dependencia parcial</a> y <a href="ale.html#ale">efectos locales acumulados</a>.
+Mientras que la gráfica PDP y ALE muestran efectos promedio, la dependencia SHAP también muestra la varianza en el eje y.
+Especialmente en caso de interacciones, la gráfica de dependencia SHAP estará mucho más dispersa en el eje y.
+El diagrama de dependencia se puede mejorar resaltando estas interacciones de características.</p>
+</div>
+<div id="valores-de-interacción-shap" class="section level3">
+<h3><span class="header-section-number">5.10.8</span> Valores de interacción SHAP</h3>
+<p>El efecto de interacción es el efecto de característica combinada adicional después de tener en cuenta los efectos de característica individuales.
+El índice de interacción Shapley de la teoría de juegos se define como:</p>
+<p><span class="math display">\[\phi_{i,j}=\sum_{S\subseteq\setminus\{i,j\}}\frac{|S|!(M-|S|-2)!}{2(M-1)!}\delta_{ij}(S)\]</span></p>
+<p>cuando <span class="math inline">\(i\neq{}j\)</span> y:</p>
+<p><span class="math display">\[\delta_{ij}(S)=f_x(S\cup\{i,j\})-f_x(S\cup\{i\})-f_x(S\cup\{j\})+f_x(S)\]</span></p>
+<p>Esta fórmula resta el efecto principal de las características para que obtengamos el efecto de interacción pura después de tener en cuenta los efectos individuales.
+Promediamos los valores sobre todas las posibles coaliciones de características S, como en el cálculo del valor de Shapley.
+Cuando calculamos los valores de interacción SHAP para todas las características, obtenemos una matriz por instancia con dimensiones MxM, donde M es el número de características.</p>
+<p>¿Cómo podemos usar el índice de interacción?
+Por ejemplo, para colorear automáticamente el gráfico de dependencia de la función SHAP con la interacción más fuerte:</p>
+<div class="figure"><span id="fig:unnamed-chunk-37"></span>
+<img src="images/shap-dependence-interaction.png" alt="SHAP presenta un gráfico de dependencia con visualización de interacción. Los años con anticonceptivos hormonales interactúan con las ETS. En casos cercanos a 0 años, la aparición de una ETS aumenta el riesgo de cáncer previsto. Durante más años con anticonceptivos, la aparición de una ETS reduce el riesgo previsto. Una vez más, este no es un modelo causal. Los efectos pueden deberse a confusión (por ejemplo, las ETS y un menor riesgo de cáncer podrían correlacionarse con más visitas al médico)." width="800" />
+<p class="caption">
+FIGURA 5.53: SHAP presenta un gráfico de dependencia con visualización de interacción. Los años con anticonceptivos hormonales interactúan con las ETS. En casos cercanos a 0 años, la aparición de una ETS aumenta el riesgo de cáncer previsto. Durante más años con anticonceptivos, la aparición de una ETS reduce el riesgo previsto. Una vez más, este no es un modelo causal. Los efectos pueden deberse a confusión (por ejemplo, las ETS y un menor riesgo de cáncer podrían correlacionarse con más visitas al médico).
+</p>
+</div>
+</div>
+<div id="agrupando-valores-shap" class="section level3">
+<h3><span class="header-section-number">5.10.9</span> Agrupando valores SHAP</h3>
+<p>Puedes agrupar tus datos con la ayuda de los valores de Shapley.
+El objetivo de la agrupación es encontrar grupos de instancias similares.
+Normalmente, la agrupación se basa en características.
+Las características son a menudo en diferentes escalas.
+Por ejemplo, la altura se puede medir en metros, la intensidad del color de 0 a 100 y algo de salida del sensor entre -1 y 1.
+La dificultad es calcular distancias entre instancias con características tan diferentes y no comparables.</p>
+<p>La agrupación SHAP funciona agrupando en valores Shapley de cada instancia.
+Esto significa que agrupa las instancias por similitud de explicación.
+Todos los valores SHAP tienen la misma unidad: la unidad del espacio de predicción.
+Puedes usar cualquier método de agrupación.
+El siguiente ejemplo utiliza agrupación jerárquica aglomerativa para ordenar las instancias.</p>
+<p>La trama consta de muchas gráficas de fuerza, cada una de las cuales explica la predicción de una instancia.
+Rotamos las gráficas de fuerza verticalmente y las colocamos una al lado de la otra según su similitud de agrupamiento.</p>
+<div class="figure"><span id="fig:unnamed-chunk-38"></span>
+<img src="images/shap-clustering.png" alt="Explicaciones SHAP apiladas agrupadas por similitud de explicación. Cada posición en el eje x es una instancia de los datos. Los valores SHAP rojos aumentan la predicción, los valores azules la disminuyen. Un grupo se destaca: A la derecha hay un grupo con un alto riesgo de cáncer previsto" width="800" />
+<p class="caption">
+FIGURA 5.54: Explicaciones SHAP apiladas agrupadas por similitud de explicación. Cada posición en el eje x es una instancia de los datos. Los valores SHAP rojos aumentan la predicción, los valores azules la disminuyen. Un grupo se destaca: A la derecha hay un grupo con un alto riesgo de cáncer previsto
+</p>
+</div>
+</div>
+<div id="ventajas-14" class="section level3">
+<h3><span class="header-section-number">5.10.10</span> Ventajas</h3>
+<p>Dado que SHAP calcula los valores de Shapley, se aplican todas las ventajas de los valores de Shapley:
+SHAP tiene una <strong>base teórica sólida</strong> en teoría de juegos.
+La predicción está <strong>bastante distribuida</strong> entre los valores de las características.
+Obtenemos <strong>explicaciones contrastantes</strong> que comparan la predicción con la predicción promedio.</p>
+<p>SHAP <strong>conecta los valores Shapley y LIME</strong>.
+Esto es muy útil para comprender mejor ambos métodos.
+También ayuda a unificar el campo del aprendizaje automático interpretable.</p>
+<p>SHAP tiene una <strong>implementación rápida para modelos basados en árboles</strong>.
+Creo que esto fue clave para la popularidad de SHAP, porque la mayor barrera para la adopción de los valores de Shapley es el cálculo lento.</p>
+<p>El cálculo rápido permite calcular los muchos valores de Shapley necesarios para las <strong>interpretaciones del modelo global</strong>.
+Los métodos de interpretación global incluyen la importancia de la característica, la dependencia de la característica, las interacciones, la agrupación y las gráficas de resumen.
+Con SHAP, las interpretaciones globales son consistentes con las explicaciones locales, ya que los valores de Shapley son la “unidad atómica” de las interpretaciones globales.
+Si usas LIME para explicaciones locales y gráficos de dependencia parcial más la importancia de la característica de permutación para explicaciones globales, careces de una base común.</p>
+</div>
+<div id="desventajas-14" class="section level3">
+<h3><span class="header-section-number">5.10.11</span> Desventajas</h3>
+<p><strong>KernelSHAP es lento</strong>.
+Esto hace que KernelSHAP sea poco práctico de usar cuando desees calcular los valores de Shapley para muchas instancias.
+Además, todos los métodos SHAP globales, como la importancia de la función SHAP, requieren calcular los valores de Shapley para muchas instancias.</p>
+<p><strong>KernelSHAP ignora la dependencia de características</strong>.
+La mayoría de los otros métodos de interpretación basados en permutación tienen este problema.
+Al reemplazar los valores de entidad con valores de instancias aleatorias, generalmente es más fácil muestrear aleatoriamente de la distribución marginal.
+Sin embargo, si las características son dependientes, por ejemplo correlacionadas, esto lleva a poner demasiado peso en puntos de datos poco probables.
+TreeSHAP resuelve este problema modelando explícitamente la predicción condicional esperada.</p>
+<p>Las desventajas de los valores de Shapley también se aplican a SHAP:
+Los valores de Shapley pueden malinterpretarse y se necesita acceso a los datos para calcularlos para nuevos datos (a excepción de TreeSHAP).</p>
+</div>
+<div id="software-4" class="section level3">
+<h3><span class="header-section-number">5.10.12</span> Software</h3>
+<p>Los autores implementaron SHAP en el paquete Python <a href="https://github.com/slundberg/shap">shap</a>.
+Esta implementación funciona para modelos basados en árboles en la biblioteca de aprendizaje automático <a href="https://scikit-learn.org/stable/">scikit-learn</a> para Python.
+El paquete shap también se usó para los ejemplos de este capítulo.
+SHAP está integrado en los marcos de refuerzo de árbol <a href="https://github.com/dmlc/xgboost/tree/master/python-package">xgboost</a> y <a href="https://github.com/microsoft/LightGBM">LightGBM</a>.
+En R, está el paquete <a href="https://modeloriented.github.io/shapper/">shapper</a>.
+SHAP también se incluye en el paquete R <a href="https://rdrr.io/cran/xgboost/man/xgb.plot.shap.html">xgboost</a>.</p>
+
+</div>
+</div>
+<!-- </div> -->
+<div class="footnotes">
+<hr />
+<ol start="43">
+<li id="fn43"><p>Lundberg, Scott M., and Su-In Lee. “A unified approach to interpreting model predictions.” Advances in Neural Information Processing Systems. 2017.<a href="shap.html#fnref43" class="footnote-back">↩</a></p></li>
+<li id="fn44"><p>Lundberg, Scott M., Gabriel G. Erion, and Su-In Lee. “Consistent individualized feature attribution for tree ensembles.” arXiv preprint arXiv:1802.03888 (2018).<a href="shap.html#fnref44" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="shapley.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="basadoenejemplos.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/05.9b-agnostic-shap.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

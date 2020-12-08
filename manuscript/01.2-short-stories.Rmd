@@ -4,9 +4,9 @@
 ## Hora del cuento {#horadelcuento}
 
 Comenzaremos con algunas historias cortas.
-Cada historia es una llamada algo exagerada para el aprendizaje automático interpretable.
-Si tenés prisa, puede saltear las historias.
-Si querés entretenerte y (des)motivarte, ¡sigue leyendo!
+Cada historia es un ejemplo algo exagerado para el aprendizaje automático interpretable.
+Si tienes prisa, puedes saltear las historias.
+Si quieres entretenerte y (des)motivarte, ¡sigue leyendo!
 
 El formato está inspirado en los cuentos técnicos de Jack Clark en su [Boletín informativo Importación AI](https://jack-clark.net/).
 Si te gustan este tipo de historias o si estás interesado en la inteligencia artificial, te recomiendo que te registres.
@@ -20,21 +20,20 @@ knitr::include_graphics("images/hospital.jpg")
 
 
 "¡Definitivamente no es la peor forma de morir!" Tom resumió, tratando de encontrar algo positivo en la tragedia.
-Sacó la bomba del poste intravenoso.
+Sacó la bomba intravenosa.
 "Simplemente murió por las razones equivocadas", agregó Lena.
-"¡Y ciertamente con la bomba de morfina equivocada!
+"¡Y con la bomba de morfina equivocada!
 ¡Solo estamos creando más trabajo para nosotros!", Se quejó Tom mientras desenroscaba la placa posterior de la bomba.
 Después de quitar todos los tornillos, levantó la placa y la dejó a un lado.
 Conectó un cable al puerto de diagnóstico.
-"No solo te quejaste de tener un trabajo, ¿verdad?" Lena le dedicó una sonrisa burlona.
+"No te estás quejando de tener un trabajo, ¿verdad?" Lena le dedicó una sonrisa burlona.
 "Por supuesto que no. ¡Nunca!" exclamó con un tono sarcástico.
 
 Arrancó la computadora de la bomba.
 Lena enchufó el otro extremo del cable a su tableta.
 "Muy bien, los diagnósticos se están ejecutando", anunció.
 "Tengo mucha curiosidad por saber qué salió mal".
-"Ciertamente le disparó a nuestro John Doe al Nirvana.
-Fue la alta concentración de este material de morfina.
+"Fue la alta concentración de este material de morfina.
 Hombre. Quiero decir, normalmente, una bomba rota emite muy poco o nada en absoluto.
 Pero nunca, ya sabes, algo así", explicó Tom.
 "Lo sé. No tienes que convencerme ... Oye, mira eso". Lena levantó su tableta.
@@ -42,7 +41,7 @@ Pero nunca, ya sabes, algo así", explicó Tom.
 ¡Mira! Esta línea muestra el nivel de referencia.
 El pobre tipo tenía una mezcla de analgésicos en su sistema sanguíneo que podría matarlo 17 veces.
 Inyectado por nuestra bomba aquí.
-Y aquí ... "se deslizó," aquí puedes ver el momento de la muerte del paciente".
+Y aquí ..." se deslizó, "aquí puedes ver el momento de la muerte del paciente".
 "Entonces, ¿alguna idea de lo que pasó, jefe?" Tom le preguntó a su supervisor.
 "Hmm... Los sensores parecen estar bien.
 Frecuencia cardíaca, niveles de oxígeno, glucosa, ... Los datos se recopilaron como se esperaba.
@@ -74,7 +73,7 @@ Dejando de lado la falla de emergencia del protocolo, la bomba no debería haber
 El algoritmo debería haberse detenido por sí solo mucho antes, dado el bajo nivel de cortisol y otras señales de advertencia", explicó Lena.
 "¿Quizás algo de mala suerte, como una cosa entre un millón, como ser alcanzado por un rayo?" Tom le preguntó.
 "No, Tom.
-Si hubiera leído la documentación que le envié, habría sabido que la bomba se entrenó primero en experimentos con animales, luego en humanos, para aprender a inyectar la cantidad perfecta de analgésicos en función de la información sensorial.
+Si hubieras leído la documentación que te envié, habrías sabido que la bomba se entrenó primero en experimentos con animales, luego en humanos, para aprender a inyectar la cantidad perfecta de analgésicos en función de la información sensorial.
 El algoritmo de la bomba puede ser opaco y complejo, pero no es aleatorio.
 Eso significa que en la misma situación la bomba se comportaría exactamente de la misma manera nuevamente.
 Nuestro paciente moriría de nuevo.
@@ -110,7 +109,7 @@ knitr::include_graphics("images/access-denied.jpg")
 Se apresuró a la estación Bishan.
 Sus pensamientos ya estaban en el trabajo.
 Las pruebas para la nueva arquitectura neuronal deberían completarse por ahora.
-Ella dirigió el rediseño del "Sistema fiscal de predicción de afinidad para entidades individuales" del gobierno, que predice si una persona esconderá dinero que debe pagar en impuestos.
+Ella dirigió el rediseño del "Sistema fiscal de predicción de afinidad para entidades individuales" del gobierno, que predice si una persona esconde dinero que debe pagar en impuestos.
 Su equipo ha creado una elegante pieza de ingeniería.
 Si tiene éxito, el sistema no solo serviría a la oficina de impuestos, sino que también se incorporaría a otros sistemas, como el sistema de alarma contra el terrorismo y el registro comercial.
 Un día, el gobierno podría incluso integrar las predicciones en el Civic Trust Score.
@@ -132,12 +131,12 @@ La puerta se abrió y él entró.
 La puerta se cerró de nuevo.
 Se limpió la nariz.
 Le dolía, pero al menos no sangraba.
-Ella trató de abrir la puerta, pero fue rechazada nuevamente.
+Trató de abrir la puerta, pero fue rechazada nuevamente.
 Fue extraño
 Tal vez su cuenta de transporte público no tenía suficiente crédito.
 Miró su reloj inteligente para verificar el saldo de la cuenta.
 
-"Inicio de sesión denegado. ¡Comuníquese con su Oficina de asesoramiento para ciudadanos! su reloj le informó.
+"Inicio de sesión denegado. ¡Comuníquese con su Oficina de asesoramiento para ciudadanos!" su reloj le informó.
 
 Una sensación de náuseas la golpeó como un puño en el estómago.
 Ella sospechaba lo que había sucedido.

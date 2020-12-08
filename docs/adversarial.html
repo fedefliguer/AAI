@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>6.2 Ejemplos adversos | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="6.2 Ejemplos adversos | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="6.2 Ejemplos adversos | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="contrafactual.html"/>
+<link rel="next" href="proto.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="adversarial" class="section level2">
+<h2><span class="header-section-number">6.2</span> Ejemplos adversos</h2>
+<p>Un ejemplo adverso es una instancia con pequeñas perturbaciones de características intencionales que hacen que un modelo de aprendizaje automático haga una predicción falsa.
+Recomiendo leer el capítulo sobre <a href="contrafactual.html#contrafactual">Explicaciones contrafácticas</a> primero, ya que los conceptos son muy similares.
+Los ejemplos adversos son ejemplos contrafácticos con el objetivo de engañar al modelo, no interpretarlo.</p>
+<!-- *Palabras clave: ejemplos adversos, aprendizaje automático adversario, contrafácticos, ataques de evasión, seguridad de aprendizaje automático* -->
+<p>¿Por qué nos interesan los ejemplos adversos?
+¿No son solo subproductos curiosos de los modelos de aprendizaje automático sin relevancia práctica?
+La respuesta es un claro “no”.
+Los ejemplos adversos hacen que los modelos de aprendizaje automático sean vulnerables a los ataques, como en los siguientes escenarios.</p>
+<p>Un auto sin conductor choca con otro porque ignora una señal de alto.
+Alguien había colocado una imagen sobre el letrero, que parece una señal de alto con un poco de suciedad para los humanos, pero fue diseñado para parecerse a un letrero de prohibición de estacionamiento para el software de reconocimiento de letreros del automóvil.</p>
+<p>Un detector de spam no puede clasificar un correo electrónico como spam.
+El correo no deseado ha sido diseñado para parecerse a un correo electrónico normal, pero con la intención de engañar al destinatario.</p>
+<p>Un escáner automático de aprendizaje automático escanea las maletas en busca de armas en el aeropuerto.
+Se desarrolló un cuchillo para evitar la detección al hacer que el sistema piense que es un paraguas.</p>
+<p>Echemos un vistazo a algunas formas de crear ejemplos adversos.</p>
+<div id="métodos-y-ejemplos" class="section level3">
+<h3><span class="header-section-number">6.2.1</span> Métodos y ejemplos</h3>
+<p>Existen muchas técnicas para crear ejemplos adversos.
+La mayoría de los enfoques sugieren minimizar la distancia entre el ejemplo de confrontación y la instancia a manipular, mientras se cambia la predicción al resultado deseado (de confrontación).
+Algunos métodos requieren acceso a los gradientes del modelo, que por supuesto solo funciona con modelos basados en gradientes como las redes neuronales, otros métodos solo requieren acceso a la función de predicción, lo que hace que estos métodos sean independientes del modelo.
+Los métodos de esta sección se centran en clasificadores de imágenes con redes neuronales profundas, ya que se realiza mucha investigación en esta área y la visualización de imágenes adversas es muy educativa.
+Ejemplos adversos de imágenes son imágenes con píxeles intencionalmente perturbados con el objetivo de engañar al modelo durante el tiempo de aplicación.
+Los ejemplos demuestran de manera impresionante la facilidad con que las redes neuronales profundas para el reconocimiento de objetos pueden ser engañadas por imágenes que parecen inofensivas para los humanos.
+Si aún no has visto estos ejemplos, puedes sorprenderte, porque los cambios en las predicciones son incomprensibles para un observador humano.
+Los ejemplos adversos son como ilusiones ópticas pero para máquinas.</p>
+<p><strong>Algo está mal con mi perro</strong></p>
+<p>Szegedy et. al (2013)<a href="#fn50" class="footnote-ref" id="fnref50"><sup>50</sup></a> utilizó un enfoque de optimización basado en gradiente en su trabajo “Propiedades intrigantes de las redes neuronales” para encontrar ejemplos adversos para redes neuronales profundas.</p>
+<div class="figure"><span id="fig:adversarial-ostrich"></span>
+<img src="images/adversarial-ostrich.jpg" alt="Ejemplos adversos para AlexNet de Szegedy et. al (2013). Todas las imágenes en la columna izquierda están clasificadas correctamente. La columna central muestra el error (ampliado) agregado a las imágenes para producir las imágenes en la columna derecha, todas clasificadas (incorrectamente) como 'Avestruz'." width="600" />
+<p class="caption">
+FIGURA 6.4: Ejemplos adversos para AlexNet de Szegedy et. al (2013). Todas las imágenes en la columna izquierda están clasificadas correctamente. La columna central muestra el error (ampliado) agregado a las imágenes para producir las imágenes en la columna derecha, todas clasificadas (incorrectamente) como ‘Avestruz’.
+</p>
+</div>
+<p>Estos ejemplos adversos se generaron minimizando la siguiente función con respecto a r:</p>
+<p><span class="math display">\[loss(\hat{f}(x+r),l)+c\cdot|r|\]</span></p>
+<p>En esta fórmula, x es una imagen (representada como un vector de píxeles), r son los cambios en los píxeles para crear una imagen de confrontación (x + r produce una nueva imagen), l es la clase de resultado deseada y el parámetro c se usa para equilibrar la distancia entre imágenes y la distancia entre predicciones.
+El primer término es la distancia entre el resultado predicho del ejemplo de confrontación y la clase deseada l, el segundo término mide la distancia entre el ejemplo de confrontación y la imagen original.
+Esta formulación es casi idéntica a la función de pérdida para generar <a href="contrafactual.html#contrafactual">explicaciones contrafácticas</a>.
+Existen restricciones adicionales para r, de modo que los valores de píxeles permanecen entre 0 y 1.
+Los autores sugieren resolver este problema de optimización con un L-BFGS con restricción de caja, un algoritmo de optimización que funciona con gradientes.</p>
+<p><strong>Panda perturbado: método de signo de gradiente rápido</strong></p>
+<p>Goodfellow et. al (2014)<a href="#fn51" class="footnote-ref" id="fnref51"><sup>51</sup></a> inventaron el método de signo de gradiente rápido para generar imágenes adversas.
+El método de signo de gradiente usa el gradiente del modelo subyacente para encontrar ejemplos adversos.
+La imagen original x se manipula agregando o restando un pequeño error <span class="math inline">\(\epsilon\)</span> a cada píxel.
+Si sumamos o restamos <span class="math inline">\(\epsilon\)</span> depende de si el signo del gradiente de un píxel es positivo o negativo.
+Agregar errores en la dirección del gradiente significa que la imagen se altera intencionalmente para que la clasificación del modelo falle.</p>
+<div class="figure"><span id="fig:adversarial-panda"></span>
+<img src="images/adversarial-panda.jpg" alt="Goodfellow et. al (2014) hacen que un panda se vea como un gibón para una red neuronal. Al agregar pequeñas perturbaciones (imagen central) a los píxeles originales del panda (imagen izquierda), los autores crean un ejemplo de confrontación que se clasifica como un gibón (imagen de la derecha) pero parece un panda para los humanos." width="600" />
+<p class="caption">
+FIGURA 6.5: Goodfellow et. al (2014) hacen que un panda se vea como un gibón para una red neuronal. Al agregar pequeñas perturbaciones (imagen central) a los píxeles originales del panda (imagen izquierda), los autores crean un ejemplo de confrontación que se clasifica como un gibón (imagen de la derecha) pero parece un panda para los humanos.
+</p>
+</div>
+<p>La siguiente fórmula describe el núcleo del método de signo de gradiente rápido:</p>
+<p><span class="math display">\[x^\prime=x+\epsilon\cdot{}sign(\bigtriangledown_x{}J(\theta,x,y))\]</span></p>
+<p>donde <span class="math inline">\(\bigtriangledown_x{}J\)</span> es el gradiente de la función de pérdida de modelos con respecto al vector de píxeles de entrada original x, y es el verdadero vector de etiqueta para x y <span class="math inline">\(\theta\)</span> es el vector de parámetros del modelo.
+Del vector de gradiente (que es tan largo como el vector de los píxeles de entrada) solo necesitamos el signo:
+El signo del gradiente es positivo (+1) si un aumento en la intensidad de píxeles aumenta la pérdida (el error que comete el modelo) y negativo (-1) si una disminución en la intensidad de píxeles aumenta la pérdida.
+Esta vulnerabilidad se produce cuando una red neuronal trata una relación entre una intensidad de píxel de entrada y la puntuación de la clase de forma lineal.
+En particular, las arquitecturas de redes neuronales que favorecen la linealidad, como LSTM, redes maxout, redes con unidades de activación ReLU u otros algoritmos lineales de aprendizaje automático, como la regresión logística, son vulnerables al método de signo de gradiente.
+El ataque se lleva a cabo por extrapolación.
+La linealidad entre la intensidad del píxel de entrada y los puntajes de la clase conduce a la vulnerabilidad a los valores atípicos, es decir, el modelo puede ser engañado moviendo los valores de los píxeles a áreas fuera de la distribución de datos.
+Se esperaba que estos ejemplos adversos fueran bastante específicos para una arquitectura de red neuronal dada.
+Pero resulta que puedes reutilizar ejemplos adversos para engañar a las redes con una arquitectura diferente entrenada en la misma tarea.</p>
+<p>Goodfellow et. al (2014) sugirieron agregar ejemplos adversos a los datos de entrenamiento para aprender modelos robustos.</p>
+<p><strong>Una medusa … No, espera. Una bañera: ataques de 1 píxel</strong></p>
+<p>El enfoque presentado por Goodfellow y colegas (2014) requiere que se cambien muchos píxeles, aunque solo sea un poco.
+Pero, ¿y si solo puedes cambiar un solo píxel?
+¿Serías capaz de engañar a un modelo de aprendizaje automático?
+Su et al. (2019)<a href="#fn52" class="footnote-ref" id="fnref52"><sup>52</sup></a> demostraron que en realidad es posible engañar a los clasificadores de imágenes cambiando un solo píxel.</p>
+<div class="figure"><span id="fig:adversarial-1pixel"></span>
+<img src="images/adversarial-1pixel.jpg" alt="Al cambiar intencionalmente un solo píxel (marcado con círculos), una red neuronal entrenada en ImageNet es engañada para predecir la clase incorrecta en lugar de la clase original. Trabajo de Su et. al (2019)." width="600" />
+<p class="caption">
+FIGURA 6.6: Al cambiar intencionalmente un solo píxel (marcado con círculos), una red neuronal entrenada en ImageNet es engañada para predecir la clase incorrecta en lugar de la clase original. Trabajo de Su et. al (2019).
+</p>
+</div>
+<p>De manera similar a los contrafácticos, el ataque de 1 píxel busca un ejemplo modificado de x’ que se acerque a la imagen original x, pero cambie la predicción a un resultado adverso.
+Sin embargo, la definición de cercanía difiere: solo un píxel puede cambiar.
+El ataque de 1 píxel utiliza la evolución diferencial para descubrir qué píxel se va a cambiar y cómo.
+La evolución diferencial se inspira libremente en la evolución biológica de las especies.
+Una población de individuos llamados soluciones candidatas se recombina generación por generación hasta encontrar una solución.
+Cada solución candidata codifica una modificación de píxeles y está representada por un vector de cinco elementos: las coordenadas x e y y los valores rojo, verde y azul (RGB).
+La búsqueda comienza con, por ejemplo, 400 soluciones candidatas (= sugerencias de modificación de píxeles) y crea una nueva generación de soluciones candidatas (secundarias) a partir de la generación principal utilizando la siguiente fórmula:</p>
+<p><span class="math display">\[x_{i}(g+1)=x_{r1}(g)+F\cdot(x_{r2}(g)+x_{r3}(g))\]</span></p>
+<p>donde cada <span class="math inline">\(x_i\)</span> es un elemento de una solución candidata (ya sea coordenada x, coordenada y, rojo, verde o azul), g es la generación actual, F es un parámetro de escala (establecido en 0.5) y r1, r2 y r3 son números aleatorios diferentes.
+Cada nueva solución candidata secundaria es a su vez un píxel con los cinco atributos de ubicación y color y cada uno de esos atributos es una mezcla de tres píxeles primarios aleatorios.</p>
+<p>La creación de elementos secundarios se detiene si una de las soluciones candidatas es un ejemplo contradictorio, lo que significa que se clasifica como una clase incorrecta o si se alcanza el número de iteraciones máximas especificadas por el usuario.</p>
+<p><strong>Todo es una tostadora: parche adversarial</strong></p>
+<p>Uno de mis métodos favoritos trae ejemplos adversos a la realidad física.
+Brown et. al (2017)<a href="#fn53" class="footnote-ref" id="fnref53"><sup>53</sup></a> diseñaron una etiqueta imprimible que se puede pegar junto a los objetos para que parezcan tostadoras para un clasificador de imágenes.
+Trabajo brillante!</p>
+<div class="figure"><span id="fig:adversarial-toaster"></span>
+<img src="images/adversarial-toaster.jpg" alt="Una calcomanía que hace que un clasificador VGG16 entrenado en ImageNet clasifique una imagen de un plátano como tostadora. Trabajo de Brown et. al (2017)." width="600" />
+<p class="caption">
+FIGURA 6.7: Una calcomanía que hace que un clasificador VGG16 entrenado en ImageNet clasifique una imagen de un plátano como tostadora. Trabajo de Brown et. al (2017).
+</p>
+</div>
+<p>Este método difiere de los métodos presentados hasta ahora para los ejemplos de confrontación, ya que se elimina la restricción de que la imagen de confrontación debe estar muy cerca de la imagen original.
+En cambio, el método reemplaza completamente una parte de la imagen con un parche que puede tomar cualquier forma.
+La imagen del parche se optimiza sobre diferentes imágenes de fondo, con diferentes posiciones del parche en las imágenes, a veces movidas, a veces más grandes o más pequeñas y giradas, para que el parche funcione en muchas situaciones.
+Al final, esta imagen optimizada puede imprimirse y usarse para engañar a los clasificadores de imágenes en la naturaleza.</p>
+<p><strong>Nunca traigas una tortuga impresa en 3D a un tiroteo, incluso si tu computadora cree que es una buena idea: ejemplos adversos robustos</strong></p>
+<p>El siguiente método es literalmente agregar otra dimensión a la tostadora:
+Athalye et. al (2017)<a href="#fn54" class="footnote-ref" id="fnref54"><sup>54</sup></a> imprimieron en 3D una tortuga que fue diseñada para parecerse a un rifle en una red neuronal profunda desde casi todos los ángulos posibles.
+Sí, leíste eso bien.
+¡Un objeto físico que parece una tortuga para los humanos parece un rifle para la computadora!</p>
+<div class="figure"><span id="fig:adversarial-turtle"></span>
+<img src="images/adversarial-turtle.jpg" alt="Una tortuga impresa en 3D que es reconocida como un rifle por el clasificador InceptionV3 pre-entrenado estándar de TensorFlow. Trabajo de Athalye et. al (2017)" width="600" />
+<p class="caption">
+FIGURA 6.8: Una tortuga impresa en 3D que es reconocida como un rifle por el clasificador InceptionV3 pre-entrenado estándar de TensorFlow. Trabajo de Athalye et. al (2017)
+</p>
+</div>
+<p>Los autores han encontrado una manera de crear un ejemplo de confrontación en 3D para un clasificador 2D que es adversario sobre las transformaciones, como todas las posibilidades de rotar a la tortuga, acercar, etc.
+Otros enfoques, como el método de gradiente rápido, ya no funcionan cuando se gira la imagen o cambian los ángulos de visión.
+Athalye et. al (2017) proponen el algoritmo Expectation Over Transformation (EOT), que es un método para generar ejemplos adversos que incluso funcionan cuando la imagen se transforma.
+La idea principal detrás de EOT es optimizar ejemplos adversos en muchas transformaciones posibles.
+En lugar de minimizar la distancia entre el ejemplo de confrontación y la imagen original, EOT mantiene la distancia esperada entre los dos por debajo de un cierto umbral, dada una distribución seleccionada de posibles transformaciones.
+La distancia esperada bajo transformación se puede escribir como:</p>
+<p><span class="math display">\[\mathbb{E}_{t\sim{}T}[d(t(x^\prime),t(x))]\]</span></p>
+<p>donde x es la imagen original, t(x) la imagen transformada (por ejemplo, rotada), x’ el ejemplo de confrontación y t(x’) su versión transformada.
+Además de trabajar con una distribución de transformaciones, el método EOT sigue el patrón familiar de enmarcar la búsqueda de ejemplos adversos como un problema de optimización.
+Intentamos encontrar un ejemplo de confrontación x’ que maximice la probabilidad de la clase seleccionada <span class="math inline">\(y_t\)</span> (por ejemplo, “rifle”) en la distribución de posibles transformaciones T:</p>
+<p><span class="math display">\[\arg\max_{x^\prime}\mathbb{E}_{t\sim{}T}[log{}P(y_t|t(x^\prime))]\]</span></p>
+<p>Con la restricción de que la distancia esperada sobre todas las posibles transformaciones entre el ejemplo de confrontación x’ y la imagen original x permanece por debajo de cierto umbral:</p>
+<p><span class="math display">\[\mathbb{E}_{t\sim{}T}[d(t(x^\prime),t(x))]&lt;\epsilon\quad\text{and}\quad{}x\in[0,1]^d\]</span></p>
+<p>Creo que deberíamos preocuparnos por las posibilidades que ofrece este método.
+Los otros métodos se basan en la manipulación de imágenes digitales.
+Sin embargo, estos ejemplos adversos robustos impresos en 3D se pueden insertar en cualquier escena real y engañar a una computadora para clasificar erróneamente un objeto.
+Vamos a darle la vuelta: ¿Qué pasa si alguien crea un rifle que se parece a una tortuga?</p>
+<p><strong>El adversario con los ojos vendados: ataque de caja negra</strong></p>
+<p>Imagina el siguiente escenario:
+Te doy acceso a mi gran clasificador de imágenes a través de la API web.
+Puedes obtener predicciones del modelo, pero no tienes acceso a los parámetros del modelo.
+Desde la comodidad de tu sofá, puedes enviar datos y ver mis respuestas de servicio con las clasificaciones correspondientes.
+La mayoría de los ataques adversos no están diseñados para funcionar en este escenario porque requieren acceso al gradiente de la red neuronal profunda subyacente para encontrar ejemplos adversos.
+Papernot et al. (2017)<a href="#fn55" class="footnote-ref" id="fnref55"><sup>55</sup></a> demostraron que es posible crear ejemplos adversos sin información interna del modelo y sin acceso a los datos de entrenamiento.
+Este tipo de ataque (casi) de conocimiento cero se llama ataque de caja negra.</p>
+<p>Cómo funciona:</p>
+<ol style="list-style-type: decimal">
+<li>Comienza con algunas imágenes que provienen del mismo dominio que los datos de entrenamiento, por ejemplo, si el clasificador a atacar es un clasificador de dígitos, use imágenes de dígitos. Se requiere el conocimiento del dominio, pero no el acceso a los datos de entrenamiento.</li>
+<li>Obtén predicciones para el conjunto actual de imágenes de caja negra.</li>
+<li>Entrena a un modelo sustituto en el conjunto actual de imágenes (por ejemplo, una red neuronal).</li>
+<li>Crea un nuevo conjunto de imágenes sintéticas utilizando una heurística que examine el conjunto actual de imágenes en qué dirección manipular los píxeles para que la salida del modelo tenga más variación.</li>
+<li>Repite los pasos 2 a 4 para un número predefinido de épocas.</li>
+<li>Crea ejemplos adversos para el modelo sustituto utilizando el método de gradiente rápido (o similar).</li>
+<li>Ataca el modelo original con ejemplos adversos.</li>
+</ol>
+<p>El objetivo del modelo sustituto es aproximar los límites de decisión del modelo de caja negra, pero no necesariamente para lograr la misma precisión.</p>
+<p>Los autores probaron este enfoque atacando clasificadores de imágenes entrenados en varios servicios de aprendizaje automático en la nube.
+Estos servicios entrenan a los clasificadores de imágenes en imágenes y etiquetas cargadas por el usuario.
+El software entrena el modelo automáticamente, a veces con un algoritmo desconocido para el usuario, y lo implementa.
+El clasificador da predicciones para las imágenes cargadas, pero el modelo en sí no puede ser inspeccionado o descargado.
+Los autores pudieron encontrar ejemplos adversos para varios proveedores, con hasta el 84% de los ejemplos adversos clasificados erróneamente.</p>
+<p>El método incluso funciona si el modelo de caja negra a ser engañado no es una red neuronal.
+Esto incluye modelos de aprendizaje automático sin gradientes, como árboles de decisión.</p>
+</div>
+<div id="la-perspectiva-de-ciberseguridad" class="section level3">
+<h3><span class="header-section-number">6.2.2</span> La perspectiva de ciberseguridad</h3>
+<p>El aprendizaje automático trata con incógnitas conocidas: prediciendo puntos de datos desconocidos a partir de una distribución conocida.
+La defensa contra ataques se ocupa de incógnitas desconocidas: prediciendo de manera sólida puntos de datos desconocidos a partir de una distribución desconocida de entradas adversas.
+A medida que el aprendizaje automático se integra en más y más sistemas, como vehículos autónomos o dispositivos médicos, también se están convirtiendo en puntos de entrada para ataques.
+Incluso si las predicciones de un modelo de aprendizaje automático en un conjunto de datos de prueba son 100% correctas, se pueden encontrar ejemplos adversos para engañar al modelo.
+La defensa de los modelos de aprendizaje automático contra los ciberataques es una nueva parte del campo de la ciberseguridad.</p>
+<p>Biggio et. al (2018)<a href="#fn56" class="footnote-ref" id="fnref56"><sup>56</sup></a> ofrecen una buena revisión de diez años de investigación sobre aprendizaje automático adversarial, en el que se basa esta sección.
+La ciberseguridad es una carrera armamentista en la que los atacantes y defensores se burlan mutuamente una y otra vez.</p>
+<p><strong>Hay tres reglas de oro en ciberseguridad: 1) conoce a tu adversario 2) sé proactivo y 3) protégete.</strong></p>
+<p>Las diferentes aplicaciones tienen diferentes adversos.
+Las personas que intentan defraudar a otras personas por correo electrónico por su dinero son agentes adversos de los usuarios y proveedores de servicios de correo electrónico.
+Los proveedores quieren proteger a sus usuarios para que puedan seguir usando su programa de correo, los atacantes quieren que las personas les den dinero.
+Conocer a tus adversos significa conocer sus objetivos.
+Suponiendo que no sabes que existen estos spammers y que el único abuso del servicio de correo electrónico es enviar copias pirateadas de música, la defensa sería diferente (por ejemplo, escaneando los archivos adjuntos en busca de material protegido por derechos de autor en lugar de analizar el texto en busca de indicadores de spam).</p>
+<p>Ser proactivo significa probar e identificar activamente los puntos débiles del sistema.
+Eres proactivo cuando tratas de engañar activamente al modelo con ejemplos adversos y luego te defiendes de ellos.
+El uso de métodos de interpretación para comprender qué características son importantes y cómo las características afectan la predicción también es un paso proactivo para comprender las debilidades de un modelo de aprendizaje automático.
+Como científico de datos, ¿confías en tu modelo en este mundo peligroso sin haber visto más allá del poder predictivo en un conjunto de datos de prueba?
+¿Has analizado cómo se comporta el modelo en diferentes escenarios, identificado las entradas más importantes, verificado las explicaciones de predicción para algunos ejemplos?
+¿Has intentado encontrar entradas adversas?
+La interpretabilidad de los modelos de aprendizaje automático juega un papel importante en la ciberseguridad.
+Ser reactivo, lo opuesto a proactivo, significa esperar hasta que el sistema haya sido atacado y solo entonces comprender el problema e instalar algunas medidas defensivas.</p>
+<p>¿Cómo podemos proteger nuestros sistemas de aprendizaje automático contra ejemplos adversos?
+Un enfoque proactivo es el reentrenamiento iterativo del clasificador con ejemplos adversos, también llamado entrenamiento adversario.
+Otros enfoques se basan en la teoría de juegos, como aprender transformaciones invariables de las características u optimización robusta (regularización).
+Otro método propuesto es usar múltiples clasificadores en lugar de uno solo y hacer que voten la predicción (conjunto), pero eso no tiene garantía de funcionar, ya que todos podrían sufrir ejemplos adversos similares.
+Otro enfoque que tampoco funciona bien es el enmascaramiento de gradiente, que construye un modelo sin gradientes útiles mediante el uso de un clasificador vecino más cercano en lugar del modelo original.</p>
+<p>Podemos distinguir los tipos de ataques según cuánto sepa un atacante sobre el sistema.
+Los atacantes pueden tener un conocimiento perfecto (ataque de caja blanca), lo que significa que saben todo sobre el modelo, como el tipo de modelo, los parámetros y los datos de entrenamiento;
+los atacantes pueden tener un conocimiento parcial (ataque de caja gris), lo que significa que solo pueden conocer la representación de características y el tipo de modelo que se utilizó, pero no tienen acceso a los datos de entrenamiento o los parámetros;
+los atacantes pueden tener cero conocimiento (ataque de caja negra), lo que significa que solo pueden consultar el modelo caja negra pero no tienen acceso a los datos de entrenamiento o información sobre los parámetros del modelo.
+Dependiendo del nivel de información, los atacantes pueden usar diferentes técnicas para atacar el modelo.
+Como hemos visto en los ejemplos, incluso en el caso de la caja negra se pueden crear ejemplos adversos, de modo que ocultar información sobre los datos y el modelo no es suficiente para protegerse contra los ataques.</p>
+<p>Dada la naturaleza del juego del gato y el ratón entre atacantes y defensores, veremos mucho desarrollo e innovación en esta área.
+Solo piensa en los diferentes tipos de correos electrónicos no deseados que evolucionan constantemente.
+Se inventan nuevos métodos de ataques contra modelos de aprendizaje automático y se proponen nuevas medidas defensivas contra estos nuevos ataques.
+Se desarrollan ataques más potentes para evadir las últimas defensas y así sucesivamente hasta el infinito.
+Con este capítulo espero sensibilizar sobre el problema de los ejemplos adversos y que solo estudiando proactivamente los modelos de aprendizaje automático podemos descubrir y remediar las debilidades.</p>
+
+<!--{pagebreak}-->
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="50">
+<li id="fn50"><p>Szegedy, Christian, et al. “Intriguing properties of neural networks.” arXiv preprint arXiv:1312.6199 (2013).<a href="adversarial.html#fnref50" class="footnote-back">↩</a></p></li>
+<li id="fn51"><p>Goodfellow, Ian J., Jonathon Shlens, and Christian Szegedy. “Explaining and harnessing adversarial examples.” arXiv preprint arXiv:1412.6572 (2014).<a href="adversarial.html#fnref51" class="footnote-back">↩</a></p></li>
+<li id="fn52"><p>Su, Jiawei, Danilo Vasconcellos Vargas, and Kouichi Sakurai. “One pixel attack for fooling deep neural networks.” IEEE Transactions on Evolutionary Computation (2019).<a href="adversarial.html#fnref52" class="footnote-back">↩</a></p></li>
+<li id="fn53"><p>Brown, Tom B., et al. “Adversarial patch.” arXiv preprint arXiv:1712.09665 (2017).<a href="adversarial.html#fnref53" class="footnote-back">↩</a></p></li>
+<li id="fn54"><p>Athalye, Anish, and Ilya Sutskever. “Synthesizing robust adversarial examples.” arXiv preprint arXiv:1707.07397 (2017).<a href="adversarial.html#fnref54" class="footnote-back">↩</a></p></li>
+<li id="fn55"><p>Papernot, Nicolas, et al. “Practical black-box attacks against machine learning.” Proceedings of the 2017 ACM on Asia Conference on Computer and Communications Security. ACM (2017).<a href="adversarial.html#fnref55" class="footnote-back">↩</a></p></li>
+<li id="fn56"><p>Biggio, Battista, and Fabio Roli. “Wild Patterns: Ten years after the rise of adversarial machine learning.” Pattern Recognition 84 (2018): 317-331.<a href="adversarial.html#fnref56" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="contrafactual.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="proto.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/06.2-example-based-adversarial.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

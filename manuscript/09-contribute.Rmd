@@ -1,0 +1,32 @@
+# Contribuir al libro {#contribute}
+
+Gracias por leer mi libro sobre Aprendizaje Automático Interpretable.
+El libro está en continuo desarrollo.
+Se mejorará con el tiempo y se agregarán más capítulos.
+Muy similar a cómo se desarrolla el software.
+
+Todo el texto y el código del libro es de código abierto y [disponible en github.com](https://github.com/fedefliguer/AAI).
+En la página de Github puede sugerir soluciones y [problemas abiertos](https://github.com/fedefliguer/AAI/issues) si encuentras un error o si falta algo.
+
+Si deseas ayudar aún más, la página de problemas también es el mejor lugar para encontrar problemas que solucionar y una buena manera de contribuir al libro.
+Si estás interesado en una contribución mayor sobre el contenido del libro, envíame un mensaje con tu idea concreta: [christoph.molnar.ai@gmail.com](mailto: christoph.molnar.ai@gmail.com). Si tienes sugerencias sobre la traducción, puedes escribirle al traductor a [federico.fliguer@gmail.com](mailto: federico.fliguer@gmail.com).
+
+
+
+# Citando este libro {#cita}
+
+Si este libro te resulta útil para tu publicación de blog, artículo de investigación o producto, te agradecería que lo citaras.
+Puedes citar el libro así:
+
+
+`Molnar, Christoph. "Interpretable machine learning. A Guide for Making Black Box Models Expplainable", 2019. https://christophm.github.io/interpretable-ml-book/.`
+
+O usa la siguiente entrada bibtex:
+
+
+	`@book{molnar2019, title = {Aprendizaje automático interpretable}, autor = {Christoph Molnar}, note = {\url{https://christophm.github.io/interpretable-ml-book/}}, year = {2019}, subtitle = {Guide for Making Black Box Models Explainable}}`
+
+Siempre tengo curiosidad sobre dónde y cómo se utilizan los métodos de interpretación en la industria y la investigación.
+Si usas el libro como referencia, sería genial que me escribieras una línea y me dijeras para qué.
+Por supuesto, esto es opcional y solo sirve para satisfacer mi propia curiosidad y estimular intercambios interesantes.
+Mi correo es christoph.molnar.ai@gmail.com.

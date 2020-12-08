@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>5.3 Gráfico de efectos locales acumulados (ALE) | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="5.3 Gráfico de efectos locales acumulados (ALE) | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="5.3 Gráfico de efectos locales acumulados (ALE) | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="ICE.html"/>
+<link rel="next" href="interacción.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="ale" class="section level2">
+<h2><span class="header-section-number">5.3</span> Gráfico de efectos locales acumulados (ALE)</h2>
+<p>Los efectos locales acumulados <a href="#fn30" class="footnote-ref" id="fnref30"><sup>30</sup></a> describen cómo las características influyen en la predicción de un modelo de aprendizaje automático en promedio.
+Los gráficos ALE son una alternativa más rápida e imparcial a los gráficos de dependencia parcial (PDP).</p>
+<!-- *Palabras clave: gráficos ALE, gráficos de dependencia parcial, medias marginales, márgenes predictivos, efectos marginales* -->
+<p>Recomiendo leer primero el <a href="pdp.html#pdp">capítulo sobre gráficas de dependencia parcial</a>, ya que son más fáciles de entender y ambos métodos comparten el mismo objetivo:
+Ambos describen cómo una característica afecta la predicción en promedio.
+En la siguiente sección, quiero convencerte de que los gráficos de dependencia parcial tienen un problema grave cuando las características están correlacionadas.</p>
+<div id="motivación-e-intuición" class="section level3">
+<h3><span class="header-section-number">5.3.1</span> Motivación e intuición</h3>
+<p>Si las características de un modelo de aprendizaje automático están correlacionadas, no se puede confiar en el diagrama de dependencia parcial.
+El cálculo de una gráfica de dependencia parcial para una característica que está fuertemente correlacionada con otras características implica promedios de instancias de datos artificiales que son poco probables en la realidad.
+Esto puede sesgar en gran medida el efecto de función estimado.
+Imagina calcular gráficos de dependencia parcial para un modelo de aprendizaje automático que predice el valor de una casa en función del número de habitaciones y el tamaño de la superficie habitable.
+Estamos interesados en el efecto del área habitable en el valor predicho.
+Como recordatorio, la receta para los gráficos de dependencia parcial es: 1) Seleccionar variable. 2) Definir cuadrícula. 3) Por valor de cuadrícula: a) Reemplazar la característica con el valor de cuadrícula y b) predicciones promedio. 4) Dibujar curva.
+Para el cálculo del primer valor de cuadrícula del PDP, digamos 30 m^2, reemplazamos el área habitable para <strong>todas</strong> instancias por 30 m^2, incluso para casas con 10 habitaciones.
+A mí me parece una casa muy inusual.
+El diagrama de dependencia parcial incluye estas casas poco realistas en la estimación del efecto característico y pretende que todo está bien.
+La siguiente figura ilustra dos características correlacionadas y cómo resulta que el método de diagrama de dependencia parcial promedia las predicciones de instancias poco probables.</p>
+<div class="figure"><span id="fig:aleplot-motivation1"></span>
+<img src="images/aleplot-motivation1-1.png" alt="Características fuertemente correlacionadas x1 y x2. Para calcular el efecto de función de x1 en 0.75, el PDP reemplaza x1 de todas las instancias con 0.75, suponiendo falsamente que la distribución de x2 en x1 = 0.75 es lo mismo que la distribución marginal de x2 (línea vertical). Esto da como resultado combinaciones poco probables de x1 y x2 (p. Ej. X2 = 0.2 en x1 = 0.75), que el PDP usa para calcular el efecto promedio." width="1050" />
+<p class="caption">
+FIGURA 5.10: Características fuertemente correlacionadas x1 y x2. Para calcular el efecto de función de x1 en 0.75, el PDP reemplaza x1 de todas las instancias con 0.75, suponiendo falsamente que la distribución de x2 en x1 = 0.75 es lo mismo que la distribución marginal de x2 (línea vertical). Esto da como resultado combinaciones poco probables de x1 y x2 (p. Ej. X2 = 0.2 en x1 = 0.75), que el PDP usa para calcular el efecto promedio.
+</p>
+</div>
+<p>¿Qué podemos hacer para obtener una estimación del efecto de la característica que respete la correlación de las características?
+Podríamos promediar sobre la distribución condicional de la característica, es decir, con un valor de cuadrícula de x1, promediamos las predicciones de instancias con un valor de x1 similar.
+La solución para calcular los efectos de entidad usando la distribución condicional se llama Gráficos marginales o M-Plots (nombre confuso, ya que se basan en la distribución condicional, no marginal).
+Espera, ¿no te prometí que hablaría de los gráficos ALE?
+Los M-Plots no son la solución que estamos buscando.
+¿Por qué los M-Plots no resuelven nuestro problema?
+Si promediamos las predicciones de todas las casas de aproximadamente 30 m^2, estimamos el efecto <strong>combinado</strong> del área habitable y del número de habitaciones, debido a su correlación.
+Suponga que la sala de estar no tiene efecto sobre el valor predicho de una casa, solo el número de habitaciones lo tiene.
+El diagrama M aún mostraría que el tamaño del área de vida aumenta el valor predicho, ya que el número de habitaciones aumenta con el área de vida.
+La siguiente gráfica muestra para dos características correlacionadas cómo funcionan los M-Plots.</p>
+<div class="figure"><span id="fig:aleplot-motivation2"></span>
+<img src="images/aleplot-motivation2-1.png" alt="Características fuertemente correlacionadas x1 y x2. M-Plots promedio sobre la distribución condicional. Aquí la distribución condicional de x2 en x1 = 0.75. El promedio de las predicciones locales lleva a mezclar los efectos de ambas características " width="1050" />
+<p class="caption">
+FIGURA 5.11: Características fuertemente correlacionadas x1 y x2. M-Plots promedio sobre la distribución condicional. Aquí la distribución condicional de x2 en x1 = 0.75. El promedio de las predicciones locales lleva a mezclar los efectos de ambas características
+</p>
+</div>
+<p>Los Gráficos M evitan promedios de instancias de datos poco probables, pero mezclan el efecto de una característica con los efectos de todas las características correlacionadas.
+Las gráficas ALE resuelven este problema calculando, también en función de la distribución condicional de las características, <strong>diferencias en las predicciones en lugar de promedios</strong>.
+Para el efecto del área habitable a 30 m^2, el método ALE usa todas las casas con aproximadamente 30 m^2, obtiene las predicciones del modelo que fingen que estas casas fueron de 31 m^2 menos la predicción que finge que eran 29 m^2.
+Esto nos da el efecto puro de la sala de estar y no está mezclando el efecto con los efectos de características correlacionadas.
+El uso de diferencias bloquea el efecto de otras características.
+El siguiente gráfico proporciona una intuición de cómo se calculan los gráficos ALE.</p>
+<div class="figure"><span id="fig:aleplot-computation"></span>
+<img src="images/aleplot-computation-1.png" alt="Cálculo de ALE para la característica x1, que se correlaciona con x2. Primero, dividimos la característica en intervalos (líneas verticales). Para las instancias de datos (puntos) en un intervalo, calculamos la diferencia en la predicción cuando reemplazamos la entidad con el límite superior e inferior del intervalo (líneas horizontales). Estas diferencias se acumulan y centran posteriormente, lo que da como resultado la curva ALE. " width="1050" />
+<p class="caption">
+FIGURA 5.12: Cálculo de ALE para la característica x1, que se correlaciona con x2. Primero, dividimos la característica en intervalos (líneas verticales). Para las instancias de datos (puntos) en un intervalo, calculamos la diferencia en la predicción cuando reemplazamos la entidad con el límite superior e inferior del intervalo (líneas horizontales). Estas diferencias se acumulan y centran posteriormente, lo que da como resultado la curva ALE.
+</p>
+</div>
+<p>Para resumir cómo cada tipo de gráfico (PDP, M, ALE) calcula el efecto de una característica en un determinado valor de cuadrícula v:</p>
+<p><strong>Gráficos de dependencia parcial</strong>: “Permíteme mostrarte lo que el modelo predice en promedio cuando cada instancia de datos tiene el valor v para esa característica.
+Ignoro si el valor v tiene sentido para todas las instancias de datos”.</p>
+<p><strong>M-Plots</strong>: “Déjame mostrarte lo que el modelo predice en promedio para instancias de datos que tienen valores cercanos a v para esa característica.
+El efecto podría deberse a esa característica, pero también a características correlacionadas”.</p>
+<p><strong>Gráfica ALE</strong>: “Permíteme mostrarte cómo cambian las predicciones del modelo en una pequeña ‘ventana’ de la función alrededor de v para instancias de datos en esa ventana”.</p>
+</div>
+<div id="teoría-2" class="section level3">
+<h3><span class="header-section-number">5.3.2</span> Teoría</h3>
+<p>¿Cómo difieren matemáticamente las gráficas PD, M y ALE?
+Es común a los tres métodos que reducen la compleja función de predicción f a una función que depende de solo una (o dos) características.
+Los tres métodos reducen la función promediando los efectos de las otras características, pero difieren en si se calculan los promedios de las predicciones o las <strong>diferencias en las predicciones</strong> y si el promedio se realiza sobre la distribución marginal o condicional.</p>
+<p>Los gráficos de dependencia parcial promedian las predicciones sobre la distribución marginal.</p>
+<p><span class="math display">\[\begin{align*}\hat{f}_{x_S,PDP}(x_S)&amp;=E_{X_C}\left[\hat{f}(x_S,X_C)\right]\\&amp;=\int_{x_C}\hat{f}(x_S,x_C)\mathbb{P}(x_C)d{}x_C\end{align*}\]</span></p>
+<p>Este es el valor de la función de predicción f, en los valores de función <span class="math inline">\(x_S\)</span>, promediado sobre todas las funciones en <span class="math inline">\(x_C\)</span>.
+Promedio significa calcular la expectativa marginal E sobre las características del conjunto C, que es la integral sobre las predicciones ponderadas por la distribución de probabilidad.
+Suena elegante, pero para calcular el valor esperado sobre la distribución marginal, simplemente tomamos todas nuestras instancias de datos, les obligamos a tener un cierto valor de cuadrícula para las características en el conjunto S y promediamos las predicciones para este conjunto de datos manipulados.
+Este procedimiento asegura que promediamos la distribución marginal de las características.</p>
+<p>Las Gráficas M promedian las predicciones sobre la distribución condicional.</p>
+<p><span class="math display">\[\begin{align*}\hat{f}_{x_S,M}(x_S)&amp;=E_{X_C|X_S}\left[\hat{f}(X_S,X_C)|X_S=x_s\right]\\&amp;=\int_{x_C}\hat{f}(x_S,x_C)\mathbb{P}(x_C|x_S)d{}x_C\end{align*}\]</span></p>
+<p>Lo único que cambia en comparación con los PDP es que promediamos las predicciones condicionales a cada valor de cuadrícula de la característica de interés, en lugar de asumir la distribución marginal en cada valor de cuadrícula.
+En la práctica, esto significa que tenemos que definir un vecindario, por ejemplo, para el cálculo del efecto de 30 m^2 en el valor predicho de la casa, podríamos promediar las predicciones de todas las casas entre 28 y 32 m^2.</p>
+<p>Las gráficas ALE promedian los cambios en las predicciones y las acumulan sobre la cuadrícula (más sobre el cálculo más adelante).</p>
+<p><span class="math display">\[\begin{align*}\hat{f}_{x_S,ALE}(x_S)=&amp;\int_{z_{0,1}}^{x_S}E_{X_C|X_S}\left[\hat{f}^S(X_s,X_c)|X_S=z_S\right]dz_S-\text{constant}\\=&amp;\int_{z_{0,1}}^{x_S}\int_{x_C}\hat{f}^S(z_s,x_c)\mathbb{P}(x_C|z_S)d{}x_C{}dz_S-\text{constant}\end{align*}\]</span></p>
+<p>La fórmula revela tres diferencias con los M-Plots.
+Primero, promediamos los cambios de las predicciones, no las predicciones en sí.
+El cambio se define como el gradiente (pero más tarde, para el cálculo real, reemplazado por las diferencias en las predicciones durante un intervalo).</p>
+<p><span class="math display">\[\hat{f}^S(x_s,x_c)=\frac{\delta\hat{f}(x_S,x_C)}{\delta{}x_S}\]</span></p>
+<p>La segunda diferencia es la integral adicional sobre z.
+Acumulamos los gradientes locales sobre el rango de características en el conjunto S, lo que nos da el efecto de la característica en la predicción.
+Para el cálculo real, las z se reemplazan por una cuadrícula de intervalos sobre los cuales calculamos los cambios en la predicción.
+En lugar de promediar directamente las predicciones, el método ALE calcula las diferencias de predicción condicionales a las características S e integra la derivada sobre las características S para estimar el efecto.
+Bueno, eso suena estúpido.
+La derivación y la integración generalmente se cancelan entre sí, como restar primero y luego sumar el mismo número.
+¿Por qué tiene sentido aquí?
+La derivada (o diferencia de intervalo) aísla el efecto de la característica de interés y bloquea el efecto de las características correlacionadas.</p>
+<p>La tercera diferencia de los gráficos ALE con los gráficos M es que restamos una constante de los resultados.
+Este paso centra el gráfico ALE para que el efecto promedio sobre los datos sea cero.</p>
+<p>Queda un problema:
+No todos los modelos vienen con un gradiente, por ejemplo, el random forest no tiene gradiente.
+Pero como verás, el cálculo real funciona sin gradientes y utiliza intervalos.
+Profundicemos un poco más en la estimación de las gráficas ALE.</p>
+</div>
+<div id="estimación" class="section level3">
+<h3><span class="header-section-number">5.3.3</span> Estimación</h3>
+<p>Primero describiré cómo se estiman las gráficas ALE para una sola característica numérica, luego para dos características numéricas y para una sola característica categórica.
+Para estimar los efectos locales, dividimos la característica en muchos intervalos y calculamos las diferencias en las predicciones.
+Este procedimiento aproxima los gradientes y también funciona para modelos sin gradientes.</p>
+<p>Primero estimamos el efecto no centrado:</p>
+<p><span class="math display">\[\hat{\tilde{f}}_{j,ALE}(x)=\sum_{k=1}^{k_j(x)}\frac{1}{n_j(k)}\sum_{i:x_{j}^{(i)}\in{}N_j(k)}\left[f(z_{k,j},x^{(i)}_{\setminus{}j})-f(z_{k-1,j},x^{(i)}_{\setminus{}j})\right]\]</span></p>
+<p>Analicemos esta fórmula, comenzando por el lado derecho.
+El nombre <strong>Efectos locales acumulados</strong> refleja muy bien todos los componentes individuales de esta fórmula.
+En esencia, el método ALE calcula las diferencias en las predicciones, por lo que reemplazamos la característica de interés con valores de cuadrícula z.
+La diferencia en la predicción es el <strong>Efecto</strong> que tiene la característica para una instancia individual en un intervalo determinado.
+La suma de la derecha suma los efectos de todas las instancias dentro de un intervalo que aparece en la fórmula como vecindario <span class="math inline">\(N_j(k)\)</span>.
+Dividimos esta suma por el número de instancias en este intervalo para obtener la diferencia promedio de las predicciones para este intervalo.
+Este promedio en el intervalo está cubierto por el término <strong>Local</strong> en el nombre ALE.
+El símbolo de suma izquierda significa que acumulamos los efectos promedio en todos los intervalos.
+El ALE (no centrado) de un valor de característica que se encuentra, por ejemplo, en el tercer intervalo es la suma de los efectos del primer, segundo y tercer intervalo.
+La palabra <strong>Acumulado</strong> en ALE refleja esto.</p>
+<p>Este efecto está centrado para que el efecto medio sea cero.</p>
+<p><span class="math display">\[\hat{\tilde{f}}_{j,ALE}(x)=\sum_{k=1}^{k_j(x)}\frac{1}{n_j(k)}\sum_{i:x_{j}^{(i)}\in{}N_j(k)}\left[f(z_{k,j},x^{(i)}_{\setminus{}j})-f(z_{k-1,j},x^{(i)}_{\setminus{}j})\right]\]</span></p>
+<p>El valor de la ALE puede interpretarse como el efecto principal de la característica en un cierto valor en comparación con la predicción promedio de los datos.
+Por ejemplo, una estimación de ALE de -2 en <span class="math inline">\(x_j = 3\)</span> significa que cuando la característica j-ésima tiene el valor 3, entonces la predicción es menor en 2 en comparación con la predicción promedio.</p>
+<p>Los cuantiles de la distribución de la característica se utilizan como la cuadrícula que define los intervalos.
+El uso de los cuantiles garantiza que haya el mismo número de instancias de datos en cada uno de los intervalos.
+Los cuantiles tienen la desventaja de que los intervalos pueden tener longitudes muy diferentes.
+Esto puede conducir a algunos gráficos ALE extraños si la característica de interés está muy sesgada, por ejemplo, muchos valores bajos y solo unos pocos valores muy altos.</p>
+<p><strong>Gráficos ALE para la interacción de dos características</strong></p>
+<p>Las gráficas ALE también pueden mostrar el efecto de interacción de dos características.
+Los principios de cálculo son los mismos que para una entidad única, pero trabajamos con celdas rectangulares en lugar de intervalos, porque tenemos que acumular los efectos en dos dimensiones.
+Además de ajustar el efecto medio general, también ajustamos los efectos principales de ambas características.
+Esto significa que ALE para dos características estima el efecto de segundo orden, que no incluye los efectos principales de las características.
+En otras palabras, ALE para dos características solo muestra el efecto de interacción adicional de las dos características.
+Le ahorro las fórmulas para gráficos 2D ALE porque son largas y desagradables de leer.
+Si estás interesado en el cálculo, te remito al artículo, fórmulas (13) - (16).
+Confiaré en las visualizaciones para desarrollar la intuición sobre el cálculo de ALE de segundo orden.</p>
+<div class="figure"><span id="fig:aleplot-computation-2d"></span>
+<img src="images/aleplot-computation-2d-1.png" alt="Cálculo de 2D-ALE. Colocamos una cuadrícula sobre las dos características. En cada celda de la cuadrícula calculamos las diferencias de segundo orden para todas las instancias dentro. Primero reemplazamos los valores de x1 y x2 con los valores de las esquinas de las celdas. Si a, b, c y d representan las predicciones de &quot;esquina&quot; de una instancia manipulada (como se indica en el gráfico), entonces la diferencia de segundo orden es (d - c) - (b - a). La diferencia media de segundo orden en cada celda se acumula sobre la cuadrícula y se centra." width="1050" />
+<p class="caption">
+FIGURA 5.13: Cálculo de 2D-ALE. Colocamos una cuadrícula sobre las dos características. En cada celda de la cuadrícula calculamos las diferencias de segundo orden para todas las instancias dentro. Primero reemplazamos los valores de x1 y x2 con los valores de las esquinas de las celdas. Si a, b, c y d representan las predicciones de “esquina” de una instancia manipulada (como se indica en el gráfico), entonces la diferencia de segundo orden es (d - c) - (b - a). La diferencia media de segundo orden en cada celda se acumula sobre la cuadrícula y se centra.
+</p>
+</div>
+<p>En la figura anterior, muchas celdas están vacías debido a la correlación.
+En el diagrama ALE, esto se puede visualizar con un cuadro atenuado u oscurecido.
+Alternativamente, puede reemplazar la estimación de ALE que falta de una celda vacía con la estimación de ALE de la celda no vacía más cercana.</p>
+<p>Dado que las estimaciones de ALE para dos características solo muestran el efecto de segundo orden de las características, la interpretación requiere atención especial.
+El efecto de segundo orden es el efecto de interacción adicional de las características después de haber contabilizado los efectos principales de las características.
+Supongamos que dos características no interactúan, pero cada una tiene un efecto lineal sobre el resultado predicho.
+En el gráfico 1D ALE para cada entidad, veríamos una línea recta como la curva ALE estimada.
+Pero cuando graficamos las estimaciones 2D ALE, deberían estar cerca de cero, porque el efecto de segundo orden es solo el efecto adicional de la interacción.
+Las gráficas ALE y PD son diferentes en este sentido:
+Los PDP siempre muestran el efecto total, los gráficos ALE muestran el efecto de primer o segundo orden.
+Estas son decisiones de diseño que no dependen de las matemáticas subyacentes.
+Puede restar los efectos de orden inferior en un gráfico de dependencia parcial para obtener los efectos puros principales o de segundo orden o puede obtener una estimación del total de gráficos de ALE evitando restar los efectos de orden inferior.</p>
+<p>Los efectos locales acumulados también podrían calcularse para órdenes arbitrariamente más altas (interacciones de tres o más características), pero como se argumenta en el <a href="pdp.html#pdp">capítulo PDP</a>, solo tiene sentido hasta dos características, porque las interacciones más altas no se pueden visualizar o incluso interpretado de manera significativa.</p>
+<p><strong>ALE para características categóricas</strong></p>
+<p>El método de efectos locales acumulados necesita, por definición, los valores de las características para tener un orden, porque el método acumula efectos en una determinada dirección.
+Las características categóricas no tienen ningún orden natural.
+Para calcular un gráfico ALE para una característica categórica, tenemos que crear o encontrar un pedido de alguna manera.
+El orden de las categorías influye en el cálculo e interpretación de los efectos locales acumulados.</p>
+<p>Una solución es ordenar las categorías según su similitud en función de las otras características.
+La distancia entre dos categorías es la suma de las distancias de cada entidad.
+La distancia en función de las características compara la distribución acumulativa en ambas categorías, también llamada distancia de Kolmogorov-Smirnov (para características numéricas) o las tablas de frecuencias relativas (para características categóricas).
+Una vez que tenemos las distancias entre todas las categorías, usamos escalas multidimensionales para reducir la matriz de distancia a una medida de distancia unidimensional.
+Esto nos da un orden de similitud basado en las categorías.</p>
+<p>Para aclarar esto un poco, aquí hay un ejemplo:
+Supongamos que tenemos las dos características categóricas “estación” y “clima” y una característica numérica “temperatura”.
+Para la primera característica categórica (estación) queremos calcular los ALE.
+La variable tiene las categorías “primavera”, “verano”, “otoño”, “invierno”.
+Comenzamos a calcular la distancia entre las categorías “primavera” y “verano”.
+La distancia es la suma de distancias sobre la temperatura y el clima de las características.
+Para la temperatura, tomamos todas las instancias con la temporada “primavera”, calculamos la función empírica de distribución acumulativa y hacemos lo mismo para las instancias con la temporada “verano” y medimos su distancia con la estadística de Kolmogorov-Smirnov.
+Para la característica del clima, calculamos para todas las instancias de “primavera” las probabilidades para cada tipo de clima, hacemos lo mismo para las instancias de “verano” y sumamos las distancias absolutas en la distribución de probabilidad.
+Si “primavera” y “verano” tienen temperaturas y clima muy diferentes, la distancia total por categoría es grande.
+Repetimos el procedimiento con los otros pares estacionales y reducimos la matriz de distancias resultante a una sola dimensión mediante escalamiento multidimensional.</p>
+</div>
+<div id="ejemplos-2" class="section level3">
+<h3><span class="header-section-number">5.3.4</span> Ejemplos</h3>
+<p>Veamos las gráficas ALE en acción.
+He construido un escenario en el que los PDP fallan.
+El escenario consiste en un modelo de predicción y dos características fuertemente correlacionadas.
+El modelo de predicción es principalmente un modelo de regresión lineal, pero hace algo extraño en una combinación de las dos características para las cuales nunca hemos observado casos.</p>
+<div class="figure"><span id="fig:correlation-problem"></span>
+<img src="images/correlation-problem-1.png" alt="Dos características y el resultado predicho. El modelo predice la suma de las dos características (fondo sombreado), con la excepción de que si x1 es mayor que 0.7 y x2 menor que 0.3, el modelo siempre predice 2. Esta área está lejos de la distribución de datos (nube de puntos) y no afecta el rendimiento del modelo y tampoco debería afectar su interpretación. " width="1050" />
+<p class="caption">
+FIGURA 5.14: Dos características y el resultado predicho. El modelo predice la suma de las dos características (fondo sombreado), con la excepción de que si x1 es mayor que 0.7 y x2 menor que 0.3, el modelo siempre predice 2. Esta área está lejos de la distribución de datos (nube de puntos) y no afecta el rendimiento del modelo y tampoco debería afectar su interpretación.
+</p>
+</div>
+<p>¿Es este un escenario realista y relevante en absoluto?
+Cuando entrenas un modelo, el algoritmo de aprendizaje minimiza la pérdida de las instancias de datos de entrenamiento existentes.
+Pueden ocurrir cosas extrañas fuera de la distribución de datos de entrenamiento, porque el modelo no está penalizado por hacer cosas extrañas en estas áreas.
+Salir de la distribución de datos se llama extrapolación, que también se puede utilizar para engañar a los modelos de aprendizaje automático, que se describe en el <a href="adversarial.html#adversarial">capítulo sobre ejemplos adversos</a>.
+Vea en nuestro pequeño ejemplo cómo se comportan las gráficas de dependencia parcial en comparación con las gráficas ALE.</p>
+<div class="figure"><span id="fig:correlation-pdp-ale-plot"></span>
+<img src="images/correlation-pdp-ale-plot-1.png" alt="Comparación de los efectos característicos calculados con PDP (fila superior) y ALE (fila inferior). Las estimaciones de PDP están influenciadas por el comportamiento extraño del modelo externo la distribución de datos (saltos pronunciados en las gráficas). Las gráficas ALE identifican correctamente que el modelo de aprendizaje automático tiene una relación lineal entre las características y la predicción, ignorando las áreas sin datos." width="1050" />
+<p class="caption">
+FIGURA 5.15: Comparación de los efectos característicos calculados con PDP (fila superior) y ALE (fila inferior). Las estimaciones de PDP están influenciadas por el comportamiento extraño del modelo externo la distribución de datos (saltos pronunciados en las gráficas). Las gráficas ALE identifican correctamente que el modelo de aprendizaje automático tiene una relación lineal entre las características y la predicción, ignorando las áreas sin datos.
+</p>
+</div>
+<p>Pero, ¿no es interesante ver que nuestro modelo se comporta de manera extraña en x1&gt;0.7 y x2&lt;0.3?
+Pues sí y no.
+Dado que estas son instancias de datos que pueden ser físicamente imposibles o al menos extremadamente improbables, generalmente es irrelevante analizar estas instancias.
+Pero si sospechas que tu distribución de prueba puede ser ligeramente diferente y algunas instancias están realmente en ese rango, entonces sería interesante incluir esta área en el cálculo de los efectos de características.
+Pero tiene que ser una decisión consciente incluir áreas donde aún no hemos observado datos y no debe ser un efecto secundario del método de elección como PDP.
+Si sospechas que el modelo se usará más tarde con datos distribuidos de manera diferente, te recomiendo usar gráficos ALE y simular la distribución de datos que esperas.</p>
+<p>En cuanto a un conjunto de datos real, pronostiquemos el <a href="bike-data.html#bike-data">número de bicicletas alquiladas</a> según el clima y el día y verifiquemos si las gráficas ALE realmente funcionan tan bien como se prometió.
+Entrenamos un árbol de regresión para predecir el número de bicicletas alquiladas en un día determinado y utilizamos gráficas ALE para analizar cómo la temperatura, la humedad relativa y la velocidad del viento influyen en las predicciones.
+Veamos lo que dicen las gráficas ALE:</p>
+<div class="figure"><span id="fig:ale-bike"></span>
+<img src="images/ale-bike-1.png" alt="Gráficos ALE para el modelo de predicción de bicicletas por temperatura, humedad y velocidad del viento. La temperatura tiene un efecto fuerte en la predicción. La predicción promedio crece con el incremento de la temperatura, pero decrece sobre los 25 grados Celsius. La humedad tiene un efecto negativo: sobre el 60%, la más alta humedad baja la predicción. La velocidad del vientono afecta la predicción demasiado." width="1050" />
+<p class="caption">
+FIGURA 5.16: Gráficos ALE para el modelo de predicción de bicicletas por temperatura, humedad y velocidad del viento. La temperatura tiene un efecto fuerte en la predicción. La predicción promedio crece con el incremento de la temperatura, pero decrece sobre los 25 grados Celsius. La humedad tiene un efecto negativo: sobre el 60%, la más alta humedad baja la predicción. La velocidad del vientono afecta la predicción demasiado.
+</p>
+</div>
+<p>Veamos la correlación entre temperatura, humedad y velocidad del viento y todas las demás características.
+Dado que los datos también contienen características categóricas, no solo podemos usar el coeficiente de correlación de Pearson, que solo funciona si ambas características son numéricas.
+En cambio, entreno un modelo lineal para predecir, por ejemplo, la temperatura basada en una de las otras características como entrada.
+Luego mido cuánta varianza explica la otra característica en el modelo lineal y tomo la raíz cuadrada.
+Si la otra característica era numérica, entonces el resultado es igual al valor absoluto del coeficiente de correlación de Pearson estándar.
+Pero este enfoque basado en modelos de “explicación por la varianza” (también llamado ANOVA, que significa Análisis de varianza) funciona incluso si la otra característica es categórica.
+La medida “explicada por la varianza” se encuentra siempre entre 0 (sin asociación) y 1 (la temperatura puede predecirse perfectamente a partir de la otra característica).
+Calculamos la varianza explicada de temperatura, humedad y velocidad del viento con todas las demás características.
+Cuanto mayor sea la varianza explicada (correlación), más problemas (potenciales) con los gráficos de DP.
+La siguiente figura visualiza cuán fuertemente se correlacionan las características climáticas con otras características.</p>
+<div class="figure"><span id="fig:ale-bike-cor"></span>
+<img src="images/ale-bike-cor-1.png" alt="La fuerza de la correlación entre temperatura, humedad y velocidad del viento con todas las características, medida como la cantidad de variación explicada, cuando entrenamos un modelo lineal con, por ejemplo, temperatura para predecir y estación como característica. Para la temperatura observamos, no sorprendentemente, una alta correlación con la estación y el mes. La humedad se correlaciona con la situación climática." width="1050" />
+<p class="caption">
+FIGURA 5.17: La fuerza de la correlación entre temperatura, humedad y velocidad del viento con todas las características, medida como la cantidad de variación explicada, cuando entrenamos un modelo lineal con, por ejemplo, temperatura para predecir y estación como característica. Para la temperatura observamos, no sorprendentemente, una alta correlación con la estación y el mes. La humedad se correlaciona con la situación climática.
+</p>
+</div>
+<p>Este análisis de correlación revela que podemos encontrar problemas con los gráficos de dependencia parcial, especialmente para la característica de temperatura.
+Bueno, compruébalo tú mismo:</p>
+<div class="figure"><span id="fig:pdp-bike-compare"></span>
+<img src="images/pdp-bike-compare-1.png" alt="PDP para temperatura, humedad y velocidad del viento. En comparación con las gráficas ALE, las PDP muestran una disminución menor en el número previsto de bicicletas para alta temperatura o alta humedad. El PDP utiliza todas las instancias de datos para calcular el efecto de las altas temperaturas, incluso si son, por ejemplo, instancias con la temporada &quot;invierno&quot;. Las gráficas ALE son más confiables." width="1050" />
+<p class="caption">
+FIGURA 5.18: PDP para temperatura, humedad y velocidad del viento. En comparación con las gráficas ALE, las PDP muestran una disminución menor en el número previsto de bicicletas para alta temperatura o alta humedad. El PDP utiliza todas las instancias de datos para calcular el efecto de las altas temperaturas, incluso si son, por ejemplo, instancias con la temporada “invierno”. Las gráficas ALE son más confiables.
+</p>
+</div>
+<p>A continuación, veamos los gráficos ALE en acción para una característica categórica.
+El mes es una característica categórica para la que queremos analizar el efecto sobre el número previsto de bicicletas.
+Podría decirse que los meses ya tienen un cierto orden (enero a diciembre), pero intentemos ver qué sucede si primero reordenamos las categorías por similitud y luego calculamos los efectos.
+Los meses se ordenan por la similitud de días de cada mes en función de otras características, como la temperatura o si es feriado.</p>
+<div class="figure"><span id="fig:ale-bike-cat"></span>
+<img src="images/ale-bike-cat-1.png" alt="Gráfico ALE para el mes de la característica categórica. Los meses se ordenan por su similitud entre sí, según las distribuciones de las otras funciones por mes. Observamos que enero, marzo y abril, pero especialmente diciembre y noviembre, tienen un efecto menor en el número previsto de bicicletas alquiladas en comparación con los otros meses." width="1050" />
+<p class="caption">
+FIGURA 5.19: Gráfico ALE para el mes de la característica categórica. Los meses se ordenan por su similitud entre sí, según las distribuciones de las otras funciones por mes. Observamos que enero, marzo y abril, pero especialmente diciembre y noviembre, tienen un efecto menor en el número previsto de bicicletas alquiladas en comparación con los otros meses.
+</p>
+</div>
+<p>Dado que muchas de las características están relacionadas con el clima, el orden de los meses refleja fuertemente cuán similar es el clima entre los meses.
+Todos los meses más fríos están en el lado izquierdo (febrero a abril) y los meses más cálidos en el lado derecho (octubre a agosto).
+Ten en cuenta que las características no meteorológicas también se han incluido en el cálculo de similitud, por ejemplo, la frecuencia relativa de vacaciones tiene el mismo peso que la temperatura para calcular la similitud entre los meses.</p>
+<p>A continuación, consideramos el efecto de segundo orden de la humedad y la temperatura en el número previsto de bicicletas.
+Recuerda que el efecto de segundo orden es el efecto de interacción adicional de las dos características y no incluye los efectos principales.
+Esto significa que, por ejemplo, no verás el efecto principal de que la alta humedad conduce a un menor número de bicicletas predichas en promedio en el diagrama ALE de segundo orden.</p>
+<div class="figure"><span id="fig:ale-bike-2d"></span>
+<img src="images/ale-bike-2d-1.png" alt="Gráfico ALE para el efecto de segundo orden de la humedad y la temperatura en el número previsto de bicicletas alquiladas. El tono más claro indica un tono por encima del promedio y el más oscuro una predicción por debajo del promedio cuando los efectos principales ya se tienen en cuenta. La trama revela una interacción entre temperatura y humedad: el clima cálido y húmedo aumenta la predicción. En climas fríos y húmedos se muestra un efecto negativo adicional en el número de bicicletas predichas." width="1050" />
+<p class="caption">
+FIGURA 5.20: Gráfico ALE para el efecto de segundo orden de la humedad y la temperatura en el número previsto de bicicletas alquiladas. El tono más claro indica un tono por encima del promedio y el más oscuro una predicción por debajo del promedio cuando los efectos principales ya se tienen en cuenta. La trama revela una interacción entre temperatura y humedad: el clima cálido y húmedo aumenta la predicción. En climas fríos y húmedos se muestra un efecto negativo adicional en el número de bicicletas predichas.
+</p>
+</div>
+<p>Ten en cuenta que los dos efectos principales de la humedad y la temperatura indican que el número previsto de bicicletas disminuye en climas muy cálidos y húmedos.
+En climas cálidos y húmedos, el efecto combinado de temperatura y humedad no es, por lo tanto, la suma de los efectos principales, sino mayor que la suma.
+Para enfatizar la diferencia entre el efecto de segundo orden puro (el gráfico 2D ALE que acaba de ver) y el efecto total, veamos el gráfico de dependencia parcial.
+El PDP muestra el efecto total, que combina la predicción media, los dos efectos principales y el efecto de segundo orden (la interacción).</p>
+<div class="figure"><span id="fig:pdp-bike-vs-ale-2D"></span>
+<img src="images/pdp-bike-vs-ale-2D-1.png" alt="PDP del efecto total de la temperatura y la humedad en el número previsto de bicicletas. La trama combina el efecto principal de cada una de las características y su interacción efecto, a diferencia del gráfico 2D-ALE que solo muestra la interacción." width="1050" />
+<p class="caption">
+FIGURA 5.21: PDP del efecto total de la temperatura y la humedad en el número previsto de bicicletas. La trama combina el efecto principal de cada una de las características y su interacción efecto, a diferencia del gráfico 2D-ALE que solo muestra la interacción.
+</p>
+</div>
+<p>Si solo estás interesado en la interacción, debes mirar los efectos de segundo orden, ya que el efecto total mezcla los efectos principales en la trama.
+Pero si deseas conocer el efecto combinado de las características, debes mirar el efecto total (que muestra el PDP).
+Por ejemplo, si deseas conocer el número esperado de bicicletas a 30 grados Celsius y 80 por ciento de humedad, puedes leerlo directamente desde el PDP 2D.
+Si deseas leer lo mismo de los gráficos ALE, debes mirar tres gráficos:
+El gráfico ALE para temperatura, humedad y temperatura + humedad y también necesitas conocer la predicción media general.
+En un escenario donde dos características no tienen interacción, la gráfica de efecto total de las dos características podría ser engañosa porque probablemente muestra un paisaje complejo, lo que sugiere cierta interacción, pero es simplemente el producto de los dos efectos principales.
+El efecto de segundo orden mostraría inmediatamente que no hay interacción.</p>
+<p>Suficientes bicicletas por ahora, pasemos a una tarea de clasificación.
+Entrenamos un random forest para predecir la probabilidad de <a href="cervical.html#cervical">cáncer cervical</a> en función de los factores de riesgo.
+Visualizamos los efectos locales acumulados para dos de las características:</p>
+<div class="figure"><span id="fig:ale-cervical-1D"></span>
+<img src="images/ale-cervical-1D-1.png" alt="Gráfica ALE del efecto de la edad y los años con anticonceptivos hormonales en la probabilidad pronosticada de cáncer cervical. Para la característica de edad, la gráfica ALE muestra que la probabilidad pronosticada de cáncer es bajo en promedio hasta los 40 años y aumenta después de eso. El número de años con anticonceptivos hormonales se asocia con un mayor riesgo de cáncer previsto después de 8 años." width="1050" />
+<p class="caption">
+FIGURA 5.22: Gráfica ALE del efecto de la edad y los años con anticonceptivos hormonales en la probabilidad pronosticada de cáncer cervical. Para la característica de edad, la gráfica ALE muestra que la probabilidad pronosticada de cáncer es bajo en promedio hasta los 40 años y aumenta después de eso. El número de años con anticonceptivos hormonales se asocia con un mayor riesgo de cáncer previsto después de 8 años.
+</p>
+</div>
+<p>A continuación, observamos la interacción entre el número de embarazos y la edad.</p>
+<div class="figure"><span id="fig:ale-cervical-2d"></span>
+<img src="images/ale-cervical-2d-1.png" alt="Gráfico ALE del efecto de segundo orden del número de embarazos y la edad. La interpretación de la trama no es concluyente, ya que muestra lo que parece un sobreajuste. Por ejemplo, la gráfica muestra un comportamiento de modelo extraño a la edad de 18-20 años y más de 3 embarazos (aumento de hasta 5 puntos porcentuales en la probabilidad de cáncer). No hay muchas mujeres en los datos con esta constelación de edad y número de embarazos (los datos reales se muestran como puntos), por lo que el modelo no se penaliza severamente durante el entrenamiento por cometer errores para esas mujeres." width="1050" />
+<p class="caption">
+FIGURA 5.23: Gráfico ALE del efecto de segundo orden del número de embarazos y la edad. La interpretación de la trama no es concluyente, ya que muestra lo que parece un sobreajuste. Por ejemplo, la gráfica muestra un comportamiento de modelo extraño a la edad de 18-20 años y más de 3 embarazos (aumento de hasta 5 puntos porcentuales en la probabilidad de cáncer). No hay muchas mujeres en los datos con esta constelación de edad y número de embarazos (los datos reales se muestran como puntos), por lo que el modelo no se penaliza severamente durante el entrenamiento por cometer errores para esas mujeres.
+</p>
+</div>
+</div>
+<div id="ventajas-7" class="section level3">
+<h3><span class="header-section-number">5.3.5</span> Ventajas</h3>
+<p><strong>Las gráficas ALE son imparciales</strong>, lo que significa que aún funcionan cuando las características están correlacionadas.
+Las gráficas de dependencia parcial fallan en este escenario porque marginaron sobre combinaciones de valores de características improbables o incluso físicamente imposibles.</p>
+<p><strong>Los gráficos ALE son más rápidos de calcular</strong> que los PDP y se escalan con O(n), ya que el mayor número posible de intervalos es el número de instancias con un intervalo por instancia.
+El PDP requiere n veces el número de estimaciones de puntos de la cuadrícula.
+Para 20 puntos de cuadrícula, los PDP requieren 20 veces más predicciones que el gráfico ALE del caso más desfavorable donde se utilizan tantos intervalos como instancias.</p>
+<p>La <strong>interpretación de las gráficas ALE es clara</strong>: dependiendo de un valor dado, el efecto relativo de cambiar la característica en la predicción se puede leer de la gráfica ALE.
+<strong>Las gráficas ALE están centradas en cero</strong>.
+Esto hace que su interpretación sea agradable, porque el valor en cada punto de la curva ALE es la diferencia con la predicción media.
+<strong>El diagrama 2D ALE solo muestra la interacción</strong>:
+Si dos características no interactúan, la trama no muestra nada.</p>
+<p>En general, en la mayoría de las situaciones preferiría <strong>las gráficas ALE a las PDP</strong>, porque las características generalmente están correlacionadas en cierta medida.</p>
+</div>
+<div id="desventajas-7" class="section level3">
+<h3><span class="header-section-number">5.3.6</span> Desventajas</h3>
+<p><strong>Las gráficas ALE pueden volverse un poco inestables</strong> (muchas subidas y bajadas pequeñas) con una gran cantidad de intervalos.
+En este caso, reducir el número de intervalos hace que las estimaciones sean más estables, pero también suaviza y oculta parte de la verdadera complejidad del modelo de predicción.
+<strong>No existe una solución perfecta para establecer el número de intervalos</strong>.
+Si el número es demasiado pequeño, los gráficos ALE pueden no ser muy precisos.
+Si el número es demasiado alto, la curva puede volverse inestable.</p>
+<p>A diferencia de los PDP, <strong>los gráficos ALE no están acompañados por curvas ICE</strong>.
+Para los PDP, las curvas ICE son excelentes porque pueden revelar heterogeneidad en el efecto de la característica, lo que significa que el efecto de una característica se ve diferente para los subconjuntos de datos.
+Para los gráficos ALE solo puede verificar por intervalo si el efecto es diferente entre las instancias, pero cada intervalo tiene instancias diferentes, por lo que no es lo mismo que las curvas ICE.</p>
+<p><strong>Las estimaciones de ALE de segundo orden tienen una estabilidad variable en todo el espacio de características, que no se visualiza de ninguna manera.</strong>
+La razón de esto es que cada estimación de un efecto local en una celda utiliza un número diferente de instancias de datos.
+Como resultado, todas las estimaciones tienen una precisión diferente (pero siguen siendo las mejores estimaciones posibles).
+El problema existe en una versión menos severa para los gráficos ALE de efecto principal.
+El número de instancias es el mismo en todos los intervalos, gracias al uso de cuantiles como cuadrícula, pero en algunas áreas habrá muchos intervalos cortos y la curva ALE consistirá en muchas más estimaciones.
+Pero para intervalos largos, que pueden constituir una gran parte de toda la curva, hay comparativamente menos casos.
+Esto sucedió en la predicción ALE de cáncer de cuello uterino para la edad avanzada, por ejemplo.</p>
+<p><strong>Las gráficas de efectos de segundo orden pueden ser un poco molestas de interpretar</strong>, ya que siempre debes tener en cuenta los efectos principales.
+Es tentador leer los mapas de calor como el efecto total de las dos características, pero es solo el efecto adicional de la interacción.
+El efecto puro de segundo orden es interesante para descubrir y explorar interacciones, pero para interpretar cómo se ve el efecto, creo que tiene más sentido integrar los efectos principales en la trama.</p>
+<p>La implementación <strong>de los gráficos ALE es mucho más compleja</strong> y menos intuitiva en comparación con los gráficos de dependencia parcial.</p>
+<p>Aunque los gráficos ALE no están sesgados en caso de características correlacionadas, <strong>la interpretación sigue siendo difícil cuando las características están fuertemente correlacionadas</strong>.
+Porque si tienen una correlación muy fuerte, solo tiene sentido analizar el efecto de cambiar ambas características juntas y no de forma aislada.
+Esta desventaja no es específica de las gráficas ALE, sino un problema general de características fuertemente correlacionadas.</p>
+<p>Si las características no están correlacionadas y el tiempo de cálculo no es un problema, los PDP son ligeramente preferibles porque son más fáciles de entender y se pueden trazar junto con las curvas ICE.</p>
+<p>La lista de desventajas se ha vuelto bastante larga, pero no te dejes engañar por la cantidad de palabras que uso:
+Como regla general: usa ALE en lugar de PDP.</p>
+</div>
+<div id="implementación-y-alternativas" class="section level3">
+<h3><span class="header-section-number">5.3.7</span> Implementación y alternativas</h3>
+<p>¿Mencioné que <a href="pdp.html#pdp">los gráficos de dependencia parcial</a> y las <a href="ICE.html#ICE">curvas de expectativas condicionales individuales</a> son una alternativa? =)</p>
+<p>Que yo sepa, las gráficas ALE actualmente solo se implementan en R, en el <a href="https://cran.r-project.org/web/packages/ALEPlot/index.html">paquete ALEPlot R</a> creado por el inventor mismo, y en el <a href="https://cran.r-project.org/web/packages/iml/index.html">paquete iml</a>.</p>
+
+<!--{pagebreak}-->
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="30">
+<li id="fn30"><p>Apley, Daniel W. “Visualizing the effects of predictor variables in black box supervised learning models.” arXiv preprint arXiv:1612.08468 (2016).<a href="ale.html#fnref30" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="ICE.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="interacción.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/05.4-agnostic-ale.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

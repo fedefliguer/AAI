@@ -1,0 +1,210 @@
+## Atribución de funciones
+<!--
+Algo de literatura
+- Para la atribución de características: http://blog.qure.ai/notes/deep-learning-visualization-gradient-based-methods
+- http://blog.qure.ai/notes/visualizing_deep_learning
+-->
+
+
+La atribución de características explica las predicciones individuales al atribuir cada característica de entrada por cuánto cambió la predicción (negativa o positiva).
+Ya se trate de píxeles de entrada, datos tabulares o palabras.
+
+La atribución también se denomina a veces "relevancia" o "contribución".
+Solo observamos los métodos de atribución que no requieren modificar la red.
+Esto significa solo métodos que funcionan para una red capacitada.
+
+<!--Idea para el capítulo:
+- Comience con objetivo general
+- Explicar aproximadamente diferentes enfoques
+- Explicar más profundamente uno de los enfoques (LRP?)
+- Mostrar comparaciones en papel de enfoques
+- Ejemplo con VGG15, innvestigate https://github.com/albermax/innvestigate e imagen divertida.
+- Ventajas desventajas
+- Software
+-->
+
+Definicion formal:
+Un método de atribución de características de la predicción para la entrada p-dimensional x, en relación con alguna entrada base (¿o predicción?) Puede expresarse como un vector de relevancias: $(r_1,\ldots,r_p)$.
+El elemento j-ésimo r~j~ es la contribución de la entrada de la característica j-ésimo a la predicción.
+
+Hay dos formas de hacerlo:
+- Manipula la entrada y ve cómo cambia la salida:
+  Oclusión, Shapley Value, LIME, se mueven alrededor de las entradas, visualizan las direcciones en las que cambia la salida
+- Atribución de relevancia basada en gradiente: Distribuya la relevancia entre las entradas, generalmente por propagación hacia atrás (también aquí la deconvolución y algunos métodos basados en propagación hacia atrás).
+
+Problemas con la perturbación u oclusión: la red nunca fue entrenada en esas imágenes, está dejando el espacio de imágenes realistas.
+Puede no ser relevante cómo se comporta la red neuronal aquí.
+
+Gran problema con los métodos de retropropagación / atribución:
+La red neuronal tiene unidades de transformación no lineales, y así es como la mayoría de los métodos difieren en su forma de tratarlos.
+Por lo tanto, no está claro cómo propagarse a través de esas unidades.
+
+Desiderata, como se define en[^gradientes-integrados]:
+- Sensibilidad: si la entrada y la línea base difieren en una característica y tienen predicciones diferentes, la relevancia de esa característica no debe ser cero.
+Creo que es un requisito justo.
+El gradiente por sí solo no cumple con este axioma, porque el gradiente puede ser cero, pero tener características diferentes.
+También descontaminación y sensibilidad de rotura de propagación posterior guiada.
+- Invariancia de implementación: para dos redes que tienen exactamente las mismas predicciones, no importa cómo se vea la entrada, la atribución debe ser la misma.
+Incluso si las redes funcionan de manera diferente en el interior.
+Creo que esto también es una suposición justa.
+LRP y DeepLift no satisfacen la invariancia de implementación.
+Si los métodos no tienen invariancia de implementación, son sensibles al funcionamiento sin importancia de la red.
+- Completitud: el puntaje de las atribuciones / relevancia se suma a la diferencia entre la entrada xy la línea base elegida.
+Los degradados integrados, DeepList y LRRP lo hacen.
+- Dummy: si una red no depende en absoluto de una característica, su relevancia debería ser cero.
+- Linealidad: si combinamos linealmente dos redes (por ejemplo, la suma ponderada de la predicción de ambas), entonces la atribución de una característica también debería ser una suma ponderada (con los mismos pesos que en la combinación lineal).
+- Simetría: el intercambio de dos características debería producir la misma atribución (ver valor de shapley)
+
+(la mayoría de los axiomas son como sus equivalentes shapley)
+
+
+
+¿Cuál es la línea base elegida?
+a menudo la imagen completamente negra, que tiene una predicción cercana a cero.
+
+TODO: ¿Agregar axiomas de shapley aquí?
+Tal vez también aximos de otros periódicos también.
+
+
+Problemas con propagación hacia atrás guiada y métodos similares:
+Las imágenes se parecen mucho a la salida de los detectores de borde.
+Los detectores de borde son independientes del modelo y los datos, por lo que esto es realmente malo para la propagación inversa guiada.
+Gradients y GradCAM pasaron las verificaciones de cordura (aleatorización de modelo y datos).
+
+Desafortunadamente, muchos de esos métodos tienen problemas.
+En un experimento, donde las etiquetas se mezclaron y el modelo se volvió a entrenar, las explicaciones aún eran muy similares.
+Solo GradCAM estaba bien.
+
+La atribución de características también podría denominarse mapas de prominencia.
+Hay muchos enfoques para esto, todos muy similares.
+/ Solo veremos la idea general y señalaremos algunos de los enfoques.
+
+Buena visión general: HACIA MEJOR ENTENDIMIENTO DE LOS MÉTODOS DE ATRIBUCIÓN BASADOS EN GRADIENTES PARA REDES NEURALES PROFUNDAS.
+Este documento también sirvió para estructurar este artículo.
+
+Aquí consideramos las redes neuronales que generan como predicción un vector de longitud $C$, que incluye la regresión donde $C=1$.
+La salida de DNN se llama $S(x)=[S_1(x),\ldots,S_p(x)]$.
+Formalmente, todos esos métodos toman la entrada $x\in\mathbb{R}^p$ (pueden ser píxeles de imágenes, datos tabulares, palabras, ...) y generan una explicación $R^c=[R_1^c,\ldots,R_p^c]$, un valor de relevancia para cada una de las características de entrada p.
+La c indica la relevancia para la salida c-ésima.
+
+En la clasificación de varias clases, debe decidir qué clasificación considerar la relevancia de las entradas.
+Esta puede ser la clase correcta de ese ejemplo, al menos es un caso interesante para mirar.
+Pero también, si DNN estaba equivocado, podría ser interesante observar la relevancia de entrada para la clase incorrecta y también la relevancia para la clase correcta para la depuración.
+
+La palabra mapas de atribución significa que, para las imágenes, visualizamos los píxeles con rojo si contribuyeron positivamente, azul si negativamente.
+Por supuesto, puede elegir el color que desee.
+No hay reglas
+
+
+Todos los enfoques regresan, como explicación de una predicción individual, una suma ponderada:
+TODO: Fórmula para la atribución (suma lineal).
+
+
+Clasificación principal:
+- métodos basados en perturbaciones: calcule la atribución de características eliminando / enmascarando / alterando estas características, y haciendo la predicción nuevamente. Se estima el efecto marginal de la característica. depende de la cantidad de características que se perturben juntas (para las imágenes perturbarían los píxeles cercanos).
+- métodos basados en gradiente
+-
+
+
+El valor Shapley solo se aproxima generalmente, lea más en el CAPÍTULO DE ENLACE
+
+Algunos de esos métodos tienen la propiedad de Completitud, lo que significa que la suma de los valores de relevancia para todas las características de entrada suman la diferencia entre la predicción de la imagen / punto de datos menos la predicción de un punto de referencia (por ejemplo, todas las imágenes grises).
+Integrated Gradient y SHAP tienen esta propiedad.
+
+*Lista de enfoques*
+
+VISUALIZACIÓN DE DECISIONES DE RED NEURAL PROFUNDA: ANÁLISIS DE DIFERENCIA DE PREDICCIÓN:
+- Basado en Shapley Value para explicar predicciones individuales
+- La relevancia de la característica se estima midiendo cómo cambia la predicción si la característica es desconocida, simulando que la característica es desconocida.
+- lo que este documento hace de manera diferente: en lugar de simular
+- Implementación: https://github.com/lmzintgraf/DeepVis-PredDiff
+
+
+
+- DeepSHAP (basado en gradiente)
+  - Versión llamada DeepExplainer. Hay una conexión entre SHAP y DeepLift
+  - versión llamada GradientExplainer. Conexión entre SHAP y el algoritmo de entrada de degradado.
+- (epsilon) Propagación de relevancia de capa sabia (basada en gradiente)
+- DeepLift (basado en gradiente)
+- Descomposición profunda de Taylor (basada en gradiente)
+- Mapa de saliencia (basado en gradiente) https://arxiv.org/abs/1312.6034. Los mapas de prominencia son un método local, porque solo se considera el gradiente aroudn local, pero no las contribuciones globales absolutas. La mayoría de los otros métodos son globales. Probablemente Taylor decomp también sea local.
+- Gradient * Input (basado en gradiente, ¡sorpresa!) Https://arxiv.org/abs/1605.01713
+- Oclusión (basada en perturbación) https://arxiv.org/abs/1311.2901
+- Gradientes integrados (basados en gradientes) https://arxiv.org/abs/1703.01365
+- Muestreo de valor Shapley (basado en perturbación)
+- LIME (basado en perturbación)
+- Grad-CAM (basado en gradiente)
+- Red desconvolucional
+- Backpropagagion guiado
+
+Deep Lift y $\epsilon$-LRP se pueden volver a formular como una retropropagación informática para la función de gradiente modificada
+Ancona et. al 2018.
+
+Estos métodos basados en gradientes son todos diferentes para diferentes funciones de activación, ya que cuando se aplica la regla de cadena para derivación, reemplazan las activaciones no lineales con una función $g(x)$ que es diferente en diferentes métodos.
+
+
+TODO: Cree un ejemplo con diferentes métodos de relevancia.
+
+
+Implementaciones:
+
+https://github.com/oracle/Skater/blob/master/skater/core/local_interpretation/dnni/deep_interpreter.py
+
+Implementación de DeepLift https://github.com/kundajelab/deeplift
+DeepVisualization ToolBox https://github.com/yosinski/deep-visualization-toolbox
+Gradietns integrados https://github.com/ankurtaly/Integrated-Gradients
+SHAP https://github.com/slundberg/shap
+
+Algunos consejos y trucos (para LRP): métodos para interpretar y comprender las redes neuronales profundas
+LRP: debería funcionar mejor en ReLU
+
+TODO: Encuentre más consejos de este documento y mencione aquí.
+
+Ventajas de LRP sobre la desconvolución y el análisis de sensibilidad.
+https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=2ahUKEwj_5vL0m6DiAhUz8uAKHU6ED0oQFjAAegQIAhAC&url=https%3A%2F%tuf. 2Fmueller.pdf & usg = AOvVaw1yR_5ZwKPvKLxHvwsAfQgA
+
+
+TODO: Insertar imagen con detectores de borde
+
+### Para RNN
+
+Documento: Razonamiento visual de la atribución de características con redes neuronales recurrentes profundas
+
+### Ejemplo
+
+Quiero predecir lo siguiente:
+TODO: INCLUYE IMAGEN DE DOGO
+
+Red neuronal VGG16 TODO: CITE
+
+Clase más probable Italian_greyhound (35.21%)
+
+Y mi salida se ve así:
+
+TODO: todas las imágenes aquí
+
+TODO: Verifique el tiempo para cubrir pattern.net y pattern
+
+Todos los ejemplos se realizan con innVestigate
+
+
+### Ventajas
+- dar una manera de entender las predicciones
+-
+- mejor que las variantes agnósticas del modelo (por ejemplo, shapley) ya que dependen del gradiente y se pueden calcular más rápido.
+-
+
+
+
+### Desventajas
+- Debe ver qué métodos funcionan mejor para qué red. Parece que LRP funciona mejor cuando no hay demasiadas capas completamente conectadas, porque si hay demasiadas, la relevancia no será selectiva sino que se distribuirá a muchas capas.
+- Algunos métodos tienen similitudes con los detectores de borde, que son independientes de los datos y el modelo de entrenamiento.
+  La explicación se vuelve engañosa.
+
+Muchos de los métodos se implementan en DeepExplaiin Toolbox: https://github.com/marcoancona/DeepExplain
+
+
+
+
+[^integrated-gradients]: Sundararajan, Mukund, Ankur Taly, and Qiqi Yan. "Axiomatic attribution for deep networks." Proceedings of the 34th International Conference on Machine Learning-Volume 70. JMLR. org, 2017.
+

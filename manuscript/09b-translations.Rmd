@@ -1,0 +1,25 @@
+# Traducciones {#traducciones}
+
+**¿Interesado en traducir el libro?**
+
+Este libro está licenciado bajo [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-nc-sa/4.0/).
+Esto significa que puedes traducirlo y ponerlo en línea.
+Debes mencionarme como autor original y no puedes vender el libro.
+
+Si estás interesado en traducir el libro, puedes escribir un mensaje y puedo vincular tu traducción aquí.
+Mi dirección es christoph.molnar.ai@gmail.com.
+
+Inglés (versión original):
+
+- https://christophm.github.io/interpretable-ml-book/ Versión original por Christoph Molnar.
+
+
+**Lista de traducciones**
+
+Chino:
+
+- https://blog.csdn.net/wizardforcel/article/details/98992150 Traducción de la mayoría de los capítulos, por CSDN, una comunidad en línea de programadores.
+- https://zhuanlan.zhihu.com/p/63408696. Traducción de algunos capítulos por 知 乎. El sitio web también incluye preguntas y respuestas de varios usuarios.
+
+Si conoces alguna otra traducción del libro o de capítulos individuales, te agradecería saberlo y enumerarlo aquí.
+Puedes contactarme por correo electrónico: christoph.molnar.ai@gmail.com.

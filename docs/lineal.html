@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>4.1 Regresión lineal | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="4.1 Regresión lineal | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="4.1 Regresión lineal | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="simple.html"/>
+<link rel="next" href="logística.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="lineal" class="section level2">
+<h2><span class="header-section-number">4.1</span> Regresión lineal</h2>
+<p>Un modelo de regresión lineal predice el objetivo como una suma ponderada de las entradas de características.
+La linealidad de la relación facilita la interpretación.
+Los modelos de regresión lineal son utilizados por estadísticos, informáticos y otras personas que abordan problemas cuantitativos.</p>
+<p>Los modelos lineales se pueden usar para modelar la dependencia de un objetivo de regresión y de algunas características x.
+Las relaciones aprendidas son lineales y se pueden escribir para una sola instancia i de la siguiente manera:</p>
+<p><span class="math display">\[y=\beta_{0}+\beta_{1}x_{1}+\ldots+\beta_{p}x_{p}+\epsilon\]</span></p>
+<p>El resultado previsto de una instancia es una suma ponderada de sus características p.
+Los betas (<span class="math inline">\(\beta_{j}\)</span>) representan los pesos o coeficientes de las características aprendidas.
+El primer peso en la suma (<span class="math inline">\(\beta_0\)</span>) se denomina intercepto y no se multiplica con un valor de característica.
+El épsilon (<span class="math inline">\(\epsilon\)</span>) es el error que cometemos, es decir, la diferencia entre la predicción y el resultado real.
+Se supone que estos errores siguen una distribución gaussiana, lo que significa que cometemos errores en direcciones negativas y positivas y cometemos muchos errores pequeños y pocos errores grandes.</p>
+<p>Se pueden usar varios métodos para estimar el peso óptimo.
+El método de mínimos cuadrados ordinarios generalmente se usa para encontrar los pesos que minimizan las diferencias al cuadrado entre los resultados reales y los estimados:</p>
+<p><span class="math display">\[\hat{\boldsymbol{\beta}}=\arg\!\min_{\beta_0,\ldots,\beta_p}\sum_{i=1}^n\left(y^{(i)}-\left(\beta_0+\sum_{j=1}^p\beta_jx^{(i)}_{j}\right)\right)^{2}\]</span></p>
+<p>No discutiremos en detalle cómo se pueden encontrar los pesos óptimos, pero si estás interesado, puedes leer el capítulo 3.2 del libro “Los elementos del aprendizaje estadístico” (Friedman, Hastie y Tibshirani 2009)<a href="#fn16" class="footnote-ref" id="fnref16"><sup>16</sup></a> o uno de los otros recursos en línea sobre modelos de regresión lineal.</p>
+<p>La mayor ventaja de los modelos de regresión lineal es la linealidad:
+Simplifica el procedimiento de estimación y, lo que es más importante, estas ecuaciones lineales tienen una interpretación fácil de entender a nivel modular (es decir, los pesos).
+Esta es una de las principales razones por las que el modelo lineal y todos los modelos similares están tan extendidos en campos académicos como la medicina, la sociología, la psicología y muchos otros campos de investigación cuantitativa.
+Por ejemplo, en el campo de la medicina, no solo es importante predecir el resultado clínico de un paciente, sino también cuantificar la influencia del fármaco y al mismo tiempo tener en cuenta el sexo, la edad y otras características de manera interpretable.</p>
+<p>Los pesos estimados vienen con intervalos de confianza.
+Un intervalo de confianza es un rango para la estimación de peso que cubre el peso “verdadero” con una cierta confianza.
+Por ejemplo, un intervalo de confianza del 95% para un peso de 2 podría variar de 1 a 3.
+La interpretación de este intervalo sería:
+Si repetimos la estimación 100 veces con datos recién muestreados, el intervalo de confianza incluiría el peso verdadero en 95 de los 100 casos, dado que el modelo de regresión lineal es el modelo correcto para los datos.</p>
+<p>Si el modelo es el modelo “correcto” depende de si las relaciones en los datos cumplen ciertos supuestos, que son linealidad, normalidad, homocedasticidad, independencia, características fijas y ausencia de multicolinealidad.</p>
+<p><strong>Linealidad</strong></p>
+<p>El modelo de regresión lineal obliga a la predicción a ser una combinación lineal de características, que es tanto su mayor fortaleza como su mayor limitación.
+La linealidad conduce a modelos interpretables.
+Los efectos lineales son fáciles de cuantificar y describir.
+Son aditivos, por lo que es fácil separar los efectos.
+Si sospechas interacciones de entidades o una asociación no lineal de una entidad con el valor objetivo, puedes agregar términos de interacción o utilizar splines de regresión.</p>
+<p><strong>Normalidad</strong></p>
+<p>Se supone que el resultado objetivo dadas las características sigue una distribución normal.
+Si se viola esta suposición, los intervalos de confianza estimados de los pesos de las características no son válidos.</p>
+<p><strong>Homocedasticidad</strong> (varianza constante)</p>
+<p>Se supone que la varianza de los términos de error es constante en todo el espacio de características.
+Supón que deseas predecir el valor de una casa dada la superficie habitable en metros cuadrados.
+Estimas un modelo lineal que asume que, independientemente del tamaño de la casa, el error en torno a la respuesta pronosticada tiene la misma variación.
+Esta suposición a menudo se viola en la realidad.
+En el ejemplo de la casa, es plausible que la variación de los términos de error alrededor del precio predicho sea mayor para las casas más grandes, ya que los precios son más altos y hay más margen para las fluctuaciones de precios.
+Supón que el error promedio (diferencia entre el precio predicho y el real) en su modelo de regresión lineal es de 50,000 euros.
+Si asumes la homocedasticidad, asumes que el error promedio de 50,000 es el mismo para casas que cuestan 1 millón y para casas que cuestan solo 40,000.
+Esto no es razonable, porque significaría que podemos esperar precios de vivienda negativos.</p>
+<p><strong>Independencia</strong></p>
+<p>Se supone que cada observación es independiente de cualquier otra observación.
+Si realizas mediciones repetidas, como múltiples análisis de sangre por paciente, las observaciones no son independientes.
+Para datos dependientes necesitas modelos especiales de regresión lineal, como modelos de efectos mixtos, GLMM o GEE.
+Si usas el modelo de regresión lineal “normal”, puedes sacar conclusiones incorrectas del modelo.</p>
+<p><strong>Características fijas</strong></p>
+<p>Las características de entrada se consideran “fijas”.
+Fijo significa que se tratan como “constantes dadas” y no como variables estadísticas.
+Esto implica que están libres de errores de medición.
+Esta es una suposición poco realista.
+Sin ese supuesto, sin embargo, tendrías que adaptarte a modelos de error de medición muy complejos que tengan en cuenta los errores de medición de sus características de entrada.
+Y generalmente no quieres hacer eso.</p>
+<p><strong>Ausencia de multicolinealidad</strong></p>
+<p>No deseas características fuertemente correlacionadas, porque esto arruina la estimación de los pesos.
+En una situación en la que dos características están fuertemente correlacionadas, se vuelve problemático estimar los pesos porque los efectos de la característica son aditivos y se vuelve indeterminable a cuál de las características correlacionadas atribuir los efectos.</p>
+<div id="interpretación" class="section level3">
+<h3><span class="header-section-number">4.1.1</span> Interpretación</h3>
+<p>La interpretación de una ponderación en el modelo de regresión lineal depende del tipo de la característica correspondiente.</p>
+<ul>
+<li>Característica numérica: aumentar la característica numérica en una unidad cambia el resultado estimado por su peso.
+Un ejemplo de una característica numérica es el tamaño de una casa.</li>
+<li>Característica binaria: una característica que toma uno de los dos valores posibles para cada instancia.
+Un ejemplo es la característica “La casa viene con un jardín”.
+Uno de los valores cuenta como la categoría basal (en algunos lenguajes de programación codificados con 0), como “Sin jardín”.
+Cambiar la característica de la categoría basal a la otra categoría cambia el resultado estimado por el peso de la característica.</li>
+<li>Característica categórica con múltiples categorías:
+Una característica con un número fijo de valores posibles.
+Un ejemplo es la característica “tipo de piso”, con posibles categorías “alfombra”, “laminado” y “parquet”.
+Una solución para tratar con muchas categorías es la codificación en caliente -<em>hot encoding</em>-, lo que significa que cada categoría tiene su propia columna binaria.
+Para una característica categórica con categorías L, solo necesitas L-1 columnas, porque la columna restante tendría información redundante (por ejemplo, cuando las columnas 1 a L-1 tienen valor 0 para una instancia, sabemos que el valor de esa variable es el de la categoría restante).
+La interpretación para cada categoría es entonces la misma que la interpretación para las características binarias.
+Algunos lenguajes, como R, permiten codificar características categóricas de varias maneras, como <a href="lineal.html#categoricas">se describe más adelante en este capítulo</a>.</li>
+<li>Intercepto <span class="math inline">\(\beta_0\)</span>:
+El intercepto es el peso de la característica para la “característica constante”, que siempre es 1 para todas las instancias.
+La mayoría de los paquetes de software agregan automáticamente esta característica “1” para estimar la intercepción.
+La interpretación es:
+Para una instancia con todos los valores de características numéricas en cero y los valores de características categóricas en las categorías de referencia, la predicción del modelo es el peso del intercepto.
+La interpretación del intercepto generalmente no es relevante porque las instancias con todos los valores de características en cero a menudo no tienen sentido.
+La interpretación solo es significativa cuando las características se han estandarizado (media de cero, desviación estándar de uno).
+En estos casos, el intercepto refleja el resultado previsto de una instancia en la que todas las características tienen su valor medio.</li>
+</ul>
+<p>La interpretación de las características en el modelo de regresión lineal se puede automatizar mediante el uso de las siguientes plantillas de texto.</p>
+<p><strong>Interpretación de una característica numérica</strong></p>
+<p>Un aumento de la característica <span class="math inline">\(x_ {k}\)</span> en una unidad aumenta la predicción para y en <span class="math inline">\(\beta_k\)</span> unidades cuando todos los demás valores de la característica permanecen fijos.</p>
+<p><strong>Interpretación de una característica categórica</strong></p>
+<p>Cambiar la característica <span class="math inline">\(x_{k}\)</span> de la categoría de referencia a la otra categoría aumenta la predicción para y en <span class="math inline">\(\beta_{k}\)</span> cuando todas las demás funciones permanecen fijas.</p>
+<p>Otra medida importante para interpretar modelos lineales es la medición de R cuadrado.
+Esta medida te indica qué cantidad de la varianza total de tu resultado objetivo es explicada por el modelo.
+Cuanto mayor sea el R cuadrado, mejor explicará tu modelo los datos.
+La fórmula para calcular el R-cuadrado es:</p>
+<p><span class="math display">\[R^2=1-SSE/SST\]</span></p>
+<p>SSE es la suma al cuadrado de los términos de error:</p>
+<p><span class="math display">\[SSE=\sum_{i=1}^n(y^{(i)}-\hat{y}^{(i)})^2\]</span></p>
+<p>SST es la suma al cuadrado de la varianza de datos:</p>
+<p><span class="math display">\[SST=\sum_{i=1}^n(y^{(i)}-\bar{y})^2\]</span></p>
+<p>El SSE te indica cuánta varianza queda después de ajustar el modelo lineal, que se mide por las diferencias al cuadrado entre los valores objetivo predichos y reales.
+SST es la varianza total del resultado objetivo.
+El R-cuadrado te indica cuánta de tu varianza puede explicarse por el modelo lineal.
+El R-cuadrado varía entre 0 para modelos donde el modelo no explica los datos en absoluto y 1 para los modelos que explican toda la varianza en sus datos.</p>
+<p>Hay un problema, porque el R-cuadrado aumenta con el número de características en el modelo, incluso si no contienen ninguna información sobre el valor objetivo en absoluto.
+Por lo tanto, es mejor usar el R cuadrado ajustado, que representa la cantidad de características utilizadas en el modelo.
+Su cálculo es:</p>
+<p><span class="math display">\[\bar{R}^2=R^2-(1-R^2)\frac{n-1}{n-p-1}\]</span></p>
+<p>donde p es el número de características y n el número de instancias.</p>
+<p>No tiene sentido interpretar un modelo con un R cuadrado muy bajo (ajustado), porque dicho modelo básicamente no explica gran parte de la varianza.
+Cualquier interpretación de los pesos no sería significativa.</p>
+<p><strong>Importancia de la característica</strong></p>
+<p>La importancia de una característica en un modelo de regresión lineal se puede medir por el valor absoluto de su estadístico t.
+El estadístico t es el peso estimado escalado con su error estándar.</p>
+<p><span class="math display">\[t_{\hat{\beta}_j}=\frac{\hat{\beta}_j}{SE(\hat{\beta}_j)}\]</span></p>
+<p>Examinemos lo que esta fórmula nos dice:
+La importancia de una característica aumenta con el aumento de peso.
+Esto tiene sentido.
+Mientras más varianza tenga el peso estimado (= menos seguro estamos del valor correcto), menos importante es la característica.
+Esto también tiene sentido.</p>
+</div>
+<div id="ejemplo" class="section level3">
+<h3><span class="header-section-number">4.1.2</span> Ejemplo</h3>
+<p>En este ejemplo, utilizamos el modelo de regresión lineal para predecir el <a href="bike-data.html#bike-data">número de bicicletas alquiladas</a> en un día en particular, dada la información del clima y el calendario.
+Para la interpretación, examinamos los pesos de regresión estimados.
+Las características se reparten entre numéricas y categóricas.
+Para cada característica, la tabla muestra el peso estimado, el error estándar de la estimación (SE) y el valor absoluto del estadístico t (|t|).</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Weight</th>
+<th align="right">SE</th>
+<th align="right">|t|</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">2399.4</td>
+<td align="right">238.3</td>
+<td align="right">10.1</td>
+</tr>
+<tr class="even">
+<td align="left">seasonSUMMER</td>
+<td align="right">899.3</td>
+<td align="right">122.3</td>
+<td align="right">7.4</td>
+</tr>
+<tr class="odd">
+<td align="left">seasonFALL</td>
+<td align="right">138.2</td>
+<td align="right">161.7</td>
+<td align="right">0.9</td>
+</tr>
+<tr class="even">
+<td align="left">seasonWINTER</td>
+<td align="right">425.6</td>
+<td align="right">110.8</td>
+<td align="right">3.8</td>
+</tr>
+<tr class="odd">
+<td align="left">holidayHOLIDAY</td>
+<td align="right">-686.1</td>
+<td align="right">203.3</td>
+<td align="right">3.4</td>
+</tr>
+<tr class="even">
+<td align="left">workingdayWORKING DAY</td>
+<td align="right">124.9</td>
+<td align="right">73.3</td>
+<td align="right">1.7</td>
+</tr>
+<tr class="odd">
+<td align="left">weathersitMISTY</td>
+<td align="right">-379.4</td>
+<td align="right">87.6</td>
+<td align="right">4.3</td>
+</tr>
+<tr class="even">
+<td align="left">weathersitRAIN/SNOW/STORM</td>
+<td align="right">-1901.5</td>
+<td align="right">223.6</td>
+<td align="right">8.5</td>
+</tr>
+<tr class="odd">
+<td align="left">temp</td>
+<td align="right">110.7</td>
+<td align="right">7.0</td>
+<td align="right">15.7</td>
+</tr>
+<tr class="even">
+<td align="left">hum</td>
+<td align="right">-17.4</td>
+<td align="right">3.2</td>
+<td align="right">5.5</td>
+</tr>
+<tr class="odd">
+<td align="left">windspeed</td>
+<td align="right">-42.5</td>
+<td align="right">6.9</td>
+<td align="right">6.2</td>
+</tr>
+<tr class="even">
+<td align="left">days_since_2011</td>
+<td align="right">4.9</td>
+<td align="right">0.2</td>
+<td align="right">28.5</td>
+</tr>
+</tbody>
+</table>
+<p>Interpretación de una característica numérica (temperatura):
+Un aumento de la temperatura en 1 grado Celsius aumenta el número previsto de bicicletas en 110.7, cuando todas las demás características permanecen fijas.</p>
+<p>Interpretación de una característica categórica (“weathersit”):
+El número estimado de bicicletas es -1901.5 más bajo cuando está lloviendo, nevando o tormentoso, en comparación con el buen tiempo - suponiendo nuevamente que todas las demás características no cambian.
+Cuando el clima es brumoso, el número previsto de bicicletas es -379.4 menor en comparación con el buen clima, dado que todas las demás características siguen siendo las mismas.</p>
+<p>Todas las interpretaciones siempre vienen con la nota al pie de página de que “todas las demás características siguen siendo las mismas”.
+Esto se debe a la naturaleza de los modelos de regresión lineal.
+El objetivo previsto es una combinación lineal de las características ponderadas.
+La ecuación lineal estimada es un hiperplano en el espacio característica / objetivo (una línea simple en el caso de una característica única).
+Los pesos especifican la pendiente (gradiente) del hiperplano en cada dirección.
+El lado bueno es que la aditividad aísla la interpretación de un efecto de característica individual de todas las demás características.
+Eso es posible porque todos los efectos de la característica (= peso por valor de la característica) en la ecuación se combinan con un signo más.
+En el lado negativo de las cosas, la interpretación ignora la distribución conjunta de las características.
+Aumentar una característica, pero no cambiar otra, puede conducir a puntos de datos poco realistas o al menos improbables.
+Por ejemplo, aumentar el número de habitaciones puede ser poco realista sin aumentar también el tamaño de una casa.</p>
+</div>
+<div id="interpretación-visual" class="section level3">
+<h3><span class="header-section-number">4.1.3</span> Interpretación visual</h3>
+<p>Varias visualizaciones hacen que el modelo de regresión lineal sea fácil y rápido de comprender para los humanos.</p>
+<div id="gráfica-de-peso" class="section level4">
+<h4><span class="header-section-number">4.1.3.1</span> Gráfica de peso</h4>
+<p>La información de la tabla de peso (estimaciones de peso y varianza) se puede visualizar en un gráfico de peso.
+La siguiente gráfica muestra los resultados del modelo de regresión lineal anterior.</p>
+<div class="figure"><span id="fig:linear-weights-plot"></span>
+<img src="images/linear-weights-plot-1.png" alt="Los pesos estimados se muestran en los puntos, y los intervalos del 95% de confianza se muestran en las líneas." width="1050" />
+<p class="caption">
+FIGURA 4.1: Los pesos estimados se muestran en los puntos, y los intervalos del 95% de confianza se muestran en las líneas.
+</p>
+</div>
+<p>La gráfica de peso muestra que el clima lluvioso / nevoso / tormentoso tiene un fuerte efecto negativo en el número previsto de bicicletas.
+El peso de la característica de día laborable es cercano a cero y se incluye cero en el intervalo del 95%, lo que significa que el efecto no es estadísticamente significativo.
+Algunos intervalos de confianza son muy cortos y las estimaciones son cercanas a cero, aunque los efectos característicos fueron estadísticamente significativos.
+La temperatura es uno de esos candidatos.
+El problema con la gráfica de peso es que las características se miden en diferentes escalas.
+Mientras que para el clima el peso estimado refleja la diferencia entre el clima bueno y lluvioso / tormentoso / nevado, para la temperatura solo refleja un aumento de 1 grado Celsius.
+Puedes hacer los pesos más comparables al escalar las características (media cero y desviación estándar de uno) antes de ajustar el modelo lineal.</p>
+</div>
+<div id="gráfico-de-efectos" class="section level4">
+<h4><span class="header-section-number">4.1.3.2</span> Gráfico de efectos</h4>
+<p>Los pesos del modelo de regresión lineal pueden analizarse de manera más significativa cuando se multiplican por los valores reales de la característica.
+Los pesos dependen de la escala de las funciones y serán distintos, si tienes una variable que mida la altura de una persona y cambias de metro a centímetro.
+El peso cambiará, pero los efectos reales en sus datos no lo harán.
+También es importante conocer la distribución de su característica en los datos, porque si tiene una variación muy baja, significa que casi todas las instancias tienen una contribución similar de esta característica.
+La gráfica de efectos puede ayudarte a comprender cuánto contribuye la combinación de peso y función a las predicciones en sus datos.
+Comienza calculando los efectos, que es el peso por característica multiplicado por el valor de característica de una instancia:</p>
+<p><span class="math display">\[\text{effect}_{j}^{(i)}=w_{j}x_{j}^{(i)}\]</span></p>
+<p>Los efectos se pueden visualizar con diagramas de caja.
+Una caja contiene el rango de efectos para la mitad de sus datos (cuantiles de efectos del 25% al 75%).
+La línea vertical en el cuadro es el efecto medio, es decir, el 50% de las instancias tienen un efecto más bajo y la otra mitad más alto en la predicción.
+Las líneas horizontales se extienden a <span class="math inline">\(\pm1.5\text{IQR}/\sqrt{n}\)</span>, siendo IQR el rango intercuartil (Q3 menos Q1).
+Los puntos son valores atípicos.
+Los efectos de características categóricas se pueden resumir en una sola gráfica de caja, en comparación con la gráfica de peso, donde cada categoría tiene su propia fila.</p>
+<div class="figure"><span id="fig:linear-effects"></span>
+<img src="images/linear-effects-1.png" alt="El gráfico de efectos de características muestra la distribución de los efectos (=valor de característica veces peso de característica) en los datos, por característica." width="1050" />
+<p class="caption">
+FIGURA 4.2: El gráfico de efectos de características muestra la distribución de los efectos (=valor de característica veces peso de característica) en los datos, por característica.
+</p>
+</div>
+<p>Las mayores contribuciones al número esperado de bicicletas alquiladas provienen de la variable de temperatura y la variable de días, que captura la tendencia del alquiler de bicicletas con el tiempo.
+La temperatura tiene un amplio rango de cuánto contribuye a la predicción.
+La característica de tendencia del día va de cero a grandes contribuciones positivas, porque el primer día en el conjunto de datos (01.01.2011) tiene un efecto de tendencia muy pequeño y el peso estimado para esta característica es positivo (4.93).
+Esto significa que el efecto aumenta con cada día y es más alto para el último día en el conjunto de datos (31.12.2012).
+Ten en cuenta que para los efectos con un peso negativo, las observaciones con un efecto positivo son aquellas que tienen un valor de característica negativo.
+Por ejemplo, los días con un alto efecto negativo de la velocidad del viento son los que tienen altas velocidades del viento.</p>
+</div>
+</div>
+<div id="explicación-de-predicciones-individuales" class="section level3">
+<h3><span class="header-section-number">4.1.4</span> Explicación de predicciones individuales</h3>
+<p>¿Cuánto ha contribuido cada característica de una instancia a la predicción?
+Esto puede responderse calculando los efectos para esta instancia.
+Una interpretación de los efectos específicos de la observación solo tiene sentido en comparación con la distribución del efecto para cada característica.
+Queremos explicar la predicción del modelo lineal para la 6 observación del conjunto de datos de la bicicleta.
+La instancia tiene los siguientes valores de características.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Feature</th>
+<th align="left">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">season</td>
+<td align="left">SPRING</td>
+</tr>
+<tr class="even">
+<td align="left">yr</td>
+<td align="left">2011</td>
+</tr>
+<tr class="odd">
+<td align="left">mnth</td>
+<td align="left">JAN</td>
+</tr>
+<tr class="even">
+<td align="left">holiday</td>
+<td align="left">NO HOLIDAY</td>
+</tr>
+<tr class="odd">
+<td align="left">weekday</td>
+<td align="left">THU</td>
+</tr>
+<tr class="even">
+<td align="left">workingday</td>
+<td align="left">WORKING DAY</td>
+</tr>
+<tr class="odd">
+<td align="left">weathersit</td>
+<td align="left">GOOD</td>
+</tr>
+<tr class="even">
+<td align="left">temp</td>
+<td align="left">1.604356</td>
+</tr>
+<tr class="odd">
+<td align="left">hum</td>
+<td align="left">51.8261</td>
+</tr>
+<tr class="even">
+<td align="left">windspeed</td>
+<td align="left">6.000868</td>
+</tr>
+<tr class="odd">
+<td align="left">cnt</td>
+<td align="left">1606</td>
+</tr>
+<tr class="even">
+<td align="left">days_since_2011</td>
+<td align="left">5</td>
+</tr>
+</tbody>
+</table>
+<p>Para obtener los efectos de característica de esta instancia, tenemos que multiplicar sus valores de característica por los pesos correspondientes del modelo de regresión lineal.
+Para el valor “WORKING DAY” de la característica “workingday”, el efecto es, 124.9.
+Para una temperatura de 1.6 grados Celsius, el efecto es 177.6.
+Agregamos estos efectos individuales como cruces al gráfico de efectos, que nos muestra la distribución de los efectos en los datos.
+Esto nos permite comparar los efectos individuales con la distribución de efectos en los datos.</p>
+<div class="figure"><span id="fig:linear-effects-single"></span>
+<img src="images/linear-effects-single-1.png" alt="El gráfico de efectos para una observación muestra la distribución del efecto y marca con una cruz la instancia de interés." width="1050" />
+<p class="caption">
+FIGURA 4.3: El gráfico de efectos para una observación muestra la distribución del efecto y marca con una cruz la instancia de interés.
+</p>
+</div>
+<p>Si promediamos las predicciones para las instancias de datos de entrenamiento, obtenemos un promedio de 4504.
+En comparación, la predicción de la instancia 6-ésima es pequeña, ya que solo se predicen 1571 alquileres de bicicletas.
+El gráfico de efectos revela la razón por la cual.
+Los diagramas de caja muestran las distribuciones de los efectos para todas las instancias del conjunto de datos, los cruces muestran los efectos para la instancia 6.
+La instancia 6 tiene un efecto de baja temperatura porque en este día la temperatura era de 2 grados, que es baja en comparación con la mayoría de los otros días (y recuerde que el peso de la característica de temperatura es positivo).
+Además, el efecto de la característica de tendencia “days_since_2011” es pequeño en comparación con otras instancias de datos porque esta instancia es de principios de 2011 (5 days) y la característica de tendencia también tiene un peso positivo.</p>
+</div>
+<div id="categoricas" class="section level3">
+<h3><span class="header-section-number">4.1.5</span> Codificación de características categóricas</h3>
+<p>Hay varias formas de codificar una característica categórica, y la elección influye en la interpretación de los pesos.</p>
+<p>El estándar en los modelos de regresión lineal es la codificación del tratamiento, que es suficiente en la mayoría de los casos.
+Usando diferentes codificaciones se reduce a crear diferentes matrices (de diseño) desde una sola columna con la variable categórica.
+Esta sección presenta tres codificaciones diferentes, pero hay muchas más.
+El ejemplo utilizado tiene seis instancias y una característica categórica con tres categorías.
+Para las dos primeras instancias, la característica toma la categoría A;
+para los casos tres y cuatro, categoría B;
+y para las dos últimas instancias, categoría C.</p>
+<p><strong>Codificación de tratamiento</strong></p>
+<p>En la codificación del tratamiento, el peso por categoría es la diferencia estimada en la predicción entre la categoría correspondiente y la categoría basal, o de referencia.
+El intercepto intersección del modelo lineal es la media de la categoría de referencia (cuando todas las demás características siguen siendo las mismas).
+La primera columna de la matriz de diseño es el intercepto, que siempre es 1.
+La columna dos indica si la instancia i está en la categoría B, la columna tres indica si está en la categoría C.
+No hay necesidad de una columna para la categoría A, porque entonces la ecuación lineal estaría sobreespecificada y no se puede encontrar una solución única para los pesos.
+Es suficiente saber que una instancia no está en la categoría B o C.</p>
+<p>Matriz de características: <span class="math display">\[\begin{pmatrix}1&amp;0&amp;0\\1&amp;0&amp;0\\1&amp;1&amp;0\\1&amp;1&amp;0\\1&amp;0&amp;1\\1&amp;0&amp;1\\\end{pmatrix}\]</span></p>
+<p><strong>Codificación de efecto</strong></p>
+<p>En la codificación de efecto, el peso por categoría es la diferencia en la y-estimada en la categoría correspondiente a la media general (dado que todas las demás características son cero o la categoría basal).
+La primera columna se usa para estimar la intersección.
+El peso <span class="math inline">\(\beta_{0}\)</span> asociado con el intercepto representa la media general y <span class="math inline">\(\beta_{1}\)</span>, el peso de la columna dos, es la diferencia entre la media general y la categoría B.
+El efecto total de la categoría B es <span class="math inline">\(\beta_{0}+\beta_{1}\)</span>.
+La interpretación para la categoría C es equivalente.
+Para la categoría de referencia A, <span class="math inline">\(-(\beta_{1}+\beta_{2})\)</span> es la diferencia con la media general y <span class="math inline">\(\beta_{0}-(\beta_{1}+\beta_{2})\)</span> el efecto general.</p>
+<p>Matriz de características: <span class="math display">\[\begin{pmatrix}1&amp;-1&amp;-1\\1&amp;-1&amp;-1\\1&amp;1&amp;0\\1&amp;1&amp;0\\1&amp;0&amp;1\\1&amp;0&amp;1\\\end{pmatrix}\]</span></p>
+<p><strong>Codificación dummy</strong></p>
+<p>En la codificación dummy, el <span class="math inline">\(\beta\)</span> por categoría es el valor medio estimado de y para cada categoría (dado que todos los demás valores de características son cero o la categoría basal).
+Ten en cuenta que la intersección se ha omitido aquí para que se pueda encontrar una solución única para los pesos del modelo lineal.</p>
+<p>Matriz de características: <span class="math display">\[\begin{pmatrix}1&amp;0&amp;0\\1&amp;0&amp;0\\0&amp;1&amp;0\\0&amp;1&amp;0\\0&amp;0&amp;1\\0&amp;0&amp;1\\\end{pmatrix}\]</span></p>
+<p>Si deseas profundizar un poco más en las diferentes codificaciones de características categóricas, consulta <a href="http://stats.idre.ucla.edu/r/library/r-library-contrast-coding-systems-for%20-categorical-variables%20/">esta página web de resumen</a> y
+<a href="http://heidiseibold.github.io/page7/">esta publicación de blog</a>.</p>
+</div>
+<div id="los-modelos-lineales-crean-buenas-explicaciones" class="section level3">
+<h3><span class="header-section-number">4.1.6</span> ¿Los modelos lineales crean buenas explicaciones?</h3>
+<p>A juzgar por los atributos que constituyen una buena explicación, como se presenta <a href="amigables.html#buenaexplicación">en el capítulo Explicaciones amigables para los humanos</a>, los modelos lineales no crean las mejores explicaciones.
+Son contrastantes, pero la referencia es una observación donde todas las características numéricas son cero y las características categóricas están en sus categorías basales.
+Esta suele ser una instancia artificial sin sentido que es poco probable que ocurra en sus datos o realidad.
+Hay una excepción:
+Si todas las características numéricas están centradas en la media (característica menos la media de la característica) y todas las características categóricas están codificadas por efecto, la instancia de referencia es el punto de datos donde todas las características toman el valor medio de la característica.
+Esto también podría ser un punto de datos inexistente, pero al menos podría ser más probable o más significativo.
+En este caso, los pesos multiplicados por los valores de la característica (efectos de la característica) explican la contribución al resultado predicho en contraste con la “instancia media”.
+Otro aspecto de una buena explicación es la selectividad, que se puede lograr en modelos lineales usando menos características o entrenando modelos lineales dispersos.
+Pero por defecto, los modelos lineales no crean explicaciones selectivas.
+Los modelos lineales crean explicaciones verdaderas, siempre que la ecuación lineal sea un modelo apropiado para la relación entre características y resultados.
+Cuantas más no linealidades e interacciones haya, menos preciso será el modelo lineal y menos sinceras sus explicaciones.
+La linealidad hace que las explicaciones sean más generales y más simples.
+La naturaleza lineal del modelo, creo, es el factor principal por el cual las personas usan modelos lineales para explicar las relaciones.</p>
+</div>
+<div id="lineales-dispersos" class="section level3">
+<h3><span class="header-section-number">4.1.7</span> Modelos lineales dispersos</h3>
+<p>Los ejemplos de los modelos lineales que he elegido se ven bien y ordenados, ¿no es así?
+Pero en realidad, es posible que no tengas solo un puñado de características, sino cientos o miles.
+En esos casos, la interpretabilidad va cuesta abajo.
+Incluso puedes encontrarte en una situación en la que hay más características que instancias, y no puede ajustarse a un modelo lineal estándar en absoluto.
+La buena noticia es que hay formas de introducir la reducción (= pocas características) en los modelos lineales.</p>
+<div id="lasso" class="section level4">
+<h4><span class="header-section-number">4.1.7.1</span> Lasso</h4>
+<p>Lasso es una forma automática y conveniente de introducir la reducción en el modelo de regresión lineal.
+Lasso significa “operador de reducción y selección, menor absoluto” y, cuando se aplica en un modelo de regresión lineal, realiza la selección de características y la regularización de los pesos de las características seleccionadas.
+Consideremos el problema de minimización que optimizan los pesos:</p>
+<p><span class="math display">\[min_{\boldsymbol{\beta}}\left(\frac{1}{n}\sum_{i=1}^n(y^{(i)}-x_i^T\boldsymbol{\beta})^2\right)\]</span></p>
+<p>Lasso agrega un término a este problema de optimización.</p>
+<p><span class="math display">\[min_{\boldsymbol{\beta}}\left(\frac{1}{n}\sum_{i=1}^n(y^{(i)}-x_{i}^T\boldsymbol{\beta})^2+\lambda||\boldsymbol{\beta}||_1\right)\]</span></p>
+<p>El término <span class="math inline">\(||\boldsymbol{\beta}||_1\)</span>, la norma L1 del vector de características, genera una penalización de los pesos grandes.
+Cuando se usa la norma L1, muchos de los pesos reciben una estimación de 0 y los otros se reducen.
+El parámetro lambda (<span class="math inline">\(\lambda\)</span>) controla la fuerza del efecto de regularización y generalmente se ajusta mediante validación cruzada.
+Especialmente cuando lambda es grande, muchos pesos se convierten en 0.
+Los pesos de las características se pueden visualizar en función del término de penalización lambda.
+El peso de cada característica se representa mediante una curva en la siguiente figura.</p>
+<div class="figure"><span id="fig:lasso-path"></span>
+<img src="images/lasso-path-1.png" alt="Incrementando la penalidad de los pesos, cada vez menos características tienen un estimador distinto a cero. A estas curvas también se las llama caminos de regularización." width="1050" />
+<p class="caption">
+FIGURA 4.4: Incrementando la penalidad de los pesos, cada vez menos características tienen un estimador distinto a cero. A estas curvas también se las llama caminos de regularización.
+</p>
+</div>
+<p>¿Qué valor deberíamos elegir para lambda?
+Si ves el término de penalización como un parámetro de ajuste, puedes encontrar la lambda que minimiza el error del modelo con validación cruzada.
+También puedes considerar lambda como un parámetro para controlar la interpretabilidad del modelo.
+Cuanto mayor es la penalización, menos características están presentes en el modelo (porque sus pesos son cero) y mejor se puede interpretar el modelo.</p>
+<p><strong>Ejemplo con lasso</strong></p>
+<p>Vamos a predecir el alquiler de bicicletas con Lasso.
+Establecemos de antemano la cantidad de características que queremos tener en el modelo.
+Primero establezcamos el número en 2 características:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">seasonSPRING</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">seasonSUMMER</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">seasonFALL</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">seasonWINTER</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">holidayHOLIDAY</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">workingdayWORKING DAY</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">weathersitMISTY</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">weathersitRAIN/SNOW/STORM</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">temp</td>
+<td align="right">52.33</td>
+</tr>
+<tr class="even">
+<td align="left">hum</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">windspeed</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">days_since_2011</td>
+<td align="right">2.15</td>
+</tr>
+</tbody>
+</table>
+<p>Las dos primeras características con pesos distintos de según Lasso son la temperatura (“temp”) y la tendencia temporal (“days_since_2011”).</p>
+<p>Ahora, seleccionemos 5 características:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Weight</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">seasonSPRING</td>
+<td align="right">-389.99</td>
+</tr>
+<tr class="even">
+<td align="left">seasonSUMMER</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">seasonFALL</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">seasonWINTER</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">holidayHOLIDAY</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">workingdayWORKING DAY</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">weathersitMISTY</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">weathersitRAIN/SNOW/STORM</td>
+<td align="right">-862.27</td>
+</tr>
+<tr class="odd">
+<td align="left">temp</td>
+<td align="right">85.58</td>
+</tr>
+<tr class="even">
+<td align="left">hum</td>
+<td align="right">-3.04</td>
+</tr>
+<tr class="odd">
+<td align="left">windspeed</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">days_since_2011</td>
+<td align="right">3.82</td>
+</tr>
+</tbody>
+</table>
+<p>Ten en cuenta que los pesos para “temp” y “days_since_2011” difieren del modelo con dos características.
+La razón de esto es que al disminuir lambda, incluso las características que ya están “en” el modelo se penalizan menos y pueden obtener un peso absoluto mayor.
+La interpretación de los pesos de lasso corresponde a la interpretación de los pesos en el modelo de regresión lineal.
+Solo necesitas prestar atención a si las características están estandarizadas o no, porque esto afecta los pesos.
+En este ejemplo, el software estandarizó las funciones, pero los pesos se transformaron automáticamente para que coincidan con las escalas de funciones originales.</p>
+<p><strong>Otros métodos para la dispersión en modelos lineales</strong></p>
+<p>Se puede utilizar un amplio espectro de métodos para reducir el número de características en un modelo lineal.</p>
+<p>Métodos de preprocesamiento:</p>
+<ul>
+<li>Funciones seleccionadas manualmente:
+Siempre puede utilizar el conocimiento experto para seleccionar o descartar algunas funciones.
+El gran inconveniente es que no se puede automatizar y debes tener acceso a alguien que comprenda los datos.</li>
+<li>Selección univariante:
+Un ejemplo es el coeficiente de correlación.
+Solo tiene en cuenta las características que exceden un cierto umbral de correlación entre la característica y el objetivo.
+La desventaja es que solo considera las características individualmente.
+Es posible que algunas características no muestren una correlación con el objetivo hasta que el modelo lineal haya tenido en cuenta algunas otras características.
+Estas no se advertirán con métodos de selección univariantes.</li>
+</ul>
+<p>Métodos paso a paso:</p>
+<ul>
+<li>Selección hacia adelante:
+Ajusta el modelo lineal con una característica.
+Haz esto con cada característica.
+Selecciona el modelo que funcione mejor (por ejemplo, el R cuadrado más alto).
+Ahora, de nuevo, para las características restantes, ajusta diferentes versiones de su modelo agregando cada característica a su mejor modelo actual.
+Selecciona el que mejor funcione.
+Continúa hasta que se alcance algún criterio, como el número máximo de características en el modelo.</li>
+<li>Selección hacia atrás:
+Similar a la selección hacia adelante.
+Pero en lugar de agregar funciones, comienza con el modelo que contiene todas las funciones y prueba qué variable debes eliminar para obtener el mayor aumento de rendimiento.
+Repite esto hasta que se alcance algún criterio de detención.</li>
+</ul>
+<p>Recomiendo usar Lasso, porque puede ser automatizado, considera todas las características simultáneamente y puede controlarse mediante lambda.
+También funciona para el <a href="logística.html#logística">modelo de regresión logística</a> para la clasificación.</p>
+</div>
+</div>
+<div id="ventajas" class="section level3">
+<h3><span class="header-section-number">4.1.8</span> Ventajas</h3>
+<p>El modelado de las predicciones como una <strong>suma ponderada</strong> hace que la forma en la que se produce la predicción sea transparente.
+Con Lasso podemos asegurarnos de que la cantidad de funciones utilizadas sea pequeña.</p>
+<p>Muchas personas usan modelos de regresión lineal.
+Esto significa que en muchos lugares es <strong>aceptado</strong> para el modelado predictivo y hacer inferencia.
+Existe un <strong>alto nivel de expertiz y experiencia colectiva</strong>, que incluye materiales didácticos sobre modelos de regresión lineal e implementaciones de software.
+La regresión lineal se puede encontrar en R, Python, Java, Julia, Scala, Javascript, …</p>
+<p>Matemáticamente, es sencillo estimar los pesos y tiene una <strong>garantía para encontrar pesos óptimos</strong> (dado que los datos cumplen todos los supuestos del modelo de regresión lineal).</p>
+<p>Junto con los pesos, obtienes intervalos de confianza, pruebas y una sólida teoría estadística.
+También hay muchas extensiones del modelo de regresión lineal (ver <a href="extend-lm.html#extend-lm">capítulo sobre GLM, GAM y más</a>).</p>
+</div>
+<div id="desventajas" class="section level3">
+<h3><span class="header-section-number">4.1.9</span> Desventajas</h3>
+<p>Los modelos de regresión lineal solo pueden representar relaciones lineales, es decir, una suma ponderada de las características de entrada.
+Cada <strong>no linealidad o interacción tiene que ser hecha a mano</strong> y entregada explícitamente al modelo como una característica de entrada.</p>
+<p>Los modelos lineales a menudo también <strong>no son tan buenos con respecto al rendimiento predictivo</strong>, porque las relaciones que se pueden aprender son muy restringidas y generalmente simplifican demasiado la realidad, que suele ser más compleja.</p>
+<p>La interpretación de un peso <strong>puede ser poco intuitiva</strong> porque depende de todas las demás características.
+Una característica con alta correlación positiva con el resultado Y y también con alta correlación positiva con otra característica podría tener un peso negativo en el modelo lineal, porque, dada la otra característica correlacionada, se correlaciona negativamente con Y en el espacio de alta dimensión.
+Las características completamente correlacionadas hacen que sea incluso imposible encontrar una solución única para la ecuación lineal.
+Un ejemplo:
+Tienes un modelo para predecir el valor de una casa, y tienes características como el número de habitaciones y el tamaño de la casa.
+El tamaño de la casa y el número de habitaciones están altamente correlacionados: cuanto más grande es una casa, más habitaciones tiene.
+Si tomas ambas características en un modelo lineal, puede suceder que el tamaño de la casa sea el mejor predictor y obtenga un gran peso positivo.
+El número de habitaciones podría terminar teniendo un peso negativo, ya que, dado que una casa tiene el mismo tamaño, aumentar el número de habitaciones podría hacerla menos valiosa. La ecuación lineal se vuelve menos estable cuando la correlación es demasiado fuerte.</p>
+
+<!--{pagebreak}-->
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="16">
+<li id="fn16"><p>Friedman, Jerome, Trevor Hastie, and Robert Tibshirani. “The elements of statistical learning”. www.web.stanford.edu/~hastie/ElemStatLearn/ (2009).<a href="lineal.html#fnref16" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="simple.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="logística.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/04.2-interpretable-linear.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

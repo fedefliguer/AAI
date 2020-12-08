@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>6.3 Prototipos y excepciones | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="6.3 Prototipos y excepciones | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="6.3 Prototipos y excepciones | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="adversarial.html"/>
+<link rel="next" href="influyente.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="proto" class="section level2">
+<h2><span class="header-section-number">6.3</span> Prototipos y excepciones</h2>
+<p>Un <strong>prototipo</strong> es una instancia de datos que es representativa de todos los datos.
+Una <strong>excepción</strong> es una instancia de datos que no está bien representada por el conjunto de prototipos.
+El propósito de una excepción es proporcionar ideas junto con los prototipos, especialmente para los puntos de datos que los prototipos no representan bien.
+Los prototipos y excepciones se pueden usar independientemente de un modelo de aprendizaje automático para describir los datos, pero también se pueden usar para crear un modelo interpretable o para hacer que un modelo de caja negra sea interpretable.</p>
+<p>En este capítulo utilizo la expresión “punto de datos” para referirme a una sola instancia, para enfatizar la interpretación de que una instancia también es un punto en un sistema de coordenadas donde cada entidad es una dimensión.
+La siguiente figura muestra una distribución de datos simulada, con algunas de las instancias elegidas como prototipos y otras como excepciones.
+Los puntos pequeños son los datos, los puntos grandes los prototipos y los cuadrados grandes las excepciones.
+Los prototipos se seleccionan (manualmente) para cubrir los centros de distribución de datos y las excepciones son puntos en un grupo sin un prototipo.
+Los prototipos y excepciones son siempre ejemplos reales de los datos.</p>
+<div class="figure"><span id="fig:unnamed-chunk-42"></span>
+<img src="images/unnamed-chunk-42-1.png" alt="Prototipos y excepciones para una distribución de datos con dos características x1 y x2." width="1050" />
+<p class="caption">
+FIGURA 6.9: Prototipos y excepciones para una distribución de datos con dos características x1 y x2.
+</p>
+</div>
+<p>Seleccioné los prototipos manualmente, lo que no escala bien y probablemente conduce a malos resultados.
+Hay muchos enfoques para encontrar prototipos en los datos.
+Uno de estos es k-medoids, un algoritmo de agrupamiento relacionado con el algoritmo k-means.
+Cualquier algoritmo de agrupación que devuelva puntos de datos reales como centros de agrupación calificaría para seleccionar prototipos.
+Pero la mayoría de estos métodos solo encuentran prototipos, no excepciones.
+Este capítulo presenta MMD-critic por Kim et. al (2016)<a href="#fn57" class="footnote-ref" id="fnref57"><sup>57</sup></a>, un enfoque que combina prototipos y excepciones en un solo marco.</p>
+<p>MMD-critic compara la distribución de los datos y la distribución de los prototipos seleccionados.
+Este es el concepto central para entender el método crítico de MMD-critic.
+MMD-critic selecciona prototipos que minimizan la discrepancia entre las dos distribuciones.
+Los puntos de datos en áreas con alta densidad son buenos prototipos, especialmente cuando los puntos se seleccionan de diferentes “grupos de datos”.
+Los puntos de datos de regiones que no están bien explicados por los prototipos se seleccionan como excepciones.</p>
+<p>Profundicemos más en la teoría.</p>
+<div id="teoría-5" class="section level3">
+<h3><span class="header-section-number">6.3.1</span> Teoría</h3>
+<p>El procedimiento de MMD-critic a alto nivel se puede resumir brevemente:</p>
+<ol style="list-style-type: decimal">
+<li>Selecciona la cantidad de prototipos y excepciones que deseas encontrar.</li>
+<li>Encuentra prototipos con greedy search.
+Los prototipos se seleccionan de modo que la distribución de los prototipos esté cerca de la distribución de datos.</li>
+<li>Encuentra excepciones con greedy search.
+Los puntos se seleccionan como excepciones donde la distribución de prototipos difiere de la distribución de los datos.</li>
+</ol>
+<p>Necesitamos un par de ingredientes para encontrar prototipos y excepciones para un conjunto de datos con MMD-critical.
+Como ingrediente más básico, necesitamos una <strong>función del núcleo</strong> para estimar las densidades de datos.
+Un núcleo es una función que pesa dos puntos de datos según su proximidad.
+En base a las estimaciones de densidad, necesitamos una medida que nos diga cuán diferentes son las dos distribuciones para que podamos determinar si la distribución de los prototipos que seleccionamos está cerca de la distribución de datos.
+Esto se resuelve midiendo la <strong>discrepancia media máxima (MMD)</strong>.
+También basado en la función del núcleo, necesitamos la <strong>función testigo</strong> para decirnos cuán diferentes son dos distribuciones en un punto de datos particular.
+Con la función testigo, podemos seleccionar excepciones, es decir, puntos de datos en los que la distribución de prototipos y datos diverge y la función testigo adquiere grandes valores absolutos.
+El último ingrediente es una estrategia de búsqueda de buenos prototipos y excepciones, que se resuelve con una simple <strong>greedy search</strong>.</p>
+<p>Comencemos con la <strong>discrepancia media máxima (MMD)</strong>, que mide la discrepancia entre dos distribuciones.
+La selección de prototipos crea una distribución de densidad de prototipos.
+Queremos evaluar si la distribución de prototipos difiere de la distribución de datos.
+Estimamos ambos con funciones de densidad del núcleo.
+La discrepancia media máxima mide la diferencia entre dos distribuciones, que es el supremum sobre un espacio funcional de diferencias entre las expectativas según las dos distribuciones.
+¿Todo claro?
+Personalmente, entiendo estos conceptos mucho mejor cuando veo cómo se calcula algo con los datos.
+La siguiente fórmula muestra cómo calcular la medida de MMD al cuadrado (MMD2):</p>
+<p><span class="math display">\[MMD^2=\frac{1}{m^2}\sum_{i,j=1}^m{}k(z_i,z_j)-\frac{2}{mn}\sum_{i,j=1}^{m,n}k(z_i,x_j)+\frac{1}{n^2}\sum_{i,j=1}^n{}k(x_i,x_j)\]</span></p>
+<p>k es una función del núcleo que mide la similitud de dos puntos, pero más sobre esto más adelante.
+m es el número de prototipos z, y n es el número de puntos de datos x en nuestro conjunto de datos original.
+Los prototipos z son una selección de puntos de datos x.
+Cada punto es multidimensional, es decir, puede tener múltiples características.
+El objetivo de MMD-critic es minimizar MMD2.
+Cuanto más cerca esté MMD2 de cero, mejor se ajustará la distribución de los prototipos a los datos.
+La clave para llevar MMD2 a cero es el término en el medio, que calcula la proximidad promedio entre los prototipos y todos los demás puntos de datos (multiplicado por 2).
+Si este término se suma al primer término (la proximidad promedio de los prototipos entre sí) más el último término (la proximidad promedio de los puntos de datos entre sí), entonces los prototipos explican los datos perfectamente.
+Prueba lo que sucedería con la fórmula si usaras todos los n puntos de datos como prototipos.</p>
+<p>El siguiente gráfico ilustra la medida MMD2.
+El primer gráfico muestra los puntos de datos con dos características, por lo que la estimación de la densidad de datos se muestra con un fondo sombreado.
+Cada una de las otras gráficas muestra diferentes selecciones de prototipos, junto con la medida MMD2 en los títulos de las gráficas.
+Los prototipos son los puntos grandes y su distribución se muestra como líneas de contorno.
+La selección de los prototipos que mejor cubren los datos en estos escenarios (abajo a la izquierda) tiene el valor de discrepancia más bajo.</p>
+<div class="figure"><span id="fig:mmd"></span>
+<img src="images/mmd-1.png" alt="La medida de discrepancia media máxima al cuadrado (MMD2) para un conjunto de datos con dos características y diferentes selecciones de prototipos." width="1050" />
+<p class="caption">
+FIGURA 6.10: La medida de discrepancia media máxima al cuadrado (MMD2) para un conjunto de datos con dos características y diferentes selecciones de prototipos.
+</p>
+</div>
+<p>Una opción para el núcleo es el núcleo de la función de base radial:</p>
+<p><span class="math display">\[k(x,x^\prime)=exp\left(-\gamma||x-x^\prime||^2\right)\]</span></p>
+<p>donde ||x-x’||<sup>2</sup> es la distancia euclidiana entre dos puntos y <span class="math inline">\(\gamma\)</span> es un parámetro de escala.
+El valor del núcleo disminuye con la distancia entre los dos puntos y varía entre cero y uno:
+Cero cuando los dos puntos están infinitamente separados;
+uno cuando los dos puntos son iguales.</p>
+<p>Combinamos la medida MMD2, el núcleo y la búsqueda para encontrar prototipos:</p>
+<ul>
+<li>Comienza con una lista vacía de prototipos.</li>
+<li>Mientras el número de prototipos esté por debajo del número elegido m:
+<ul>
+<li>Para cada punto en el conjunto de datos, verifica cuánto MMD2 se reduce cuando el punto se agrega a la lista de prototipos. Agrega el punto de datos que minimiza el MMD2 a la lista.</li>
+</ul></li>
+<li>Devuelve la lista de prototipos.</li>
+</ul>
+<p>El ingrediente restante para encontrar excepciones es la función de testigo, que nos dice cuánto difieren las dos estimaciones de densidad en un punto particular.
+Se puede estimar usando:</p>
+<p><span class="math display">\[ testigo (x) = \ frac {1} {n} \ sum_ {i = 1} ^ nk (x, x_i) - \ frac {1} {m} \ sum_ {j = 1} ^ mk (x, z_j) \]</span></p>
+<p>Para dos conjuntos de datos (con las mismas características), la función testigo le proporciona los medios para evaluar en qué distribución empírica el punto x se ajusta mejor.
+Para encontrar excepciones, buscamos valores extremos de la función testigo en direcciones negativas y positivas.
+El primer término en la función de testigo es la proximidad promedio entre el punto x y los datos, y, respectivamente, el segundo término es la proximidad promedio entre el punto x y los prototipos.
+Si la función testigo para un punto x es cercana a cero, la función de densidad de los datos y los prototipos están muy juntos, lo que significa que la distribución de prototipos se parece a la distribución de los datos en el punto x.
+Una función testigo negativa en el punto x significa que la distribución del prototipo sobreestima la distribución de datos (por ejemplo, si seleccionamos un prototipo pero solo hay pocos puntos de datos cercanos);
+una función testigo positiva en el punto x significa que la distribución del prototipo subestima la distribución de datos (por ejemplo, si hay muchos puntos de datos alrededor de x pero no hemos seleccionado ningún prototipo cerca).</p>
+<p>Para darte más intuición, reutilicemos los prototipos de la trama de antemano con el MMD2 más bajo y visualicemos la función testigo para algunos puntos seleccionados manualmente.
+Las etiquetas en la siguiente gráfica muestran el valor de la función testigo para varios puntos marcados como triángulos.
+Solo el punto en el medio tiene un alto valor absoluto y, por lo tanto, es un buen candidato para una excepción.</p>
+<div class="figure"><span id="fig:witness"></span>
+<img src="images/witness-1.png" alt=" Evaluaciones de la función testigo en diferentes puntos. " width="1050" />
+<p class="caption">
+FIGURA 6.11:  Evaluaciones de la función testigo en diferentes puntos.
+</p>
+</div>
+<p>La función testigo nos permite buscar explícitamente instancias de datos que no están bien representadas por los prototipos.
+Las excepciones son puntos con alto valor absoluto en la función testigo.
+Al igual que los prototipos, las excepciones también se encuentran a través de greedy search.
+Pero en lugar de reducir el MMD2 general, estamos buscando puntos que maximicen una función de costo que incluya la función de testigo y un término de regularizador.
+El término adicional en la función de optimización impone la diversidad en los puntos, lo cual es necesario para que los puntos provengan de diferentes grupos.</p>
+<p>Este segundo paso es independiente de cómo se encuentran los prototipos.
+También podría haber seleccionado algunos prototipos y utilizar el procedimiento descrito aquí para conocer las excepciones.
+O los prototipos podrían provenir de cualquier procedimiento de agrupación, como k-medoides.</p>
+<p>Eso es con las partes importantes de la teoría de MMD-critic.
+Queda una pregunta:
+<strong>¿Cómo se puede utilizar el MMD-critic para el aprendizaje automático interpretable?</strong></p>
+<p>MMD-critic puede agregar interpretabilidad de tres maneras:
+Al ayudar a comprender mejor la distribución de datos;
+construyendo un modelo interpretable;
+haciendo que un modelo de caja negra sea interpretable.</p>
+<p>Si aplicas MMD-critic a tus datos para encontrar prototipos y excepciones, mejorará tu comprensión de los datos, especialmente si tienes una distribución de datos compleja con casos extremos.
+¡Pero con MMD-critic puedes lograr más!</p>
+<p>Por ejemplo, puedes crear un modelo de predicción interpretable: el llamado “modelo prototipo más cercano”.
+La función de predicción se define como:</p>
+<p><span class="math display">\[\hat{f}(x)=argmax_{i\in{}S}k(x,x_i)\]</span></p>
+<p>lo que significa que seleccionamos el prototipo i del conjunto de prototipos S que está más cerca del nuevo punto de datos, en el sentido de que produce el valor más alto de la función del núcleo.
+El prototipo en sí mismo se devuelve como una explicación para la predicción.
+Este procedimiento tiene tres parámetros de ajuste:
+El tipo de núcleo, el parámetro de escala del núcleo y el número de prototipos.
+Todos los parámetros se pueden optimizar dentro de un bucle de validación cruzada.
+Las excepciones no se utilizan en este enfoque.</p>
+<p>Como tercera opción, podemos usar MMD-critic para hacer que cualquier modelo de aprendizaje automático sea globalmente explicable mediante el examen de prototipos y excepciones junto con sus predicciones de modelo.
+El procedimiento es el siguiente:</p>
+<ol style="list-style-type: decimal">
+<li>Encuentra prototipos y excepciones con MMD-critic.</li>
+<li>Entrena un modelo de aprendizaje automático como de costumbre.</li>
+<li>Predice resultados para los prototipos y excepciones con el modelo de aprendizaje automático.</li>
+<li>Analiza las predicciones: ¿En qué casos estuvo mal el algoritmo?
+Ahora tienes una serie de ejemplos que representan bien los datos y te ayudan a encontrar las debilidades del modelo de aprendizaje automático.</li>
+</ol>
+<p>¿Cómo ayuda eso?
+¿Recuerdas cuando el clasificador de imágenes de Google identificaba a los negros como gorilas?
+Quizás deberían haber utilizado el procedimiento descrito aquí antes de implementar su modelo de reconocimiento de imagen.
+No es suficiente solo verificar el rendimiento del modelo, porque si fuera 99% correcto, este problema aún podría estar en el 1%.
+¡Y las etiquetas también pueden estar equivocadas!
+Revisar todos los datos de entrenamiento y realizar una verificación de cordura si la predicción es problemática podría haber revelado el problema, pero sería inviable.
+Pero la selección de, digamos unos miles, prototipos y excepciones es factible y podría haber revelado un problema con los datos:
+Podría haber demostrado que faltan imágenes de personas con piel oscura, lo que indica un problema con la diversidad en el conjunto de datos.
+O podría haber mostrado una o más imágenes de una persona con piel oscura como prototipo o (probablemente) como una crítica con la notoria clasificación de “gorila”.
+No prometo que MMD-critic ciertamente interceptará este tipo de errores, pero es un buen control de cordura.</p>
+</div>
+<div id="ejemplos-6" class="section level3">
+<h3><span class="header-section-number">6.3.2</span> Ejemplos</h3>
+<p>He tomado los ejemplos del artículo de MMD-critic.
+Ambas aplicaciones se basan en conjuntos de datos de imágenes.
+Cada imagen estaba representada por incrustaciones de imágenes con 2048 dimensiones.
+Una incrustación de imágenes es un vector con números que capturan atributos abstractos de una imagen.
+Los vectores de incrustación generalmente se extraen de redes neuronales que están entrenadas para resolver una tarea de reconocimiento de imágenes, en este caso el desafío de ImageNet.
+Las distancias del núcleo entre las imágenes se calcularon utilizando estos vectores de inclusión.</p>
+<p>El primer conjunto de datos contiene diferentes razas de perros del conjunto de datos ImageNet.
+MMD-critic se aplica a los datos de dos clases de razas de perros.
+Con los perros a la izquierda, los prototipos suelen mostrar la cara del perro, mientras que las excepciones son imágenes sin las caras del perro o en diferentes colores (como blanco y negro).
+En el lado derecho, los prototipos contienen imágenes de perros al aire libre.
+Las excepciones contienen perros con disfraces y otros casos inusuales.</p>
+<div class="figure"><span id="fig:prototipos-y-excepciones"></span>
+<img src="images/proto-critique.jpg" alt="Prototipos y excepciones para dos tipos de razas de perros del conjunto de datos de ImageNet." width="600" />
+<p class="caption">
+FIGURA 6.12: Prototipos y excepciones para dos tipos de razas de perros del conjunto de datos de ImageNet.
+</p>
+</div>
+<p>Otra ilustración de MMD-critic utiliza un conjunto de datos de dígitos escritos a mano.</p>
+<p>Al observar los prototipos y las excepciones reales, puedes notar que la cantidad de imágenes por dígito es diferente.
+Esto se debe a que se buscó un número fijo de prototipos y excepciones en todo el conjunto de datos y no con un número fijo por clase.
+Como se esperaba, los prototipos muestran diferentes formas de escribir los dígitos.
+Las excepciones incluyen ejemplos con líneas inusualmente gruesas o delgadas, pero también dígitos irreconocibles.</p>
+<div class="figure"><span id="fig:prototipos-y-excepciones2"></span>
+<img src="images/proto-critique2.jpg" alt="Prototipos y excepciones para un conjunto de datos de dígitos escritos a mano." width="600" />
+<p class="caption">
+FIGURA 6.13: Prototipos y excepciones para un conjunto de datos de dígitos escritos a mano.
+</p>
+</div>
+</div>
+<div id="ventajas-16" class="section level3">
+<h3><span class="header-section-number">6.3.3</span> Ventajas</h3>
+<p>En un estudio de usuarios, los autores de MMD-critical dieron imágenes a los participantes, que tuvieron que hacer coincidir visualmente con uno de los dos conjuntos de imágenes, cada una representando una de dos clases (por ejemplo, dos razas de perros).
+Los <strong>participantes se desempeñaron mejor cuando los sets mostraron prototipos y excepciones</strong> en lugar de imágenes aleatorias de una clase.</p>
+<p>Eres libre de <strong>elegir el número de prototipos y excepciones</strong>.</p>
+<p>MMD-critic trabaja con estimaciones de densidad de los datos.
+Esto <strong>funciona con cualquier tipo de datos y cualquier tipo de modelo de aprendizaje automático</strong>.</p>
+<p>El algoritmo es <strong>fácil de implementar</strong>.</p>
+<p>MMD-critic es muy flexible en la forma en que se utiliza para aumentar la capacidad de interpretación.
+Se puede utilizar para comprender distribuciones de datos complejas.
+Se puede usar para construir un modelo de aprendizaje automático interpretable.
+O puede arrojar luz sobre la toma de decisiones de un modelo de aprendizaje automático de caja negra.</p>
+<p><strong>Encontrar excepciones es independiente del proceso de selección de los prototipos</strong>.
+Pero tiene sentido seleccionar prototipos de acuerdo con MMD-critic, ya que tanto los prototipos como las excepciones se crean utilizando el mismo método de comparación de prototipos y densidades de datos.</p>
+</div>
+<div id="desventajas-16" class="section level3">
+<h3><span class="header-section-number">6.3.4</span> Desventajas</h3>
+<p>Si bien, matemáticamente, los prototipos y as excepciones se definen de manera diferente, su <strong>distinción se basa en un valor de corte</strong> (el número de prototipos).
+Supón que eliges un número demasiado bajo de prototipos para cubrir la distribución de datos.
+Las excepciones terminarían en áreas que no están tan bien explicadas.
+Pero si tuvieras que agregar más prototipos, también terminarían en las mismas áreas.
+Cualquier interpretación debe tener en cuenta que las excepciones dependen en gran medida de los prototipos existentes y del valor de corte (arbitrario) para el número de prototipos.</p>
+<p>Debes <strong>elegir el número de prototipos y excepciones</strong>.
+Por mucho que esto sea agradable de tener, también es una desventaja.
+¿Cuántos prototipos y excepciones necesitamos realmente?
+¿Mientras más, mejor? ¿Cuanto menos mejor?
+Una solución es seleccionar el número de prototipos y excepciones midiendo cuánto tiempo tienen los humanos para la tarea de mirar las imágenes, que depende de la aplicación en particular.
+Solo cuando usamos MMD-critic para construir un clasificador tenemos una manera de optimizarlo directamente.
+Una solución podría ser un diagrama de pantalla que muestre el número de prototipos en el eje xy la medida MMD2 en el eje y.
+Elegiríamos el número de prototipos donde la curva MMD2 se aplana.</p>
+<p>Los otros parámetros son la elección del núcleo y el parámetro de escala del núcleo.
+Tenemos el mismo problema que con la cantidad de prototipos y excepciones:
+<strong>¿Cómo seleccionamos un núcleo y su parámetro de escala?</strong>
+Nuevamente, cuando usamos MMD-critic como un clasificador prototipo más cercano, podemos ajustar los parámetros del kernel.
+Sin embargo, para los casos de uso no supervisado de MMD-critic, no está claro.
+(Tal vez soy un poco duro aquí, ya que todos los métodos sin supervisión tienen este problema).</p>
+<p>Toma todas las características como entrada, <strong>sin tener en cuenta el hecho de que algunas características pueden no ser relevantes</strong> para predecir el resultado de interés.
+Una solución es utilizar solo funciones relevantes, por ejemplo, incrustaciones de imágenes en lugar de píxeles sin formato.
+Esto funciona siempre que tengamos una manera de proyectar la instancia original en una representación que contenga solo información relevante.</p>
+<p>Hay algo de código disponible, pero <strong>aún no está implementado como software bien empaquetado y documentado</strong>.</p>
+</div>
+<div id="código-y-alternativas" class="section level3">
+<h3><span class="header-section-number">6.3.5</span> Código y alternativas</h3>
+<p>Puedes encontrar una implementación de MMD-critic aquí: <a href="https://github.com/BeenKim/MMD-critic">https://github.com/BeenKim/MMD-critic</a>.</p>
+<p>La alternativa más simple para encontrar prototipos es <a href="https://en.wikipedia.org/wiki/K-medoids">k-medoids</a> de Kaufman et. al (1987).[^kmedoids]</p>
+
+<!--{pagebreak}-->
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol start="57">
+<li id="fn57"><p>Kim, Been, Rajiv Khanna, and Oluwasanmi O. Koyejo. “Examples are not enough, learn to criticize! Criticism for interpretability.” Advances in Neural Information Processing Systems (2016).<a href="proto.html#fnref57" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="adversarial.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="influyente.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/06.3-example-based-proto.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,4 +1,7 @@
-﻿
+﻿```{r, message = FALSE, warning = FALSE, echo = FALSE}
+devtools::load_all()
+```
+
 <!--{pagebreak}-->
 
 ## ¿Qué es el aprendizaje automático?
@@ -9,7 +12,7 @@ Por ejemplo, para predecir el valor de una casa, la computadora puede aprender p
 El libro se centra en el aprendizaje automático supervisado, que cubre todos los problemas de predicción en los que tenemos un conjunto de datos para el que ya conocemos el resultado de interés (por ejemplo, precios anteriores de la vivienda) y queremos predecir el resultado de los nuevos datos.
 Se excluyen del aprendizaje supervisado, por ejemplo, las tareas de agrupación (aprendizaje no supervisado) donde no tenemos un resultado específico de interés, pero queremos encontrar grupos de observaciones.
 También se excluyen cosas como el aprendizaje por refuerzo, donde un agente aprende a optimizar cierta recompensa actuando en un entorno (por ejemplo, una computadora que juega Tetris).
-El objetivo del aprendizaje supervisado es aprender un modelo predictivo que relacione características de los datos (por ejemplo, tamaño de la casa, ubicación, tipo de piso, ...) con una salida (por ejemplo, el precio de la casa).
+El objetivo del aprendizaje supervisado es aprender un modelo predictivo que relacione características de los datos (por ejemplo: tamaño de la casa, ubicación, tipo de piso, ...) con una salida (por ejemplo: el precio de la casa).
 Si el resultado es categórico, el objetivo se llama clasificación, y si es numérico, se llama regresión.
 El algoritmo de aprendizaje automático aprende un modelo mediante la estimación de parámetros (como pesos) o estructuras de aprendizaje (como árboles).
 El algoritmo se guía por una función de puntuación o pérdida que se minimiza.
@@ -19,13 +22,16 @@ Un modelo de aprendizaje automático totalmente entrenado se puede utilizar para
 Estimación de precios de la vivienda, recomendaciones de productos, detección de letreros, predicción de incumplimiento crediticio y detección de fraude:
 Todos estos ejemplos tienen en común que pueden resolverse mediante el aprendizaje automático.
 Las tareas son diferentes, pero el enfoque es el mismo:
+
 Paso 1: recopilación de datos.
 Mientras más, mejor.
 Los datos deben contener el resultado que desea predecir e información adicional a partir de la cual realizar la predicción.
 Para un detector de letrero de calle ("¿Hay un letrero de calle en la imagen?"), debes recopilar imágenes de la calle y etiquetar si un letrero de calle es visible o no.
 Para un predictor de incumplimiento de crédito, necesitas datos pasados sobre préstamos reales, información sobre si los clientes estaban en incumplimiento con sus préstamos y datos que lo ayudarán a hacer predicciones, como ingresos, incumplimientos de créditos pasados, etc.
 Para un programa de estimación automática del valor de la vivienda, podés recopilar datos de ventas de viviendas anteriores e información sobre los bienes inmuebles, como el tamaño, la ubicación, etc.
+
 Paso 2: ingreso de esta información en un algoritmo de aprendizaje automático que genera un modelo de detector de signos, un modelo de calificación crediticia o un estimador del valor de la vivienda.
+
 Paso 3: uso del modelo con nuevos datos.
 Integrar el modelo en un producto o proceso, como un automóvil sin conductor, un proceso de solicitud de crédito o un sitio web del mercado inmobiliario.
 
@@ -36,9 +42,9 @@ La replicación de un modelo de aprendizaje automático en otra máquina es ráp
 El entrenamiento de un humano para una tarea puede llevar décadas (especialmente cuando son jóvenes) y es muy costoso.
 Una desventaja importante del uso del aprendizaje automático es que los conocimientos sobre los datos y la tarea que resuelve la máquina están ocultos en modelos cada vez más complejos.
 Necesita millones de números para describir una red neuronal profunda, y no hay forma de entender el modelo en su totalidad.
-Otros modelos, como el random forest, consisten en cientos de árboles de decisión que "votan" por predicciones.
-Para comprender cómo se tomó la decisión, debería examinar los votos y las estructuras de cada uno de los cientos de árboles.
-Eso simplemente no funciona, no importa cuán inteligente sea o cuán buena sea su memoria de trabajo.
+Otros modelos, como el bosque aleatorio -*random forest*-, consisten en cientos de árboles de decisión que "votan" por predicciones.
+Para comprender cómo se tomó la decisión, deberías examinar los votos y las estructuras de cada uno de los cientos de árboles.
+Eso simplemente no funciona, no importa cuán inteligente seas o cuán buena sea tu memoria de trabajo.
 Los modelos con mejor rendimiento son a menudo mezclas de varios modelos (también llamados conjuntos) imposibles de interpretar, aún bajo la posibilidad de que cada modelo se pudiera interpretar.
 Si te enfocas solo en el rendimiento, obtendrás automáticamente modelos cada vez más opacos.
 Solo echa un vistazo a [entrevistas con ganadores en la plataforma de competencia de aprendizaje automático kaggle.com](http://blog.kaggle.com/):
@@ -71,7 +77,7 @@ Esto puede ser un conjunto de pesos para un modelo lineal o para una red neurona
 Otros nombres para la palabra bastante inespecífica "modelo" son "predictor" o, según la tarea, "clasificador" o "modelo de regresión".
 En las fórmulas, el modelo de aprendizaje automático entrenado se llama $\hat{f}$ o $\hat{f}(x)$.
 
-```{r learner-definition, fig.cap = "A learner learns a model from labeled training data. The model is used to make predictions.", echo = FALSE, width = 500}
+```{r learner-definition, fig.cap = "Un algoritmo de aprendizaje automático aprende de datos supervisados de entrenamiento. El modelo se usa para hacer predicciones.", echo = FALSE, width = 500}
 knitr::include_graphics("images/learner.png")
 ```
 
@@ -93,26 +99,24 @@ Un **conjunto de datos ** es una tabla con los datos de los cuales la máquina a
 El conjunto de datos contiene las características y el objetivo a predecir.
 Cuando se usa para el aprendizaje de un modelo, el conjunto de datos se denomina datos de entrenamiento.
 
-Una **observación** es una fila en el conjunto de datos.
-Otros nombres para 'observación' son: punto (datos), ejemplo, instancia.
+Una **instancia** es una fila en el conjunto de datos.
+Otros nombres para 'instancia' son: punto de datos, ejemplo, observación.
 Una instancia consta de los valores de característica $x^{(i)}$ y, si se conoce, el resultado objetivo $y_i$.
 
 Las **características** son las entradas utilizadas para la predicción o clasificación.
 Una característica es una columna en el conjunto de datos.
 A lo largo del libro, se supone que las características son interpretables, lo que significa que es fácil entender lo que significan, como la temperatura en un día determinado o la altura de una persona.
 La interpretabilidad de las características es una gran suposición, pero si es difícil entender las características de entrada, es aún más difícil entender lo que hace el modelo.
-La matriz con todas las características se llama X y $x^{(i)}$ para instancia individual.
+La matriz con todas las características se llama X y la notación $x^{(i)}$ se usa para cada instancia en particular).
 El vector de una sola característica para todas las instancias es $x_j$ y el valor para la característica j y la instancia i es $x^{(i)}_j$.
 
 El **Objetivo (o target)** es la columna que la máquina aprende a predecir.
-En las fórmulas matemáticas, el objetivo generalmente se llama y o $y_i$ para una sola instancia.
+En las fórmulas matemáticas, el objetivo generalmente se llama $y$ o $y_i$ para una sola instancia.
 
 Una **Tarea de aprendizaje automático** es la combinación de un conjunto de datos con características y un objetivo.
 Dependiendo del tipo de objetivo, la tarea puede ser, por ejemplo, clasificación, regresión, análisis de supervivencia, agrupamiento o detección de valores atípicos.
 
 La **Predicción** es el valor que el modelo de aprendizaje automático pronostica, en función de las características dadas.
 En este libro, la predicción del modelo se denota por $\hat{f}(x^{(i)})$ o $\hat{y}$.
-
-
 
 [^algoritmo]: "Definición de algoritmo". https://www.merriam-webster.com/dictionary/algorithm. (2017)

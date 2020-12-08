@@ -12,7 +12,6 @@ Imports:
   data.table,
   mlr,
   rpart,
-  party,
   partykit,
   randomForest,
   gridExtra,
@@ -30,21 +29,24 @@ Imports:
   pre,
   shiny,
   roxygen2,
-  memoise, 
+  memoise,
   gridExtra,
-  OneR, 
+  OneR,
   RWeka,
-  sbrl,
   iml,
   jtools,
   mgcv,
   devtools,
-  readr, 
+  readr,
   Cairo,
   viridis,
   interactions,
   rjson,
   png,
-  R.utils
+  R.utils,
+  yaImpute,
+  arules
+Suggests:
+  party
 Remotes: christophM/interpretable-ml-book
 

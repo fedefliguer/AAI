@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>6.4 Instancias influyentes | Aprendizaje automatico interpretable</title>
+  <meta name="description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  <meta name="generator" content="bookdown 0.21 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="6.4 Instancias influyentes | Aprendizaje automatico interpretable" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="6.4 Instancias influyentes | Aprendizaje automatico interpretable" />
+  
+  <meta name="twitter:description" content="Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables." />
+  
+
+<meta name="author" content="Christoph Molnar" />
+
+
+<meta name="date" content="2020-12-07" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="proto.html"/>
+<link rel="next" href="redes-neuronales.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
+  'anonymizeIp': true
+  , 'storage': 'none'
+  , 'clientId': window.localStorage.getItem('ga_clientId')
+});
+ga(function(tracker) {
+  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
+});
+ga('send', 'pageview');
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
+<script src="javascript/cookieconsent.min.js"></script>
+<script>
+window.addEventListener("load", function(){
+window.cookieconsent.initialise({
+  "palette": {
+    "popup": {
+      "background": "#000"
+    },
+    "button": {
+      "background": "#f1d600"
+    }
+  },
+  "position": "bottom-right",
+  "content": {
+    "message": "Este sitio usa cookies de Google Analytics para que pueda saber cuánta gente está leyendo el libro, y qué secciones son más populares. Este sitio no recolecta ningún dato personal."
+  }
+})});
+</script>
+
+
+
+<link rel="stylesheet" href="css/style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Interpretable machine learning</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Prefacio</a></li>
+<li class="chapter" data-level="1" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>1</b> Introducción</a><ul>
+<li class="chapter" data-level="1.1" data-path="horadelcuento.html"><a href="horadelcuento.html"><i class="fa fa-check"></i><b>1.1</b> Hora del cuento</a><ul>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#un-rayo-nunca-golpea-dos-veces"><i class="fa fa-check"></i>Un rayo nunca golpea dos veces</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#perder-confianza"><i class="fa fa-check"></i>Perder confianza</a></li>
+<li class="chapter" data-level="" data-path="horadelcuento.html"><a href="horadelcuento.html#clips-de-papel-de-fermi"><i class="fa fa-check"></i>Clips de papel de Fermi</a></li>
+</ul></li>
+<li class="chapter" data-level="1.2" data-path="qué-es-el-aprendizaje-automático.html"><a href="qué-es-el-aprendizaje-automático.html"><i class="fa fa-check"></i><b>1.2</b> ¿Qué es el aprendizaje automático?</a></li>
+<li class="chapter" data-level="1.3" data-path="terminología.html"><a href="terminología.html"><i class="fa fa-check"></i><b>1.3</b> Terminología</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="interpretabilidad.html"><a href="interpretabilidad.html"><i class="fa fa-check"></i><b>2</b> Interpretabilidad</a><ul>
+<li class="chapter" data-level="2.1" data-path="interpretabilidad-importancia.html"><a href="interpretabilidad-importancia.html"><i class="fa fa-check"></i><b>2.1</b> Importancia de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.2" data-path="taxonomía-de-los-métodos-de-interpretación.html"><a href="taxonomía-de-los-métodos-de-interpretación.html"><i class="fa fa-check"></i><b>2.2</b> Taxonomía de los métodos de interpretación</a></li>
+<li class="chapter" data-level="2.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.3</b> Alcance de la interpretabilidad</a><ul>
+<li class="chapter" data-level="2.3.1" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#transparencia-del-algoritmo"><i class="fa fa-check"></i><b>2.3.1</b> Transparencia del algoritmo</a></li>
+<li class="chapter" data-level="2.3.2" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-global-y-holística-del-modelo"><i class="fa fa-check"></i><b>2.3.2</b> Interpretabilidad global y holística del modelo</a></li>
+<li class="chapter" data-level="2.3.3" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-del-modelo-global-en-un-nivel-modular"><i class="fa fa-check"></i><b>2.3.3</b> Interpretabilidad del modelo global en un nivel modular</a></li>
+<li class="chapter" data-level="2.3.4" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-una-única-predicción"><i class="fa fa-check"></i><b>2.3.4</b> Interpretabilidad local para una única predicción</a></li>
+<li class="chapter" data-level="2.3.5" data-path="alcance-de-la-interpretabilidad.html"><a href="alcance-de-la-interpretabilidad.html#interpretabilidad-local-para-un-grupo-de-predicciones"><i class="fa fa-check"></i><b>2.3.5</b> Interpretabilidad local para un grupo de predicciones</a></li>
+</ul></li>
+<li class="chapter" data-level="2.4" data-path="evaluación-de-la-interpretabilidad.html"><a href="evaluación-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>2.4</b> Evaluación de la interpretabilidad</a></li>
+<li class="chapter" data-level="2.5" data-path="properties.html"><a href="properties.html"><i class="fa fa-check"></i><b>2.5</b> Propiedades de las explicaciones</a></li>
+<li class="chapter" data-level="2.6" data-path="amigables.html"><a href="amigables.html"><i class="fa fa-check"></i><b>2.6</b> Explicaciones amigables para los humanos</a><ul>
+<li class="chapter" data-level="2.6.1" data-path="amigables.html"><a href="amigables.html#qué-es-una-explicación"><i class="fa fa-check"></i><b>2.6.1</b> ¿Qué es una explicación?</a></li>
+<li class="chapter" data-level="2.6.2" data-path="amigables.html"><a href="amigables.html#buenaexplicación"><i class="fa fa-check"></i><b>2.6.2</b> ¿Qué es una buena explicación?</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="conjuntosdedatos.html"><a href="conjuntosdedatos.html"><i class="fa fa-check"></i><b>3</b> Conjuntos de datos</a><ul>
+<li class="chapter" data-level="3.1" data-path="bike-data.html"><a href="bike-data.html"><i class="fa fa-check"></i><b>3.1</b> Alquiler de bicicletas (Regresión)</a></li>
+<li class="chapter" data-level="3.2" data-path="spam-data.html"><a href="spam-data.html"><i class="fa fa-check"></i><b>3.2</b> Comentarios de spam de YouTube (clasificación de texto)</a></li>
+<li class="chapter" data-level="3.3" data-path="cervical.html"><a href="cervical.html"><i class="fa fa-check"></i><b>3.3</b> Factores de riesgo para el cáncer de cuello uterino (Clasificación)</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="simple.html"><a href="simple.html"><i class="fa fa-check"></i><b>4</b> Modelos interpretables</a><ul>
+<li class="chapter" data-level="4.1" data-path="lineal.html"><a href="lineal.html"><i class="fa fa-check"></i><b>4.1</b> Regresión lineal</a><ul>
+<li class="chapter" data-level="4.1.1" data-path="lineal.html"><a href="lineal.html#interpretación"><i class="fa fa-check"></i><b>4.1.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.1.2" data-path="lineal.html"><a href="lineal.html#ejemplo"><i class="fa fa-check"></i><b>4.1.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.1.3" data-path="lineal.html"><a href="lineal.html#interpretación-visual"><i class="fa fa-check"></i><b>4.1.3</b> Interpretación visual</a></li>
+<li class="chapter" data-level="4.1.4" data-path="lineal.html"><a href="lineal.html#explicación-de-predicciones-individuales"><i class="fa fa-check"></i><b>4.1.4</b> Explicación de predicciones individuales</a></li>
+<li class="chapter" data-level="4.1.5" data-path="lineal.html"><a href="lineal.html#categoricas"><i class="fa fa-check"></i><b>4.1.5</b> Codificación de características categóricas</a></li>
+<li class="chapter" data-level="4.1.6" data-path="lineal.html"><a href="lineal.html#los-modelos-lineales-crean-buenas-explicaciones"><i class="fa fa-check"></i><b>4.1.6</b> ¿Los modelos lineales crean buenas explicaciones?</a></li>
+<li class="chapter" data-level="4.1.7" data-path="lineal.html"><a href="lineal.html#lineales-dispersos"><i class="fa fa-check"></i><b>4.1.7</b> Modelos lineales dispersos</a></li>
+<li class="chapter" data-level="4.1.8" data-path="lineal.html"><a href="lineal.html#ventajas"><i class="fa fa-check"></i><b>4.1.8</b> Ventajas</a></li>
+<li class="chapter" data-level="4.1.9" data-path="lineal.html"><a href="lineal.html#desventajas"><i class="fa fa-check"></i><b>4.1.9</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.2" data-path="logística.html"><a href="logística.html"><i class="fa fa-check"></i><b>4.2</b> Regresión logística</a><ul>
+<li class="chapter" data-level="4.2.1" data-path="logística.html"><a href="logística.html#qué-tiene-de-malo-la-regresión-lineal-para-la-clasificación"><i class="fa fa-check"></i><b>4.2.1</b> ¿Qué tiene de malo la regresión lineal para la clasificación?</a></li>
+<li class="chapter" data-level="4.2.2" data-path="logística.html"><a href="logística.html#teoría"><i class="fa fa-check"></i><b>4.2.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.2.3" data-path="logística.html"><a href="logística.html#interpretación-1"><i class="fa fa-check"></i><b>4.2.3</b> Interpretación</a></li>
+<li class="chapter" data-level="4.2.4" data-path="logística.html"><a href="logística.html#ejemplo-1"><i class="fa fa-check"></i><b>4.2.4</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.2.5" data-path="logística.html"><a href="logística.html#ventajas-y-desventajas"><i class="fa fa-check"></i><b>4.2.5</b> Ventajas y desventajas</a></li>
+<li class="chapter" data-level="4.2.6" data-path="logística.html"><a href="logística.html#software"><i class="fa fa-check"></i><b>4.2.6</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.3" data-path="extend-lm.html"><a href="extend-lm.html"><i class="fa fa-check"></i><b>4.3</b> GLM, GAM y más</a><ul>
+<li class="chapter" data-level="4.3.1" data-path="extend-lm.html"><a href="extend-lm.html#GLM"><i class="fa fa-check"></i><b>4.3.1</b> Resultados no gaussianos: GLM</a></li>
+<li class="chapter" data-level="4.3.2" data-path="extend-lm.html"><a href="extend-lm.html#lm-interact"><i class="fa fa-check"></i><b>4.3.2</b> Interacciones</a></li>
+<li class="chapter" data-level="4.3.3" data-path="extend-lm.html"><a href="extend-lm.html#gam"><i class="fa fa-check"></i><b>4.3.3</b> Efectos no lineales - GAM</a></li>
+<li class="chapter" data-level="4.3.4" data-path="extend-lm.html"><a href="extend-lm.html#ventajas-1"><i class="fa fa-check"></i><b>4.3.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.3.5" data-path="extend-lm.html"><a href="extend-lm.html#desventajas-1"><i class="fa fa-check"></i><b>4.3.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.3.6" data-path="extend-lm.html"><a href="extend-lm.html#software-1"><i class="fa fa-check"></i><b>4.3.6</b> Software</a></li>
+<li class="chapter" data-level="4.3.7" data-path="extend-lm.html"><a href="extend-lm.html#more-lm-extension"><i class="fa fa-check"></i><b>4.3.7</b> Extensiones adicionales</a></li>
+</ul></li>
+<li class="chapter" data-level="4.4" data-path="arbol.html"><a href="arbol.html"><i class="fa fa-check"></i><b>4.4</b> Árbol de decisión</a><ul>
+<li class="chapter" data-level="4.4.1" data-path="arbol.html"><a href="arbol.html#interpretación-2"><i class="fa fa-check"></i><b>4.4.1</b> Interpretación</a></li>
+<li class="chapter" data-level="4.4.2" data-path="arbol.html"><a href="arbol.html#ejemplo-2"><i class="fa fa-check"></i><b>4.4.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="4.4.3" data-path="arbol.html"><a href="arbol.html#ventajas-2"><i class="fa fa-check"></i><b>4.4.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.4.4" data-path="arbol.html"><a href="arbol.html#desventajas-2"><i class="fa fa-check"></i><b>4.4.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.4.5" data-path="arbol.html"><a href="arbol.html#software-2"><i class="fa fa-check"></i><b>4.4.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="4.5" data-path="reglas.html"><a href="reglas.html"><i class="fa fa-check"></i><b>4.5</b> Reglas de decisión</a><ul>
+<li class="chapter" data-level="4.5.1" data-path="reglas.html"><a href="reglas.html#aprender-las-reglas-de-una-sola-función-oner"><i class="fa fa-check"></i><b>4.5.1</b> Aprender las reglas de una sola función (OneR)</a></li>
+<li class="chapter" data-level="4.5.2" data-path="reglas.html"><a href="reglas.html#cobertura-secuencial"><i class="fa fa-check"></i><b>4.5.2</b> Cobertura secuencial</a></li>
+<li class="chapter" data-level="4.5.3" data-path="reglas.html"><a href="reglas.html#listas-de-reglas-bayesianas"><i class="fa fa-check"></i><b>4.5.3</b> Listas de reglas bayesianas</a></li>
+<li class="chapter" data-level="4.5.4" data-path="reglas.html"><a href="reglas.html#ventajas-3"><i class="fa fa-check"></i><b>4.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="4.5.5" data-path="reglas.html"><a href="reglas.html#desventajas-3"><i class="fa fa-check"></i><b>4.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="4.5.6" data-path="reglas.html"><a href="reglas.html#software-y-alternativas"><i class="fa fa-check"></i><b>4.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="4.6" data-path="rulefit.html"><a href="rulefit.html"><i class="fa fa-check"></i><b>4.6</b> RuleFit</a><ul>
+<li class="chapter" data-level="4.6.1" data-path="rulefit.html"><a href="rulefit.html#interpretación-y-ejemplo"><i class="fa fa-check"></i><b>4.6.1</b> Interpretación y ejemplo</a></li>
+<li class="chapter" data-level="4.6.2" data-path="rulefit.html"><a href="rulefit.html#teoría-1"><i class="fa fa-check"></i><b>4.6.2</b> Teoría</a></li>
+<li class="chapter" data-level="4.6.3" data-path="rulefit.html"><a href="rulefit.html#ventajas-4"><i class="fa fa-check"></i><b>4.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="4.6.4" data-path="rulefit.html"><a href="rulefit.html#desventajas-4"><i class="fa fa-check"></i><b>4.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="4.6.5" data-path="rulefit.html"><a href="rulefit.html#software-y-alternativa"><i class="fa fa-check"></i><b>4.6.5</b> Software y alternativa</a></li>
+</ul></li>
+<li class="chapter" data-level="4.7" data-path="interpretables-otros.html"><a href="interpretables-otros.html"><i class="fa fa-check"></i><b>4.7</b> Otros modelos interpretables</a><ul>
+<li class="chapter" data-level="4.7.1" data-path="interpretables-otros.html"><a href="interpretables-otros.html#clasificador-naive-bayes"><i class="fa fa-check"></i><b>4.7.1</b> Clasificador Naive Bayes</a></li>
+<li class="chapter" data-level="4.7.2" data-path="interpretables-otros.html"><a href="interpretables-otros.html#k-vecinos-más-cercanos"><i class="fa fa-check"></i><b>4.7.2</b> K Vecinos más cercanos</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="agnostico.html"><a href="agnostico.html"><i class="fa fa-check"></i><b>5</b> Métodos modelo-agnósticos</a><ul>
+<li class="chapter" data-level="5.1" data-path="pdp.html"><a href="pdp.html"><i class="fa fa-check"></i><b>5.1</b> Diagrama de dependencia parcial (PDP)</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="pdp.html"><a href="pdp.html#ejemplos"><i class="fa fa-check"></i><b>5.1.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.1.2" data-path="pdp.html"><a href="pdp.html#ventajas-5"><i class="fa fa-check"></i><b>5.1.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.1.3" data-path="pdp.html"><a href="pdp.html#desventajas-5"><i class="fa fa-check"></i><b>5.1.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.1.4" data-path="pdp.html"><a href="pdp.html#software-y-alternativas-1"><i class="fa fa-check"></i><b>5.1.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="ICE.html"><a href="ICE.html"><i class="fa fa-check"></i><b>5.2</b> Expectativa condicional individual (ICE)</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="ICE.html"><a href="ICE.html#ejemplos-1"><i class="fa fa-check"></i><b>5.2.1</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.2.2" data-path="ICE.html"><a href="ICE.html#ventajas-6"><i class="fa fa-check"></i><b>5.2.2</b> Ventajas</a></li>
+<li class="chapter" data-level="5.2.3" data-path="ICE.html"><a href="ICE.html#desventajas-6"><i class="fa fa-check"></i><b>5.2.3</b> Desventajas</a></li>
+<li class="chapter" data-level="5.2.4" data-path="ICE.html"><a href="ICE.html#software-y-alternativas-2"><i class="fa fa-check"></i><b>5.2.4</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="ale.html"><a href="ale.html"><i class="fa fa-check"></i><b>5.3</b> Gráfico de efectos locales acumulados (ALE)</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="ale.html"><a href="ale.html#motivación-e-intuición"><i class="fa fa-check"></i><b>5.3.1</b> Motivación e intuición</a></li>
+<li class="chapter" data-level="5.3.2" data-path="ale.html"><a href="ale.html#teoría-2"><i class="fa fa-check"></i><b>5.3.2</b> Teoría</a></li>
+<li class="chapter" data-level="5.3.3" data-path="ale.html"><a href="ale.html#estimación"><i class="fa fa-check"></i><b>5.3.3</b> Estimación</a></li>
+<li class="chapter" data-level="5.3.4" data-path="ale.html"><a href="ale.html#ejemplos-2"><i class="fa fa-check"></i><b>5.3.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.3.5" data-path="ale.html"><a href="ale.html#ventajas-7"><i class="fa fa-check"></i><b>5.3.5</b> Ventajas</a></li>
+<li class="chapter" data-level="5.3.6" data-path="ale.html"><a href="ale.html#desventajas-7"><i class="fa fa-check"></i><b>5.3.6</b> Desventajas</a></li>
+<li class="chapter" data-level="5.3.7" data-path="ale.html"><a href="ale.html#implementación-y-alternativas"><i class="fa fa-check"></i><b>5.3.7</b> Implementación y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="interacción.html"><a href="interacción.html"><i class="fa fa-check"></i><b>5.4</b> Interacción de características</a><ul>
+<li class="chapter" data-level="5.4.1" data-path="interacción.html"><a href="interacción.html#interacción-de-características"><i class="fa fa-check"></i><b>5.4.1</b> Interacción de características</a></li>
+<li class="chapter" data-level="5.4.2" data-path="interacción.html"><a href="interacción.html#teoría-estadístico-h-de-friedman"><i class="fa fa-check"></i><b>5.4.2</b> Teoría: estadístico H de Friedman</a></li>
+<li class="chapter" data-level="5.4.3" data-path="interacción.html"><a href="interacción.html#ejemplos-3"><i class="fa fa-check"></i><b>5.4.3</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.4.4" data-path="interacción.html"><a href="interacción.html#ventajas-8"><i class="fa fa-check"></i><b>5.4.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.4.5" data-path="interacción.html"><a href="interacción.html#desventajas-8"><i class="fa fa-check"></i><b>5.4.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.4.6" data-path="interacción.html"><a href="interacción.html#implementaciones"><i class="fa fa-check"></i><b>5.4.6</b> Implementaciones</a></li>
+<li class="chapter" data-level="5.4.7" data-path="interacción.html"><a href="interacción.html#alternativas"><i class="fa fa-check"></i><b>5.4.7</b> Alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html"><i class="fa fa-check"></i><b>5.5</b> Importancia de la característica de permutación</a><ul>
+<li class="chapter" data-level="5.5.1" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#teoría-3"><i class="fa fa-check"></i><b>5.5.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.5.2" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#importanciadecaracteristicas-datos"><i class="fa fa-check"></i><b>5.5.2</b> ¿Debo calcular la importancia de los datos de entrenamiento o prueba?</a></li>
+<li class="chapter" data-level="5.5.3" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ejemplo-e-interpretación"><i class="fa fa-check"></i><b>5.5.3</b> Ejemplo e interpretación</a></li>
+<li class="chapter" data-level="5.5.4" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#ventajas-9"><i class="fa fa-check"></i><b>5.5.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.5.5" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#desventajas-9"><i class="fa fa-check"></i><b>5.5.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.5.6" data-path="importanciadecaracteristicas.html"><a href="importanciadecaracteristicas.html#software-y-alternativas-3"><i class="fa fa-check"></i><b>5.5.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.6" data-path="global.html"><a href="global.html"><i class="fa fa-check"></i><b>5.6</b> Sustituto global</a><ul>
+<li class="chapter" data-level="5.6.1" data-path="global.html"><a href="global.html#teoría-4"><i class="fa fa-check"></i><b>5.6.1</b> Teoría</a></li>
+<li class="chapter" data-level="5.6.2" data-path="global.html"><a href="global.html#ejemplo-4"><i class="fa fa-check"></i><b>5.6.2</b> Ejemplo</a></li>
+<li class="chapter" data-level="5.6.3" data-path="global.html"><a href="global.html#ventajas-10"><i class="fa fa-check"></i><b>5.6.3</b> Ventajas</a></li>
+<li class="chapter" data-level="5.6.4" data-path="global.html"><a href="global.html#desventajas-10"><i class="fa fa-check"></i><b>5.6.4</b> Desventajas</a></li>
+<li class="chapter" data-level="5.6.5" data-path="global.html"><a href="global.html#software-3"><i class="fa fa-check"></i><b>5.6.5</b> Software</a></li>
+</ul></li>
+<li class="chapter" data-level="5.7" data-path="lime.html"><a href="lime.html"><i class="fa fa-check"></i><b>5.7</b> Sustituto local (LIME)</a><ul>
+<li class="chapter" data-level="5.7.1" data-path="lime.html"><a href="lime.html#lime-para-datos-tabulares"><i class="fa fa-check"></i><b>5.7.1</b> LIME para datos tabulares</a></li>
+<li class="chapter" data-level="5.7.2" data-path="lime.html"><a href="lime.html#lime-para-texto"><i class="fa fa-check"></i><b>5.7.2</b> LIME para texto</a></li>
+<li class="chapter" data-level="5.7.3" data-path="lime.html"><a href="lime.html#imagenes-lime"><i class="fa fa-check"></i><b>5.7.3</b> LIME para imágenes</a></li>
+<li class="chapter" data-level="5.7.4" data-path="lime.html"><a href="lime.html#ventajas-11"><i class="fa fa-check"></i><b>5.7.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.7.5" data-path="lime.html"><a href="lime.html#desventajas-11"><i class="fa fa-check"></i><b>5.7.5</b> Desventajas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.8" data-path="anchors.html"><a href="anchors.html"><i class="fa fa-check"></i><b>5.8</b> Reglas de ámbito (Anclas)</a><ul>
+<li class="chapter" data-level="5.8.1" data-path="anchors.html"><a href="anchors.html#encontrar-anclas"><i class="fa fa-check"></i><b>5.8.1</b> Encontrar anclas</a></li>
+<li class="chapter" data-level="5.8.2" data-path="anchors.html"><a href="anchors.html#complejidad-y-tiempo-de-ejecución"><i class="fa fa-check"></i><b>5.8.2</b> Complejidad y tiempo de ejecución</a></li>
+<li class="chapter" data-level="5.8.3" data-path="anchors.html"><a href="anchors.html#ejemplo-de-datos-tabulares"><i class="fa fa-check"></i><b>5.8.3</b> Ejemplo de datos tabulares</a></li>
+<li class="chapter" data-level="5.8.4" data-path="anchors.html"><a href="anchors.html#ventajas-12"><i class="fa fa-check"></i><b>5.8.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.8.5" data-path="anchors.html"><a href="anchors.html#desventajas-12"><i class="fa fa-check"></i><b>5.8.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.8.6" data-path="anchors.html"><a href="anchors.html#software-y-alternativas-4"><i class="fa fa-check"></i><b>5.8.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.9" data-path="shapley.html"><a href="shapley.html"><i class="fa fa-check"></i><b>5.9</b> Valores de Shapley</a><ul>
+<li class="chapter" data-level="5.9.1" data-path="shapley.html"><a href="shapley.html#idea-general"><i class="fa fa-check"></i><b>5.9.1</b> Idea general</a></li>
+<li class="chapter" data-level="5.9.2" data-path="shapley.html"><a href="shapley.html#ejemplos-e-interpretación"><i class="fa fa-check"></i><b>5.9.2</b> Ejemplos e interpretación</a></li>
+<li class="chapter" data-level="5.9.3" data-path="shapley.html"><a href="shapley.html#el-valor-de-shapley-en-detalle"><i class="fa fa-check"></i><b>5.9.3</b> El valor de Shapley en detalle</a></li>
+<li class="chapter" data-level="5.9.4" data-path="shapley.html"><a href="shapley.html#ventajas-13"><i class="fa fa-check"></i><b>5.9.4</b> Ventajas</a></li>
+<li class="chapter" data-level="5.9.5" data-path="shapley.html"><a href="shapley.html#desventajas-13"><i class="fa fa-check"></i><b>5.9.5</b> Desventajas</a></li>
+<li class="chapter" data-level="5.9.6" data-path="shapley.html"><a href="shapley.html#software-y-alternativas-5"><i class="fa fa-check"></i><b>5.9.6</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="5.10" data-path="shap.html"><a href="shap.html"><i class="fa fa-check"></i><b>5.10</b> SHAP (explicaciones aditivas SHapley)</a><ul>
+<li class="chapter" data-level="5.10.1" data-path="shap.html"><a href="shap.html#definición"><i class="fa fa-check"></i><b>5.10.1</b> Definición</a></li>
+<li class="chapter" data-level="5.10.2" data-path="shap.html"><a href="shap.html#kernelshap"><i class="fa fa-check"></i><b>5.10.2</b> KernelSHAP</a></li>
+<li class="chapter" data-level="5.10.3" data-path="shap.html"><a href="shap.html#treeshap"><i class="fa fa-check"></i><b>5.10.3</b> TreeSHAP</a></li>
+<li class="chapter" data-level="5.10.4" data-path="shap.html"><a href="shap.html#ejemplos-4"><i class="fa fa-check"></i><b>5.10.4</b> Ejemplos</a></li>
+<li class="chapter" data-level="5.10.5" data-path="shap.html"><a href="shap.html#importancia-de-la-función-shap"><i class="fa fa-check"></i><b>5.10.5</b> Importancia de la función SHAP</a></li>
+<li class="chapter" data-level="5.10.6" data-path="shap.html"><a href="shap.html#gráfico-de-resumen-shap"><i class="fa fa-check"></i><b>5.10.6</b> Gráfico de resumen SHAP</a></li>
+<li class="chapter" data-level="5.10.7" data-path="shap.html"><a href="shap.html#shap-gráfico-de-dependencia"><i class="fa fa-check"></i><b>5.10.7</b> SHAP Gráfico de dependencia</a></li>
+<li class="chapter" data-level="5.10.8" data-path="shap.html"><a href="shap.html#valores-de-interacción-shap"><i class="fa fa-check"></i><b>5.10.8</b> Valores de interacción SHAP</a></li>
+<li class="chapter" data-level="5.10.9" data-path="shap.html"><a href="shap.html#agrupando-valores-shap"><i class="fa fa-check"></i><b>5.10.9</b> Agrupando valores SHAP</a></li>
+<li class="chapter" data-level="5.10.10" data-path="shap.html"><a href="shap.html#ventajas-14"><i class="fa fa-check"></i><b>5.10.10</b> Ventajas</a></li>
+<li class="chapter" data-level="5.10.11" data-path="shap.html"><a href="shap.html#desventajas-14"><i class="fa fa-check"></i><b>5.10.11</b> Desventajas</a></li>
+<li class="chapter" data-level="5.10.12" data-path="shap.html"><a href="shap.html#software-4"><i class="fa fa-check"></i><b>5.10.12</b> Software</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="basadoenejemplos.html"><a href="basadoenejemplos.html"><i class="fa fa-check"></i><b>6</b> Explicaciones basadas en ejemplos</a><ul>
+<li class="chapter" data-level="6.1" data-path="contrafactual.html"><a href="contrafactual.html"><i class="fa fa-check"></i><b>6.1</b> Explicaciones contrafácticas</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="contrafactual.html"><a href="contrafactual.html#generando-explicaciones-contrafácticas"><i class="fa fa-check"></i><b>6.1.1</b> Generando explicaciones contrafácticas</a></li>
+<li class="chapter" data-level="6.1.2" data-path="contrafactual.html"><a href="contrafactual.html#ejemplos-5"><i class="fa fa-check"></i><b>6.1.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.1.3" data-path="contrafactual.html"><a href="contrafactual.html#ventajas-15"><i class="fa fa-check"></i><b>6.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.1.4" data-path="contrafactual.html"><a href="contrafactual.html#desventajas-15"><i class="fa fa-check"></i><b>6.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.1.5" data-path="contrafactual.html"><a href="contrafactual.html#ejemplo-software"><i class="fa fa-check"></i><b>6.1.5</b> Software y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="adversarial.html"><a href="adversarial.html"><i class="fa fa-check"></i><b>6.2</b> Ejemplos adversos</a><ul>
+<li class="chapter" data-level="6.2.1" data-path="adversarial.html"><a href="adversarial.html#métodos-y-ejemplos"><i class="fa fa-check"></i><b>6.2.1</b> Métodos y ejemplos</a></li>
+<li class="chapter" data-level="6.2.2" data-path="adversarial.html"><a href="adversarial.html#la-perspectiva-de-ciberseguridad"><i class="fa fa-check"></i><b>6.2.2</b> La perspectiva de ciberseguridad</a></li>
+</ul></li>
+<li class="chapter" data-level="6.3" data-path="proto.html"><a href="proto.html"><i class="fa fa-check"></i><b>6.3</b> Prototipos y excepciones</a><ul>
+<li class="chapter" data-level="6.3.1" data-path="proto.html"><a href="proto.html#teoría-5"><i class="fa fa-check"></i><b>6.3.1</b> Teoría</a></li>
+<li class="chapter" data-level="6.3.2" data-path="proto.html"><a href="proto.html#ejemplos-6"><i class="fa fa-check"></i><b>6.3.2</b> Ejemplos</a></li>
+<li class="chapter" data-level="6.3.3" data-path="proto.html"><a href="proto.html#ventajas-16"><i class="fa fa-check"></i><b>6.3.3</b> Ventajas</a></li>
+<li class="chapter" data-level="6.3.4" data-path="proto.html"><a href="proto.html#desventajas-16"><i class="fa fa-check"></i><b>6.3.4</b> Desventajas</a></li>
+<li class="chapter" data-level="6.3.5" data-path="proto.html"><a href="proto.html#código-y-alternativas"><i class="fa fa-check"></i><b>6.3.5</b> Código y alternativas</a></li>
+</ul></li>
+<li class="chapter" data-level="6.4" data-path="influyente.html"><a href="influyente.html"><i class="fa fa-check"></i><b>6.4</b> Instancias influyentes</a><ul>
+<li class="chapter" data-level="6.4.1" data-path="influyente.html"><a href="influyente.html#diagnóstico-de-eliminación"><i class="fa fa-check"></i><b>6.4.1</b> Diagnóstico de eliminación</a></li>
+<li class="chapter" data-level="6.4.2" data-path="influyente.html"><a href="influyente.html#funciones-de-influencia"><i class="fa fa-check"></i><b>6.4.2</b> Funciones de influencia</a></li>
+<li class="chapter" data-level="6.4.3" data-path="influyente.html"><a href="influyente.html#ventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.3</b> Ventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.4" data-path="influyente.html"><a href="influyente.html#desventajas-de-identificar-instancias-influyentes"><i class="fa fa-check"></i><b>6.4.4</b> Desventajas de identificar instancias influyentes</a></li>
+<li class="chapter" data-level="6.4.5" data-path="influyente.html"><a href="influyente.html#software-y-alternativas-6"><i class="fa fa-check"></i><b>6.4.5</b> Software y alternativas</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="redes-neuronales.html"><a href="redes-neuronales.html"><i class="fa fa-check"></i><b>7</b> Interpretación de redes neuronales</a><ul>
+<li class="chapter" data-level="7.1" data-path="cnn-features.html"><a href="cnn-features.html"><i class="fa fa-check"></i><b>7.1</b> Características aprendidas</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="cnn-features.html"><a href="cnn-features.html#visualización-características"><i class="fa fa-check"></i><b>7.1.1</b> Visualización de características</a></li>
+<li class="chapter" data-level="7.1.2" data-path="cnn-features.html"><a href="cnn-features.html#disección-red"><i class="fa fa-check"></i><b>7.1.2</b> Disección de red</a></li>
+<li class="chapter" data-level="7.1.3" data-path="cnn-features.html"><a href="cnn-features.html#ventajas-17"><i class="fa fa-check"></i><b>7.1.3</b> Ventajas</a></li>
+<li class="chapter" data-level="7.1.4" data-path="cnn-features.html"><a href="cnn-features.html#desventajas-17"><i class="fa fa-check"></i><b>7.1.4</b> Desventajas</a></li>
+<li class="chapter" data-level="7.1.5" data-path="cnn-features.html"><a href="cnn-features.html#software-y-material-adicional"><i class="fa fa-check"></i><b>7.1.5</b> Software y material adicional</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="futuro.html"><a href="futuro.html"><i class="fa fa-check"></i><b>8</b> Una mirada a la bola de cristal</a><ul>
+<li class="chapter" data-level="8.1" data-path="el-futuro-del-aprendizaje-automático.html"><a href="el-futuro-del-aprendizaje-automático.html"><i class="fa fa-check"></i><b>8.1</b> El futuro del aprendizaje automático</a></li>
+<li class="chapter" data-level="8.2" data-path="el-futuro-de-la-interpretabilidad.html"><a href="el-futuro-de-la-interpretabilidad.html"><i class="fa fa-check"></i><b>8.2</b> El futuro de la interpretabilidad</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="contribute.html"><a href="contribute.html"><i class="fa fa-check"></i><b>9</b> Contribuir al libro</a></li>
+<li class="chapter" data-level="10" data-path="cita.html"><a href="cita.html"><i class="fa fa-check"></i><b>10</b> Citando este libro</a></li>
+<li class="chapter" data-level="11" data-path="traducciones.html"><a href="traducciones.html"><i class="fa fa-check"></i><b>11</b> Traducciones</a></li>
+<li class="chapter" data-level="12" data-path="agradecimientos.html"><a href="agradecimientos.html"><i class="fa fa-check"></i><b>12</b> Agradecimientos</a></li>
+<li class="chapter" data-level="" data-path="references.html"><a href="references.html"><i class="fa fa-check"></i>References</a><ul>
+<li class="chapter" data-level="" data-path="r-packages-used-for-examples.html"><a href="r-packages-used-for-examples.html"><i class="fa fa-check"></i>R Packages Used for Examples</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://bookdown.org" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Aprendizaje automatico interpretable</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="influyente" class="section level2">
+<h2><span class="header-section-number">6.4</span> Instancias influyentes</h2>
+<!-- Texto de introducción -->
+<p>Los modelos de aprendizaje automático son, en última instancia, un producto de datos de entrenamiento y la eliminación de una de las instancias de entrenamiento puede afectar el modelo resultante.
+Llamamos a una instancia de entrenamiento “influyente” cuando su eliminación de los datos de entrenamiento cambia considerablemente los parámetros o predicciones del modelo.
+Al identificar instancias de entrenamiento influyentes, podemos “depurar” los modelos de aprendizaje automático y explicar mejor sus comportamientos y predicciones.</p>
+<!-- *Palabras clave: instancias influyentes, función de influencia, análisis de omisión, distancia de Cook, diagnóstico de eliminación, estadísticas robustas* -->
+<p>Este capítulo te muestra dos enfoques para identificar instancias influyentes, a saber, diagnósticos de eliminación y funciones de influencia.
+Ambos enfoques se basan en estadísticas sólidas, que proporcionan métodos estadísticos que se ven menos afectados por valores atípicos o violaciones de los supuestos del modelo.
+Las estadísticas robustas también proporcionan métodos para medir qué tan robustas son las estimaciones de los datos (como una estimación media o los pesos de un modelo de predicción).</p>
+<p>Imagina que deseas estimar el ingreso promedio de las personas en tu ciudad y preguntar a diez personas aleatorias en la calle cuánto ganan.
+Además del hecho de que tu muestra probablemente sea realmente mala, ¿cuánto puede influir la estimación de ingresos promedio por una sola persona?
+Para responder a esta pregunta, puedes volver a calcular el valor medio omitiendo respuestas individuales o derivar matemáticamente a través de “funciones de influencia” cómo se puede influir en el valor medio.
+Con el enfoque de eliminación, recalculamos el valor medio diez veces, omitiendo uno de los estados de resultados cada vez y medimos cuánto cambia la estimación media.
+Un gran cambio significa que una instancia fue muy influyente.
+El segundo enfoque pondera a una de las personas en un peso infinitesimalmente pequeño, que corresponde al cálculo de la primera derivada de una estadística o modelo.
+Este enfoque también se conoce como “enfoque infinitesimal” o “función de influencia”.
+La respuesta es, por cierto, que la estimación media puede estar muy influenciada por una sola respuesta, ya que la media se escala linealmente con valores únicos.
+Una opción más sólida es la mediana (el valor en el que la mitad de las personas gana más y la otra mitad menos), porque incluso si la persona con el ingreso más alto en su muestra ganara diez veces más, la mediana resultante no cambiaría.</p>
+<p>Los diagnósticos de eliminación y las funciones de influencia también se pueden aplicar a los parámetros o predicciones de los modelos de aprendizaje automático para comprender mejor su comportamiento o explicar predicciones individuales.
+Antes de analizar estos dos enfoques para encontrar instancias influyentes, examinaremos la diferencia entre una instancia atípica y una instancia influyente.</p>
+<p><strong>Valores atípicos</strong></p>
+<p>Un valor atípico es una instancia que está muy lejos de las otras instancias del conjunto de datos.
+“Lejos” significa que la distancia, por ejemplo euclidiana, es muy grande.
+En un conjunto de datos de recién nacidos, un recién nacido que pesa 6 kg se consideraría un valor atípico.
+En un conjunto de datos de cuentas bancarias con cuentas corrientes en su mayoría, una cuenta de préstamo dedicada (saldo negativo grande, pocas transacciones) se consideraría un valor atípico.
+La siguiente figura muestra un valor atípico para una distribución unidimensional.</p>
+<div class="figure"><span id="fig:outlier"></span>
+<img src="images/outlier-1.png" alt="La variable x sigue una distribución gaussiana con un valor atípico en x = 8." width="1050" />
+<p class="caption">
+FIGURA 6.14: La variable x sigue una distribución gaussiana con un valor atípico en x = 8.
+</p>
+</div>
+<p>Los valores atípicos pueden ser puntos de datos interesantes (por ejemplo, <a href="proto.html#proto">excepciones</a>).
+Cuando un valor atípico influye en el modelo, también es una instancia influyente.</p>
+<p><strong>Instancias influyentes</strong></p>
+<p>Una instancia influyente es una instancia de datos cuya eliminación tiene un fuerte efecto en el modelo entrenado.
+Cuanto más cambien los parámetros o predicciones del modelo cuando el modelo se vuelva a entrenar con una instancia particular eliminada de los datos de entrenamiento, más influyente será esa instancia. Si una instancia es influyente para un modelo entrenado también depende de su valor para el objetivo y.
+La siguiente figura muestra una instancia influyente para un modelo de regresión lineal.</p>
+<div class="figure"><span id="fig:influential-point"></span>
+<img src="images/influential-point-1.png" alt="Un modelo lineal con una característica. Entrenado una vez en los datos completos y una vez sin la instancia influyente. Eliminar la instancia influyente cambia drásticamente la pendiente ajustada (peso / coeficiente)." width="1050" />
+<p class="caption">
+FIGURA 6.15: Un modelo lineal con una característica. Entrenado una vez en los datos completos y una vez sin la instancia influyente. Eliminar la instancia influyente cambia drásticamente la pendiente ajustada (peso / coeficiente).
+</p>
+</div>
+<p><strong>¿Por qué las instancias influyentes ayudan a entender el modelo?</strong></p>
+<p>La idea clave detrás de las instancias influyentes para la interpretabilidad es rastrear los parámetros y predicciones del modelo hasta donde comenzó todo: los datos de entrenamiento.
+Un alumno, es decir, el algoritmo que genera el modelo de aprendizaje automático, es una función que toma datos de entrenamiento que constan de las características X y el objetivo Y y genera un modelo de aprendizaje automático.
+Por ejemplo, el alumno de un árbol de decisión es un algoritmo que selecciona las características divididas y los valores en los que se divide.
+Un alumno para una red neuronal utiliza la propagación hacia atrás para encontrar los mejores pesos.</p>
+<div class="figure"><span id="fig:learner"></span>
+<img src="images/learner.png" alt="Un alumno aprende un modelo a partir de datos de entrenamiento (características más objetivo). El modelo hace predicciones para nuevos datos." width="600" />
+<p class="caption">
+FIGURA 6.16: Un alumno aprende un modelo a partir de datos de entrenamiento (características más objetivo). El modelo hace predicciones para nuevos datos.
+</p>
+</div>
+<p>Preguntamos cómo cambiarían los parámetros del modelo o las predicciones si eliminamos instancias de entrenamiento en el proceso de entrenamiento.
+Esto contrasta con otros enfoques de interpretabilidad que analizan cómo cambia la predicción cuando manipulamos las características de las instancias a predecir, como <a href="pdp.html#pdp">gráficos de dependencia parcial</a> o <a href="importanciadecaracteristicas.html#importanciadecaracteristicas">importancia de la característica</a>.
+Con instancias influyentes, no tratamos el modelo como fijo, sino como una función de los datos de entrenamiento.
+Las instancias influyentes nos ayudan a responder preguntas sobre el comportamiento del modelo global y las predicciones individuales.
+¿Cuáles fueron las instancias más influyentes para los parámetros del modelo o las predicciones en general?
+¿Cuáles fueron las instancias más influyentes para una predicción particular?
+Las instancias influyentes nos dicen para qué instancias el modelo podría tener problemas, qué instancias de entrenamiento deberían verificarse en busca de errores y dar una impresión de la solidez del modelo.
+Es posible que no confiemos en un modelo si una sola instancia tiene una fuerte influencia en las predicciones y parámetros del modelo.
+Al menos eso nos haría investigar más a fondo.</p>
+<p>¿Cómo podemos encontrar instancias influyentes?
+Tenemos dos formas de medir la influencia:
+Nuestra primera opción es eliminar la instancia de los datos de entrenamiento, volver a entrenar el modelo en el conjunto de datos de entrenamiento reducido y observar la diferencia en los parámetros o predicciones del modelo (individualmente o sobre el conjunto de datos completo).
+La segunda opción es aumentar el peso de una instancia de datos aproximando los cambios de parámetros en función de los gradientes de los parámetros del modelo.
+El enfoque de eliminación es más fácil de entender y motiva el enfoque de mejora, por lo que comenzamos con el primero.</p>
+<div id="diagnóstico-de-eliminación" class="section level3">
+<h3><span class="header-section-number">6.4.1</span> Diagnóstico de eliminación</h3>
+<p>Los estadísticos ya han investigado mucho en el área de instancias influyentes, especialmente para los modelos de regresión lineal (generalizados).
+Cuando busca “observaciones influyentes”, los primeros resultados de búsqueda se refieren a medidas como DFBETA y la distancia de Cook.
+<strong>DFBETA</strong> mide el efecto de eliminar una instancia en los parámetros del modelo.
+<strong>La distancia de Cook</strong> (Cook, 1977<a href="#fn58" class="footnote-ref" id="fnref58"><sup>58</sup></a>) mide el efecto de eliminar una instancia en las predicciones del modelo.
+Para ambas medidas tenemos que volver a entrenar el modelo repetidamente, omitiendo instancias individuales cada vez.
+Los parámetros o predicciones del modelo con todas las instancias se comparan con los parámetros o predicciones del modelo con una de las instancias eliminadas de los datos de entrenamiento.</p>
+<p>DFBETA se define como:</p>
+<p><span class="math display">\[DFBETA_{i}=\beta-\beta^{(-i)}\]</span></p>
+<p>donde <span class="math inline">\(\beta\)</span> es el vector de peso cuando el modelo se entrena en todas las instancias de datos, y <span class="math inline">\(\beta^{(-i)}\)</span> el vector de peso cuando el modelo se entrena sin instancia i.
+Muy intuitivo, dirías.
+DFBETA funciona solo para modelos con parámetros de peso, como regresión logística o redes neuronales, pero no para modelos como árboles de decisión, conjuntos de árboles, algunas máquinas de vectores de soporte, etc.</p>
+<p>La distancia de Cook se inventó para los modelos de regresión lineal y existen aproximaciones para los modelos de regresión lineal generalizados.
+La distancia de Cook para una instancia de entrenamiento se define como la suma (a escala) de las diferencias al cuadrado en el resultado predicho cuando la i-ésima instancia se elimina del modelo de entrenamiento.</p>
+<p><span class="math display">\[D_i=\frac{\sum_{j=1}^n(\hat{y}_j-\hat{y}_{j}^{(-i)})^2}{p\cdot{}MSE}\]</span></p>
+<p>donde el numerador es la diferencia al cuadrado entre la predicción del modelo con y sin la i-ésima instancia, sumada sobre el conjunto de datos.
+El denominador es el número de características p veces el error cuadrático medio.
+El denominador es el mismo para todas las instancias, sin importar qué instancia se elimine.
+La distancia de Cook nos dice cuánto cambia la salida predicha de un modelo lineal cuando eliminamos la i-ésima instancia del entrenamiento.</p>
+<p>¿Podemos usar la distancia de Cook y DFBETA para cualquier modelo de aprendizaje automático?
+DFBETA requiere parámetros de modelo, por lo que esta medida solo funciona para modelos parametrizados.
+La distancia de Cook no requiere ningún parámetro del modelo.
+Curiosamente, la distancia de Cook generalmente no se ve fuera del contexto de los modelos lineales y los modelos lineales generalizados, pero la idea de tomar la diferencia entre las predicciones del modelo antes y después de la eliminación de una instancia particular es muy general.
+Un problema con la definición de la distancia de Cook es el MSE, que no es significativo para todos los tipos de modelos de predicción (por ejemplo, clasificación).</p>
+<p>La medida de influencia más simple para el efecto en las predicciones del modelo se puede escribir de la siguiente manera:</p>
+<p><span class="math display">\[\text{Influence}^{(-i)}=\frac{1}{n}\sum_{j=1}^{n}\left|\hat{y}_j-\hat{y}_{j}^{(-i)}\right|\]</span></p>
+<p>Esta expresión es básicamente el numerador de la distancia de Cook, con la diferencia de que la diferencia absoluta se suma en lugar de las diferencias al cuadrado.
+Esta fue una elección que hice, porque tiene sentido para los ejemplos posteriores.
+La forma general de las medidas de diagnóstico de eliminación consiste en elegir una medida (como el resultado pronosticado) y calcular la diferencia de la medida para el modelo entrenado en todas las instancias y cuando se elimina la instancia.</p>
+<p>Podemos desglosar fácilmente la influencia para explicar para la predicción de la instancia j cuál fue la influencia de la i-ésima instancia de entrenamiento:</p>
+<p><span class="math display">\[\text{Influence}_{j}^{(-i)}=\left|\hat{y}_j-\hat{y}_{j}^{(-i)}\right|\]</span></p>
+<p>Esto también funcionaría para la diferencia en los parámetros del modelo o la diferencia en la pérdida.
+En el siguiente ejemplo usaremos estas simples medidas de influencia.</p>
+<p><strong>Ejemplo de diagnóstico de eliminación</strong></p>
+<p>En el siguiente ejemplo, entrenamos una SVM para predecir <a href="cervical.html#cervical">cáncer cervical</a> dados los factores de riesgo y medir qué instancias de entrenamiento fueron más influyentes en general y para una predicción particular.
+Dado que la predicción del cáncer es un problema de clasificación, medimos la influencia como la diferencia en la probabilidad pronosticada de cáncer.
+Una instancia es influyente si la probabilidad pronosticada aumenta o disminuye en promedio en el conjunto de datos cuando la instancia se elimina del entrenamiento del modelo.
+La medición de la influencia para todas las instancias de entrenamiento 858 requiere entrenar el modelo una vez en todos los datos y volver a entrenarlo 858 veces (= tamaño de los datos de entrenamiento) con una de las instancias eliminadas hora.</p>
+<p>La instancia más influyente tiene una medida de influencia de aproximadamente 0.01.
+Una influencia de 0.01 significa que si eliminamos la instancia 540, la probabilidad pronosticada cambia en 1 punto porcentual en promedio.
+Esto es bastante considerable teniendo en cuenta que la probabilidad pronosticada promedio de cáncer es 6.4%.
+El valor medio de las medidas de influencia sobre todas las eliminaciones posibles es 0.2 puntos porcentuales.
+Ahora sabemos cuáles de las instancias de datos fueron más influyentes para el modelo.
+Esto ya es útil para depurar los datos.
+¿Hay alguna instancia problemática?
+¿Hay errores de medición?
+Las instancias influyentes son las primeras que deben verificarse en busca de errores, porque cada error en ellas influye fuertemente en las predicciones del modelo.</p>
+<p>Además de la depuración del modelo, ¿podemos aprender algo para comprender mejor el modelo?
+Simplemente imprimir las 10 instancias más influyentes no es muy útil, porque es solo una tabla de instancias con muchas características.
+Todos los métodos que devuelven instancias como salida solo tienen sentido si tenemos una buena manera de representarlos.
+Pero podemos entender mejor qué tipo de instancias influyen cuando preguntamos:
+¿Qué distingue una instancia influyente de una instancia no influyente?
+Podemos convertir esta pregunta en un problema de regresión y modelar la influencia de una instancia en función de sus valores característicos.
+Somos libres de elegir cualquier modelo del capítulo sobre <a href="simple.html#simple">Modelos de aprendizaje automático interpretables</a>.
+Para este ejemplo, elegí un árbol de decisión (figura siguiente) que muestra que los datos de mujeres de 35 años o más fueron los más influyentes para la máquina de vectores de soporte.
+De todas las mujeres en el conjunto de datos 153 de 858 tenían más de 35 años.
+En el capítulo sobre <a href="pdp.html#pdp">Gráficos de dependencia parcial</a>, hemos visto que después de 40 hay un fuerte aumento en la probabilidad pronosticada de cáncer y la [Importancia de la característica] (#importanciadecaracteristicas) también ha detectado la edad como uno de las características más importantes.
+El análisis de influencia nos dice que el modelo se vuelve cada vez más inestable al predecir el cáncer para edades más altas.
+Esto en sí mismo es información valiosa.
+Esto significa que los errores en estos casos pueden tener un fuerte efecto en el modelo.</p>
+<div class="figure"><span id="fig:cooks-analyzed"></span>
+<img src="images/cooks-analyzed-1.png" alt="Un árbol de decisión que modela la relación entre la influencia de las instancias y sus características. La profundidad máxima del árbol se establece en 2." width="1050" />
+<p class="caption">
+FIGURA 6.17: Un árbol de decisión que modela la relación entre la influencia de las instancias y sus características. La profundidad máxima del árbol se establece en 2.
+</p>
+</div>
+<p>Este primer análisis de influencia reveló la instancia <em>general</em> más influyente.
+Ahora seleccionamos una de las instancias, a saber, la instancia número 7, para la que queremos explicar la predicción al encontrar las instancias de datos de entrenamiento más influyentes.
+Es como una pregunta contrafactual:
+¿Cómo cambiaría la predicción por ejemplo 7 si omitimos la instancia i del proceso de entrenamiento?
+Repetimos esta eliminación para todas las instancias.
+Luego seleccionamos las instancias de entrenamiento que resultan en el mayor cambio en la predicción de la instancia 7 cuando se omiten del entrenamiento y las usamos para explicar la predicción del modelo para esa instancia.
+Elegí explicar la predicción, por ejemplo, 7 porque es la instancia con la mayor probabilidad pronosticada de cáncer (7.35%), que pensé fue un caso interesante para analizar más profundamente.
+Podríamos devolver, por ejemplo, las 10 instancias más influyentes para predecir la instancia número 7 impresa como una tabla.
+No es muy útil, porque no pudimos ver mucho.
+Nuevamente, tiene más sentido descubrir qué distingue las instancias influyentes de las instancias no influyentes analizando sus características.
+Usamos un árbol de decisión entrenado para predecir la influencia dadas las características, pero en realidad lo usamos mal solo para encontrar una estructura y no para predecir algo.
+El siguiente árbol de decisión muestra qué tipo de instancias de entrenamiento fueron más influyentes para predecir la instancia 7.</p>
+<div class="figure"><span id="fig:influence-single"></span>
+<img src="images/influence-single-1.png" alt="Árbol de decisión que explica qué instancias fueron más influyentes para predecir la 7-ésima instancia. Los datos de mujeres que fumaron durante 18.5 años o más tuvieron una gran influencia en el predicción de la 7-ésima instancia, con un cambio promedio en la predicción absoluta en 11.7 puntos porcentuales de probabilidad de cáncer" width="1050" />
+<p class="caption">
+FIGURA 6.18: Árbol de decisión que explica qué instancias fueron más influyentes para predecir la 7-ésima instancia. Los datos de mujeres que fumaron durante 18.5 años o más tuvieron una gran influencia en el predicción de la 7-ésima instancia, con un cambio promedio en la predicción absoluta en 11.7 puntos porcentuales de probabilidad de cáncer
+</p>
+</div>
+<p>Las instancias de datos de mujeres que fumaron o han estado fumando durante 18.5 años o más tienen una gran influencia en la predicción de la 7-ésima instancia.
+La mujer detrás de la 7 instancia fumaba por 34 años.
+En los datos, 12 mujeres (1.40%) fumaron 18.5 años o más.
+Cualquier error cometido en la recolección del número de años de fumar de una de estas mujeres tendrá un gran impacto en el resultado previsto para la 7-ésima instancia.</p>
+<p>El cambio más extremo en la predicción ocurre cuando eliminamos el número de instancia 663.
+El paciente supuestamente fumó por 22 años, alineado con los resultados del árbol de decisiones.
+La probabilidad predicha para la 7-ésima instancia cambia de 7.35% a 66.60% si eliminamos la instancia 663!</p>
+<p>Si observamos más de cerca las características de la instancia más influyente, podemos ver otro posible problema.
+Los datos dicen que la mujer tiene 28 años y ha estado fumando durante 22 años.
+O es un caso realmente extremo y ella realmente comenzó a fumar a los 6, o esto es un error de datos.
+Tiendo a creer lo último.
+Esta es ciertamente una situación en la que debemos cuestionar la precisión de los datos.</p>
+<p>Estos ejemplos mostraron lo útil que es identificar instancias influyentes para depurar modelos.
+Un problema con el enfoque propuesto es que el modelo necesita ser reentrenado para cada instancia de entrenamiento.
+Todo el reentrenamiento puede ser bastante lento, porque si tienes miles de instancias de entrenamiento, tendrás que reentrenar tu modelo miles de veces.
+Suponiendo que el modelo demore un día en entrenarse y que tenga 1000 instancias de entrenamiento, el cálculo de instancias influyentes, sin paralelización, tomará casi 3 años.
+Nadie tiene tiempo para esto.
+En el resto de este capítulo, te mostraré un método que no requiere volver a entrenar el modelo.</p>
+</div>
+<div id="funciones-de-influencia" class="section level3">
+<h3><span class="header-section-number">6.4.2</span> Funciones de influencia</h3>
+<p><em>Tú</em>: Quiero saber la influencia que tiene una instancia de entrenamiento en una predicción particular.<br />
+<em>Investigación</em>: puede eliminar la instancia de entrenamiento, volver a entrenar el modelo y medir la diferencia en la predicción.<br />
+<em>Tú</em>:¡Genial! ¿Pero tienes un método para mí que funcione sin reentrenamiento? Toma mucho tiempo<br />
+<em>Investigación</em>: ¿Tiene un modelo con una función de pérdida que sea dos veces diferenciable con respecto a sus parámetros?<br />
+<em>Tú</em>: Entrené una red neuronal con la pérdida logística. Entonces sí.<br />
+<em>Investigación </em>: Entonces, puede aproximar la influencia de la instancia en los parámetros del modelo y en la predicción con <strong>funciones de influencia</strong>.<br />
+La función de influencia es una medida de cuán fuertemente dependen los parámetros o predicciones del modelo de una instancia de entrenamiento.<br />
+En lugar de eliminar la instancia, el método compensa la instancia en la pérdida en un paso muy pequeño.<br />
+Este método implica aproximar la pérdida alrededor de los parámetros del modelo actual usando el gradiente y la matriz de Hesse.<br />
+La pérdida de peso es similar a eliminar la instancia.<br />
+<em>Tú</em>: Genial, ¡eso es lo que estoy buscando!</p>
+<p>Koh y Liang (2017)<a href="#fn59" class="footnote-ref" id="fnref59"><sup>59</sup></a> sugirieron usar funciones de influencia, un método de estadísticas robustas, para medir cómo una instancia influye en los parámetros o predicciones del modelo.
+Al igual que con los diagnósticos de eliminación, las funciones de influencia rastrean los parámetros y predicciones del modelo hasta la instancia de entrenamiento responsable.
+Sin embargo, en lugar de eliminar instancias de entrenamiento, el método se aproxima a cuánto cambia el modelo cuando la instancia se compensa en el riesgo empírico (suma de la pérdida sobre los datos de entrenamiento).</p>
+<p>El método de las funciones de influencia requiere acceso al gradiente de pérdida con respecto a los parámetros del modelo, que solo funciona para un subconjunto de modelos de aprendizaje automático.
+La regresión logística, las redes neuronales y las máquinas de vectores de soporte califican, los métodos basados en árboles como los random forest no.
+Las funciones de influencia ayudan a comprender el comportamiento del modelo, depurar el modelo y detectar errores en el conjunto de datos.</p>
+<p>La siguiente sección explica la intuición y las matemáticas detrás de las funciones de influencia.</p>
+<p><strong>Matemáticas detrás de las funciones de influencia</strong></p>
+<p>La idea clave detrás de las funciones de influencia es aumentar la pérdida de una instancia de entrenamiento mediante un paso infinitesimalmente pequeño <span class="math inline">\(\epsilon\)</span>, que da como resultado nuevos parámetros del modelo:</p>
+<p><span class="math display">\[\hat{\theta}_{\epsilon,z}=\arg\min_{\theta{}\in\Theta}(1-\epsilon)\frac{1}{n}\sum_{i=1}^n{}L(z_i,\theta)+\epsilon{}L(z,\theta)\]</span></p>
+<p>donde <span class="math inline">\(\theta\)</span> es el vector de parámetros del modelo y <span class="math inline">\(\hat{\theta}_{\epsilon,z}\)</span> es el vector de parámetros después de aumentar z por un número muy pequeño <span class="math inline">\(\epsilon\)</span>.
+L es la función de pérdida con la que se entrenó el modelo, <span class="math inline">\(z_i\)</span> son los datos de entrenamiento y z es la instancia de entrenamiento que queremos aumentar para simular su eliminación.
+La intuición detrás de esta fórmula es:
+¿Cuánto cambiará la pérdida si aumentamos un poco de peso una instancia particular <span class="math inline">\(z_i\)</span> de los datos de entrenamiento (<span class="math inline">\(\epsilon\)</span>) y atenuamos las otras instancias de datos en consecuencia?
+¿Cómo sería el vector de parámetros para optimizar esta nueva pérdida combinada?
+La función de influencia de los parámetros, es decir, la influencia de la instancia de entrenamiento de ponderación z sobre los parámetros, se puede calcular de la siguiente manera.</p>
+<p><span class="math display">\[I_{\text{up,params}}(z)=\left.\frac{d{}\hat{\theta}_{\epsilon,z}}{d\epsilon}\right|_{\epsilon=0}=-H_{\hat{\theta}}^{-1}\nabla_{\theta}L(z,\hat{\theta})\]</span></p>
+<p>La última expresión <span class="math inline">\(\nabla_{\theta}L(z,\hat{\theta})\)</span> es el gradiente de pérdida con respecto a los parámetros para la instancia de entrenamiento ponderada.
+El gradiente es la tasa de cambio de la pérdida de la instancia de entrenamiento.
+Nos dice cuánto cambia la pérdida cuando cambiamos un poco los parámetros del modelo <span class="math inline">\(\hat{\theta}\)</span>.
+Una entrada positiva en el vector gradiente significa que un pequeño aumento en el parámetro del modelo correspondiente aumenta la pérdida, una entrada negativa significa que el aumento del parámetro reduce la pérdida.
+La primera parte <span class="math inline">\(H^{-1}_{\hat{\theta}}\)</span> es la matriz Hessiana inversa (segunda derivada de la pérdida con respecto a los parámetros del modelo).
+La matriz Hessiana es la tasa de cambio del gradiente, o expresada como pérdida, es la tasa de cambio de la tasa de cambio de la pérdida.
+Se puede estimar usando:</p>
+<p><span class="math display">\[H_{\theta}=\frac{1}{n}\sum_{i=1}^n\nabla^2_{\hat{\theta}}L(z_i,\hat{\theta})\]</span></p>
+<p>Más informalmente:
+La matriz de Hesse registra cuán curvada es la pérdida en cierto punto.
+El Hessiano es una matriz y no solo un vector, porque describe la curvatura de la pérdida y la curvatura depende de la dirección en la que miremos.
+El cálculo real del Hessiano lleva mucho tiempo si tiene muchos parámetros.
+Koh y Liang sugirieron algunos trucos para calcularlo de manera eficiente, lo que va más allá del alcance de este capítulo.
+Actualizar los parámetros del modelo, como se describe en la fórmula anterior, es equivalente a dar un solo paso de Newton después de formar una expansión cuadrática alrededor de los parámetros estimados del modelo.</p>
+<p>¿Qué intuición hay detrás de esta fórmula de función de influencia?
+La fórmula proviene de formar una expansión cuadrática alrededor de los parámetros <span class="math inline">\(\hat{\theta}\)</span>.
+Eso significa que en realidad no lo sabemos, o es demasiado complejo calcular cómo cambiará exactamente la pérdida de instancia z cuando se elimine/aumente.
+Aproximamos la función localmente mediante el uso de información sobre la inclinación (= gradiente) y la curvatura (= matriz de Hesse) en la configuración del parámetro del modelo actual.
+Con esta aproximación de pérdida, podemos calcular cómo se verían aproximadamente los nuevos parámetros si ponderamos la instancia z:</p>
+<p><span class="math display">\[\hat{\theta}_{-z}\approx\hat{\theta}-\frac{1}{n}I_{\text{up,params}}(z)\]</span></p>
+<p>El vector de parámetro aproximado es básicamente el parámetro original menos el gradiente de la pérdida de z (porque queremos disminuir la pérdida) escalado por la curvatura (= multiplicado por la matriz Hessiana inversa) y escalado por 1 sobre n, porque ese es la peso de una sola instancia de entrenamiento.</p>
+<p>La siguiente figura muestra cómo funciona el aumento de peso.
+El eje x muestra el valor del parámetro <span class="math inline">\(\theta\)</span> y el eje y el valor correspondiente de la pérdida con instancia ponderada z.
+El parámetro modelo aquí es unidimensional para fines de demostración, pero en realidad suele ser de alta dimensión.
+Nos movemos solo 1 sobre n en la dirección de mejora de la pérdida, por ejemplo z.
+No sabemos cómo cambiaría realmente la pérdida cuando eliminamos z, pero con la primera y segunda derivada de la pérdida, creamos esta aproximación cuadrática alrededor de nuestro parámetro de modelo actual y pretendemos que así es como se comportaría la pérdida real.</p>
+<div class="figure"><span id="fig:quadratic-expansion"></span>
+<img src="images/quadratic-expansion-1.png" alt="Actualizando el parámetro del modelo (eje x) formando una expansión cuadrática de la pérdida alrededor del parámetro del modelo actual, y moviendo 1/n en la dirección en que la pérdida con la instancia ponderada z (eje y) mejora más. Esta ponderación de la instancia z en la pérdida se aproxima a los cambios de parámetros si eliminamos z y entrenamos el modelo en los datos reducidos." width="1050" />
+<p class="caption">
+FIGURA 6.19: Actualizando el parámetro del modelo (eje x) formando una expansión cuadrática de la pérdida alrededor del parámetro del modelo actual, y moviendo 1/n en la dirección en que la pérdida con la instancia ponderada z (eje y) mejora más. Esta ponderación de la instancia z en la pérdida se aproxima a los cambios de parámetros si eliminamos z y entrenamos el modelo en los datos reducidos.
+</p>
+</div>
+<p>En realidad, no necesitamos calcular los nuevos parámetros, pero podemos usar la función de influencia como una medida de la influencia de z en los parámetros.</p>
+<p>¿Cómo cambian las <em>predicciones</em> cuando aumentamos de peso la instancia de entrenamiento z?
+Podemos calcular los nuevos parámetros y luego hacer predicciones usando el modelo recién parametrizado, o también podemos calcular la influencia de la instancia z en las predicciones directamente, ya que podemos calcular la influencia usando la regla de la cadena:</p>
+<p><span class="math display">\[\begin{align*}I_{up,loss}(z,z_{test})&amp;=\left.\frac{d{}L(z_{test},\hat{\theta}_{\epsilon,z})}{d\epsilon}\right|_{\epsilon=0}\\&amp;=\left.\nabla_{\theta}L(z_{test},\hat{\theta})^T\frac{d\hat{\theta}_{\epsilon,z}}{d\epsilon}\right|_{\epsilon=0}\\&amp;=-\nabla_{\theta}L(z_{test},\hat{\theta})^T{}H^{-1}_{\theta}\nabla_{\theta}L(z,\hat{\theta})\end{align*}\]</span></p>
+<p>La primera línea de esta ecuación significa que medimos la influencia de una instancia de entrenamiento en una determinada predicción <span class="math inline">\(z_ {test}\)</span> como un cambio en la pérdida de la instancia de prueba cuando aumentamos la instancia z y obtenemos nuevos parámetros <span class="math inline">\(\hat{\theta}_{\epsilon,z}\)</span>.
+Para la segunda línea de la ecuación, hemos aplicado la regla de la cadena de derivados y obtenemos la derivada de la pérdida de la instancia de prueba con respecto a los parámetros multiplicados por la influencia de z en los parámetros.
+En la tercera línea, reemplazamos la expresión con la función de influencia para los parámetros.
+El primer término en la tercera línea <span class="math inline">\(\nabla_{\theta}L(z_{test},\hat{\theta})^T{}\)</span> es el gradiente de la instancia de prueba con respecto a los parámetros del modelo.</p>
+<p>Tener una fórmula es excelente y la forma científica y precisa de mostrar las cosas.
+Pero creo que es muy importante hacerse una idea de lo que significa la fórmula.
+La fórmula para <span class="math inline">\(I_{\text{up,loss}}\)</span> establece que la función de influencia de la instancia de entrenamiento z en la predicción de una instancia <span class="math inline">\(z_{test}\)</span> es “qué tan fuerte reacciona la instancia ante un cambio del modelo parámetros”multiplicados por" cuánto cambian los parámetros cuando aumentamos el peso de la instancia z".
+Otra forma de leer la fórmula:
+La influencia es proporcional a cuán grandes son los gradientes para el entrenamiento y la pérdida de pruebas.
+Cuanto mayor es el gradiente de la pérdida de entrenamiento, mayor es su influencia en los parámetros y mayor es la influencia en la predicción de la prueba.
+Cuanto mayor sea el gradiente de la predicción de prueba, más influyente será la instancia de prueba.
+Toda la construcción también se puede ver como una medida de la similitud (según lo aprendido por el modelo) entre el entrenamiento y la instancia de prueba.</p>
+<p>Eso es todo con teoría e intuición.
+La siguiente sección explica cómo se pueden aplicar las funciones de influencia.</p>
+<p><strong>Aplicación de funciones de influencia</strong></p>
+<p>Las funciones de influencia tienen muchas aplicaciones, algunas de las cuales ya se han presentado en este capítulo.</p>
+<p><strong>Comprender el comportamiento del modelo</strong></p>
+<p>Diferentes modelos de aprendizaje automático tienen diferentes formas de hacer predicciones.
+Incluso si dos modelos tienen el mismo rendimiento, la forma en que hacen predicciones a partir de las características puede ser muy diferente y, por lo tanto, fallar en diferentes escenarios.
+Comprender las debilidades particulares de un modelo mediante la identificación de instancias influyentes ayuda a formar un “modelo mental” del comportamiento del modelo de aprendizaje automático en su mente.
+La siguiente figura muestra un ejemplo en el que se entrenó una SVM y una red neuronal para distinguir imágenes de perros y peces.
+Las instancias más influyentes de una imagen de un pez fueron muy diferentes para ambos modelos.
+Para el SVM, las instancias fueron influyentes si eran similares en color.
+Para la red neuronal, las instancias eran influyentes si eran conceptualmente similares.
+Para la red neuronal, incluso una imagen de un perro se encontraba entre las imágenes más influyentes, lo que demuestra que aprendió los conceptos y no la distancia euclidiana en el espacio de color.</p>
+<div class="figure"><span id="fig:example-influence-function-svm-inception"></span>
+<img src="images/influence-functions-svm-inception.jpg" alt="Perro o pez? Para la predicción SVM (fila central), las imágenes que tenían colores similares a la imagen de prueba fueron las más influyentes. Para la predicción de la red neuronal (fila inferior), los peces en diferentes entornos fueron los más influyentes, pero también una imagen de perro (arriba a la derecha). Trabajo de Koh y Liang (2017)." width="600" />
+<p class="caption">
+FIGURA 6.20: Perro o pez? Para la predicción SVM (fila central), las imágenes que tenían colores similares a la imagen de prueba fueron las más influyentes. Para la predicción de la red neuronal (fila inferior), los peces en diferentes entornos fueron los más influyentes, pero también una imagen de perro (arriba a la derecha). Trabajo de Koh y Liang (2017).
+</p>
+</div>
+<p><strong>Manejo de desajustes de dominio / Errores de modelo de depuración</strong></p>
+<p>El manejo de la falta de coincidencia de dominio está estrechamente relacionado para comprender mejor el comportamiento del modelo.
+La falta de coincidencia de dominio significa que la distribución de los datos de entrenamiento y prueba es diferente, lo que puede hacer que el modelo tenga un bajo rendimiento en los datos de prueba.
+Las funciones de influencia pueden identificar instancias de entrenamiento que causaron el error.
+Supón que has entrenado un modelo de predicción para el resultado de pacientes que se han sometido a cirugía.
+Todos estos pacientes provienen del mismo hospital.
+Ahora usas el modelo en otro hospital y observas que no funciona bien para muchos pacientes.
+Por supuesto, asumes que los dos hospitales tienen pacientes diferentes, y si observas tus datos, puedes ver que difieren en muchas características.
+¿Pero cuáles son las características o instancias que han “roto” el modelo?
+Aquí también, las instancias influyentes son una buena manera de responder esta pregunta.
+Tomas uno de los nuevos pacientes, para quienes el modelo ha hecho una predicción falsa, encuentra y analiza las instancias más influyentes.
+Por ejemplo, esto podría mostrar que el segundo hospital tiene pacientes mayores en promedio y las instancias más influyentes de los datos de entrenamiento son los pocos pacientes mayores del primer hospital y el modelo simplemente carecía de los datos para aprender a predecir bien este subgrupo.
+La conclusión sería que el modelo debe entrenarse en más pacientes mayores para que funcionen bien en el segundo hospital.</p>
+<p><strong>Fijación de datos de entrenamiento</strong></p>
+<p>Si tienes un límite en la cantidad de instancias de entrenamiento que puede verificar para verificar que sean correctas, ¿cómo haces una selección eficiente?
+La mejor manera es seleccionar las instancias más influyentes, porque, por definición, tienen la mayor influencia en el modelo.
+Incluso si tuvieras una instancia con valores obviamente incorrectos, si la instancia no es influyente y solo necesitas los datos para el modelo de predicción, es una mejor opción verificar las instancias influyentes.
+Por ejemplo, entrenas un modelo para predecir si un paciente debe permanecer en el hospital o ser dado de alta temprano.
+Realmente deseas asegurarte de que el modelo sea robusto y haga predicciones correctas, porque una liberación incorrecta de un paciente puede tener malas consecuencias.
+Los registros de pacientes pueden ser muy desordenados, por lo que no tienes una confianza perfecta en la calidad de los datos.
+Pero verificar la información del paciente y corregirla puede llevar mucho tiempo, porque una vez que ha informado qué pacientes debe verificar, el hospital realmente necesita enviar a alguien para que revise los registros de los pacientes seleccionados más de cerca, lo que podría estar escrito a mano y acostado en algún archivo.
+Verificar los datos de un paciente puede llevar una hora o más.
+En vista de estos costos, tiene sentido verificar solo algunas instancias de datos importantes.
+La mejor manera es seleccionar pacientes que hayan tenido una gran influencia en el modelo de predicción.
+Koh y Liang (2017) mostraron que este tipo de selección funciona mucho mejor que la selección aleatoria o la selección de aquellos con la mayor pérdida o clasificación incorrecta.</p>
+</div>
+<div id="ventajas-de-identificar-instancias-influyentes" class="section level3">
+<h3><span class="header-section-number">6.4.3</span> Ventajas de identificar instancias influyentes</h3>
+<p>Los enfoques de diagnóstico de eliminación y las funciones de influencia son muy diferentes de los enfoques basados principalmente en perturbaciones de características presentados en el <a href="agnostico.html#agnostico">Capítulo Modelos agnósticos</a>.
+Una mirada a instancias influyentes enfatiza el papel de los datos de entrenamiento en el proceso de aprendizaje.
+Esto hace que las funciones de influencia y los diagnósticos de eliminación <strong>sean una de las mejores herramientas de depuración para los modelos de aprendizaje automático</strong>.
+De las técnicas presentadas en este libro, son las únicas que ayudan directamente a identificar las instancias que deben verificarse en busca de errores.</p>
+<p><strong>Los diagnósticos de eliminación son independientes del modelo</strong>, lo que significa que el enfoque se puede aplicar a cualquier modelo.
+También las funciones de influencia basadas en los derivados se pueden aplicar a una amplia clase de modelos.</p>
+<p>Podemos usar estos métodos para <strong>comparar diferentes modelos de aprendizaje automático</strong> y comprender mejor sus diferentes comportamientos, yendo más allá de comparar solo el rendimiento predictivo.</p>
+<p>No hemos hablado sobre este tema en este capítulo, pero <strong>las funciones de influencia a través de derivados también se pueden usar para crear datos de entrenamiento adversos</strong>.
+Estas son instancias que se manipulan de tal manera que el modelo no puede predecir ciertas instancias de prueba correctamente cuando el modelo está entrenado en esas instancias manipuladas.
+La diferencia con los métodos en el <a href="adversarial.html#adversarial">Capítulo de ejemplos adversos</a> es que el ataque tiene lugar durante el tiempo de entrenamiento, también conocido como ataques de envenenamiento.
+Si estás interesado, lee el artículo de Koh y Liang (2017).</p>
+<p>Para el diagnóstico de eliminación y las funciones de influencia, consideramos la diferencia en la predicción y para la función de influencia el aumento de la pérdida.
+Pero, realmente, <strong>el enfoque es generalizable</strong> a cualquier pregunta de la forma:
+“¿Qué le sucede a … cuando borramos o aumentamos la instancia z?”, Donde puedes llenar “…” con cualquier función de su modelo de su deseo.
+Puedes analizar cuánto influye una instancia de entrenamiento en la pérdida general del modelo.
+Puedes analizar cuánto influye una instancia de entrenamiento en la importancia de la función.
+Puedes analizar cuánto influye una instancia de entrenamiento en qué característica se selecciona para la primera división al entrenar un <a href="arbol.html#arbol">árbol de decisión</a>.</p>
+</div>
+<div id="desventajas-de-identificar-instancias-influyentes" class="section level3">
+<h3><span class="header-section-number">6.4.4</span> Desventajas de identificar instancias influyentes</h3>
+<p>Los diagnósticos de eliminación son muy <strong>costosos de calcular</strong> porque requieren un nuevo entrenamiento.
+Pero la historia ha demostrado que los recursos informáticos aumentan constantemente.
+Un cálculo que hace 20 años era impensable en términos de recursos se puede realizar fácilmente con su teléfono inteligente.
+Puedes entrenar modelos con miles de instancias de entrenamiento y cientos de parámetros en una computadora portátil en segundos / minutos.
+Por lo tanto, no es un gran salto suponer que los diagnósticos de eliminación funcionarán sin problemas incluso con grandes redes neuronales en 10 años.</p>
+<p><strong>Las funciones de influencia son una buena alternativa al diagnóstico de eliminación, pero solo para modelos con parámetros diferenciables</strong>, como las redes neuronales.
+No funcionan para métodos basados en árboles como bosques aleatorios, árboles potenciados o árboles de decisión.
+Incluso si tienes modelos con parámetros y una función de pérdida, la pérdida puede no ser diferenciable.
+Pero para el último problema, hay un truco:
+Usa una pérdida diferenciable como sustituto para calcular la influencia cuando, por ejemplo, el modelo subyacente usa la función de pérdida <em>Hinge Loss</em> en lugar de alguna pérdida diferenciable.
+La pérdida se reemplaza por una versión suavizada de la pérdida problemática para las funciones de influencia, pero el modelo aún se puede entrenar con la pérdida no uniforme.</p>
+<p><strong>Las funciones de influencia son solo aproximadas</strong>, porque el enfoque forma una expansión cuadrática alrededor de los parámetros.
+La aproximación puede ser incorrecta y la influencia de una instancia en realidad es mayor o menor cuando se elimina.
+Koh y Liang (2017) mostraron para algunos ejemplos que la influencia calculada por la función de influencia estaba cerca de la medida de influencia obtenida cuando el modelo fue realmente reentrenado después de que se eliminó la instancia.
+Pero no hay garantía de que la aproximación siempre sea tan cercana.</p>
+<p>No hay <strong>límite claro de la medida de influencia en la que llamamos una instancia influyente o no influyente</strong>.
+Es útil ordenar las instancias por influencia, pero sería genial tener los medios no solo para ordenar las instancias, sino para distinguir entre influyentes y no influyentes.
+Por ejemplo, si identificas las 10 instancias de entrenamiento más influyentes para una instancia de prueba, algunas de ellas pueden no ser influyentes porque, por ejemplo, solo las 3 principales fueron realmente influyentes.</p>
+<p>Las medidas de influencia <strong>solo tienen en cuenta la eliminación de instancias individuales</strong> y no la eliminación de varias instancias a la vez.
+Grupos más grandes de instancias de datos pueden tener algunas interacciones que influyen fuertemente en el entrenamiento y predicción del modelo.
+Pero el problema radica en la combinatoria:
+Hay n posibilidades de eliminar una instancia individual de los datos.
+Hay n veces (n-1) posibilidades de eliminar dos instancias de los datos de entrenamiento.
+Hay n veces (n-1) veces (n-2) posibilidades de eliminar tres …
+Creo que puedes ver a dónde va esto, hay demasiadas combinaciones.</p>
+</div>
+<div id="software-y-alternativas-6" class="section level3">
+<h3><span class="header-section-number">6.4.5</span> Software y alternativas</h3>
+<p>Los diagnósticos de eliminación son muy simples de implementar.
+Eche un vistazo al <a href="https://github.com/christophM/interpretable-ml-book/blob/master/manuscript/06.5-example-based-influence-fct.Rmd">código</a> que escribí para los ejemplos en este capítulo.</p>
+<p>Para modelos lineales y modelos lineales generalizados, muchas medidas de influencia como la distancia de Cook se implementan en R en el paquete <code>stats</code>.</p>
+<p>Koh y Liang publicaron el código de Python para funciones de influencia de su artículo <a href="https://github.com/kohpangwei/influence-release">en un repositorio</a>.
+Eso es genial!
+Desafortunadamente, es “solo” el código del documento y no un módulo Python mantenido y documentado.
+El código se centra en la biblioteca Tensorflow, por lo que no puedes usarlo directamente para modelos de caja negra que usan otros marcos, como sci-kit learn.</p>
+<p>Keita Kurita escribió una <a href="http://mlexplained.com/2018/06/01/paper-dissected-understanding-black-box-predictions-via-influence-functions/#more-641">gran publicación de blog para funciones de influencia</a> eso me ayudó a entender mejor el papel de Koh y Liang.
+La publicación del blog profundiza un poco más en las matemáticas detrás de las funciones de influencia para los modelos de caja negra y también habla sobre algunos de los ‘trucos’ matemáticos con los que el método se implementa de manera eficiente.</p>
+
+</div>
+</div>
+<!-- </div> -->
+<div class="footnotes">
+<hr />
+<ol start="58">
+<li id="fn58"><p>Cook, R. Dennis. “Detection of influential observation in linear regression.” Technometrics 19.1 (1977): 15-18.<a href="influyente.html#fnref58" class="footnote-back">↩</a></p></li>
+<li id="fn59"><p>Koh, Pang Wei, and Percy Liang. “Understanding black-box predictions via influence functions.” arXiv preprint arXiv:1703.04730 (2017).<a href="influyente.html#fnref59" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="proto.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="redes-neuronales.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": true,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/christophM/interpretable-ml-book/edit/master/06.5-example-based-influence-fct.Rmd",
+"text": "Editar"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,32 @@
+# Modelos interpretables {#simple}
+
+La forma más fácil de lograr la interpretabilidad es usar aquellos algoritmos que crean modelos interpretables.
+La regresión lineal, la regresión logística y el árbol de decisión son modelos interpretables comúnmente utilizados.
+
+En los siguientes capítulos hablaremos sobre estos modelos.
+No en detalle, solo lo básico, porque ya hay una tonelada de libros, videos, tutoriales, documentos y más material disponible.
+Nos centraremos en cómo interpretar los modelos.
+El libro trata sobre [regresión lineal](#lineal), [regresión logística](#logística), [otras extensiones de regresión lineal](#extend-lm), [árboles de decisión](#arbol), [reglas de decisión](#reglas) y [el algoritmo RuleFit](#rulefit) con más detalle.
+También mostraremos [otros modelos interpretables](#otros-interpretables).
+
+Todos los modelos interpretables explicados en este libro son interpretables en un nivel modular, con la excepción del método de k-vecinos más cercanos.
+La siguiente tabla ofrece una descripción general de los tipos de modelos interpretables y sus propiedades.
+Un modelo es lineal si la asociación entre la entrada y la salida se modela linealmente.
+Un modelo con restricciones de monotonicidad asegura que la relación entre una característica y el resultado objetivo siempre va en la misma dirección en todo el rango de la característica:
+Un aumento en el valor de la característica siempre conduce a un aumento o siempre a una disminución en el resultado objetivo.
+La monotonicidad es útil para la interpretación de un modelo porque facilita la comprensión de una relación.
+Algunos modelos pueden incluir automáticamente interacciones entre características para predecir el resultado objetivo.
+Puedes incluir interacciones en cualquier tipo de modelo creando manualmente esas características de interacción.
+Las interacciones pueden mejorar el rendimiento predictivo, pero si son demasiadas o demasiado complejas pueden dañar la capacidad de interpretación.
+Algunos modelos manejan solo la regresión, algunos solo la clasificación y otros ambos.
+
+Desde esta tabla, puedes seleccionar un modelo interpretable adecuado para tu tarea, ya sea regresión (regr) o clasificación (clas):
+
+| Algoritmo |Lineal |Monótono|Interacción|Tarea|
+|:--------------|:----|:----|:------|:--------|
+| Regresión lineal | Sí | Sí | No | regr |
+| Regresión logística | No | Sí | No | clas|
+| Árboles de decisión | No | Algunos | Sí | clas,regr|
+| RuleFit| Sí | No | Sí| clas,regr |
+| Bayes ingenuo | No | Sí | No | clas |
+| k-vecinos más cercanos | No | No | No | clas,regr|

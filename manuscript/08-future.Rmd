@@ -1,0 +1,203 @@
+# Una mirada a la bola de cristal {#futuro}
+
+¿Cuál es el futuro del aprendizaje automático interpretable?
+Este capítulo es un ejercicio mental especulativo y una suposición subjetiva de cómo se desarrollará el aprendizaje automático interpretable.
+Abrí el libro con [historias cortas](#horadelcuento) bastante pesimistas y me gustaría concluir con una perspectiva más optimista.
+
+He basado mis "predicciones" en tres premisas:
+
+1. **Digitalización: Cualquier información (interesante) será digitalizada.**
+Piensa en el dinero electrónico y las transacciones en línea.
+Piensa en libros electrónicos, música y videos.
+Piensa en todos los datos sensoriales sobre nuestro entorno, nuestro comportamiento humano, los procesos de producción industrial, etc.
+Los impulsores de la digitalización de todo son: computadoras / sensores / almacenamiento baratos, efectos de escala (el ganador se lo lleva todo), nuevos modelos de negocios, cadenas de valor modulares, presión de costos y mucho más.
+1. **Automatización: cuando una tarea se puede automatizar y el costo de la automatización es menor que el costo de realizar la tarea con el tiempo, la tarea se automatizará.**
+Incluso antes de la introducción de la computadora, teníamos un cierto grado de automatización.
+Por ejemplo, la máquina de tejer automatizada o la máquina de vapor automatizada.
+Pero las computadoras y la digitalización llevan la automatización al siguiente nivel.
+Simplemente el hecho de que puede programar loops for, escribir macros de Excel, automatizar respuestas de correo electrónico, etc., muestra cuánto puede automatizar un individuo.
+Las máquinas de boletos automatizan la compra de boletos de tren (ya no se necesita cajero), las lavadoras automatizan la lavandería, las órdenes permanentes automatizan las transacciones de pago, etc.
+La automatización de tareas libera tiempo y dinero, por lo que existe un gran incentivo económico y personal para automatizar las cosas.
+Actualmente estamos observando la automatización de la traducción de idiomas, la conducción y, en menor medida, incluso el descubrimiento científico.
+1. **Especificación incorrecta: no podemos especificar perfectamente un objetivo con todas sus limitaciones.**
+Piensa en el genio en una botella que siempre toma tus deseos literalmente:
+"¡Quiero ser la persona más rica del mundo!" -> Te conviertes en la persona más rica, pero como efecto secundario, la moneda que tienes se devalúa debido a la inflación.
+"¡Quiero ser feliz por el resto de mi vida!" -> Los siguientes 5 minutos te sientes muy feliz, luego el genio te mata.
+"¡Deseo la paz mundial!" -> El genio mata a todos los humanos.
+Especificamos objetivos incorrectamente, ya sea porque no conocemos todas las restricciones o porque no podemos medirlas.
+Veamos a las corporaciones como un ejemplo de especificación de objetivos imperfectos.
+Una corporación tiene el objetivo simple de ganar dinero para sus accionistas.
+Pero esta especificación no captura el verdadero objetivo con todas sus limitaciones por las que realmente nos esforzamos:
+Por ejemplo, no apreciamos que una compañía mate personas para ganar dinero, envenene ríos o simplemente imprima su propio dinero.
+Hemos inventado leyes, reglamentos, sanciones, procedimientos de cumplimiento, sindicatos y más para parchear la especificación de objetivos imperfectos.
+Otro ejemplo que puedes experimentar por ti mismo es
+[Paperclips](http://www.decisionproblem.com/paperclips/index2.html), un juego en el que juegas una máquina con el objetivo de producir tantos clips como sea posible.
+ADVERTENCIA: es adictivo.
+No quiero estropearlo demasiado, pero digamos que las cosas se descontrolan muy rápido.
+En el aprendizaje automático, las imperfecciones en la especificación del objetivo provienen de abstracciones de datos imperfectas (poblaciones sesgadas, errores de medición, ...), funciones de pérdida sin restricciones, falta de conocimiento de las restricciones, cambio de la distribución entre los datos de entrenamiento y aplicación y mucho más. .
+
+La digitalización está impulsando la automatización.
+La especificación de objetivos imperfecta entra en conflicto con la automatización.
+Afirmo que este conflicto está mediado parcialmente por métodos de interpretación.
+
+El escenario para nuestras predicciones está listo, la bola de cristal está lista, ¡ahora miramos hacia dónde podría ir el campo!
+
+
+## El futuro del aprendizaje automático
+
+Sin aprendizaje automático no puede haber aprendizaje automático interpretable.
+Por lo tanto, tenemos que adivinar hacia dónde se dirige el aprendizaje automático antes de poder hablar sobre la interpretabilidad.
+
+El aprendizaje automático (o "AI") está asociado con muchas promesas y expectativas.
+Pero comencemos con una observación menos optimista:
+Si bien la ciencia desarrolla muchas herramientas sofisticadas de aprendizaje automático, en mi experiencia es bastante difícil integrarlas en los procesos y productos existentes.
+No porque no sea posible, sino simplemente porque lleva tiempo para que las empresas e instituciones se pongan al día.
+En la fiebre del oro de la actual exageración de la IA, las empresas abren "laboratorios de IA", "unidades de aprendizaje automático" y contratan "científicos de datos", "expertos en aprendizaje automático", "ingenieros de IA", etc., pero la realidad es que, en mi experiencia, bastante frustrante.
+A menudo, las empresas ni siquiera tienen datos en la forma requerida y los científicos de datos esperan inactivos durante meses.
+A veces las empresas tienen una expectativa tan alta de IA y ciencia de datos debido a los medios que los científicos de datos nunca podrían cumplirlas.
+Y a menudo nadie sabe cómo integrar a los científicos de datos en las estructuras existentes y muchos otros problemas.
+Esto lleva a mi primera predicción.
+
+**El aprendizaje automático crecerá lenta pero constantemente**.
+
+La digitalización está avanzando y la tentación de automatizar está constantemente tirando.
+Incluso si el camino de la adopción del aprendizaje automático es lento y pedregoso, el aprendizaje automático se mueve constantemente de la ciencia a los procesos comerciales, productos y aplicaciones del mundo real.
+
+Creo que debemos explicar mejor a los no expertos qué tipos de problemas pueden formularse como problemas de aprendizaje automático.
+Conozco a muchos científicos de datos altamente remunerados que realizan cálculos de Excel o inteligencia empresarial clásica con informes y consultas SQL en lugar de aplicar el aprendizaje automático.
+Pero algunas empresas ya están utilizando con éxito el aprendizaje automático, con las grandes empresas de Internet a la vanguardia.
+Necesitamos encontrar mejores formas de integrar el aprendizaje automático en procesos y productos, capacitar a las personas y desarrollar herramientas de aprendizaje automático que sean fáciles de usar.
+Creo que el aprendizaje automático será mucho más fácil de usar:
+Ya podemos ver que el aprendizaje automático se está volviendo más accesible, por ejemplo, a través de los servicios en la nube ("Aprendizaje automático como un servicio", solo para lanzar algunas palabras de moda).
+Una vez que el aprendizaje automático ha madurado, y este niño ya ha dado sus primeros pasos, mi próxima predicción es:
+
+**El aprendizaje automático alimentará muchas cosas.**
+
+Basado en el principio "Todo lo que se pueda automatizar se automatizará", concluyo que siempre que sea posible,
+Las tareas se formularán como problemas de predicción y se resolverán con el aprendizaje automático.
+El aprendizaje automático es una forma de automatización o al menos puede ser parte de ella.
+Muchas tareas que actualmente realizan los humanos son reemplazadas por el aprendizaje automático.
+Aquí hay algunos ejemplos de tareas donde el aprendizaje automático se usa para automatizar partes de él:
+
+- Clasificación / toma de decisiones / finalización de documentos (por ejemplo, en compañías de seguros, el sector legal o empresas de consultoría)
+- Decisiones basadas en datos, como las solicitudes de crédito.
+- Descubrimiento de medicamento
+- Controles de calidad en líneas de montaje.
+- Autos sin conductor
+- Diagnóstico de enfermedades.
+- Traducción. Para este libro, utilicé un servicio de traducción llamado ([DeepL](https://deepl.com)) impulsado por redes neuronales profundas para mejorar mis oraciones traduciéndolas del inglés al alemán y nuevamente al inglés.
+- ...
+
+El avance para el aprendizaje automático no solo se logra a través de mejores computadoras / más datos / mejor software, sino también:
+
+
+
+**Las herramientas de interpretación catalizan la adopción del aprendizaje automático.**
+
+Basado en la premisa de que el objetivo de un modelo de aprendizaje automático nunca puede especificarse perfectamente, se deduce que el aprendizaje automático interpretable es necesario para cerrar la brecha entre el objetivo mal especificado y el objetivo real.
+En muchas áreas y sectores, la interpretabilidad será el catalizador para la adopción del aprendizaje automático.
+Alguna evidencia anecdótica:
+Muchas personas con las que he hablado no usan el aprendizaje automático porque no pueden explicar los modelos a otros.
+Creo que la interpretabilidad abordará este problema y hará que el aprendizaje automático sea atractivo para las organizaciones y las personas que exigen cierta transparencia.
+Además de la especificación errónea del problema, muchas industrias requieren interpretabilidad, ya sea por razones legales, debido a la aversión al riesgo o para obtener una idea de la tarea subyacente.
+El aprendizaje automático automatiza el proceso de modelado y aleja un poco al ser humano de los datos y la tarea subyacente:
+Esto aumenta el riesgo de problemas con el diseño experimental, la elección de la distribución del entrenamiento, el muestreo, la codificación de datos, la ingeniería de características, etc.
+Las herramientas de interpretación facilitan la identificación de estos problemas.
+
+
+
+## El futuro de la interpretabilidad
+
+Echemos un vistazo al posible futuro de la interpretabilidad del aprendizaje automático.
+
+
+**La atención se centrará en las herramientas de interpretación independientes del modelo.**
+
+Es mucho más fácil automatizar la interpretabilidad cuando se desacopla del modelo de aprendizaje automático subyacente.
+La ventaja de la interpretabilidad agnóstica del modelo radica en su modularidad.
+Podemos reemplazar fácilmente el modelo subyacente de aprendizaje automático.
+Podemos reemplazar con la misma facilidad el método de interpretación.
+Por estas razones, los métodos modelo-agnósticos escalarán mucho mejor.
+Es por eso que creo que los métodos modelo-agnósticos serán más dominantes a largo plazo.
+Pero los métodos intrínsecamente interpretables también tendrán un lugar.
+
+
+**El aprendizaje automático se automatizará y, con él, la interpretabilidad.**
+
+Una tendencia ya visible es la automatización de la formación de modelos.
+Eso incluye ingeniería automatizada y selección de características, optimización automática de hiperparámetros, comparación de diferentes modelos y ensamblaje o apilamiento de los modelos.
+El resultado es el mejor modelo de predicción posible.
+Cuando utilizamos métodos de interpretación independientes del modelo, podemos aplicarlos automáticamente a cualquier modelo que surja del proceso automatizado de aprendizaje automático.
+En cierto modo, también podemos automatizar este segundo paso:
+Calcula automáticamente la importancia de la característica, traza la dependencia parcial, entrena un modelo sustituto, etc.
+Nadie te impide calcular automáticamente todas estas interpretaciones de modelos.
+La interpretación real todavía requiere personas.
+Imagínate: cargas un conjunto de datos, especificas el objetivo de predicción y con solo presionar un botón se entrena el mejor modelo de predicción y el programa escupe todas las interpretaciones del modelo.
+Ya hay primeros productos y sostengo que para muchas aplicaciones será suficiente utilizar estos servicios automatizados de aprendizaje automático.
+Hoy cualquiera puede crear sitios web sin conocer HTML, CSS y Javascript, pero todavía hay muchos desarrolladores web.
+Del mismo modo, creo que todos podrán entrenar modelos de aprendizaje automático sin saber cómo programar, y aún será necesario contar con expertos en aprendizaje automático.
+
+
+**No analizamos datos, analizamos modelos.**
+
+Los datos sin procesar en sí mismos son siempre inútiles.
+(Exagero a propósito.
+La realidad es que necesitas una comprensión profunda de los datos para realizar un análisis significativo).
+No me importan los datos;
+Me importa el conocimiento contenido en los datos.
+El aprendizaje automático interpretable es una excelente manera de extraer el conocimiento de los datos.
+Puede sondear ampliamente el modelo, el modelo reconoce automáticamente si las características son relevantes para la predicción y cómo lo hacen (muchos modelos tienen una selección de características incorporada), el modelo puede detectar automáticamente cómo se representan las relaciones y, si se entrena correctamente, El modelo final es una muy buena aproximación de la realidad.
+
+
+Muchas herramientas analíticas ya se basan en modelos de datos (porque se basan en supuestos de distribución):
+
+- Pruebas de hipótesis simples como la prueba t de Student.
+- Pruebas de hipótesis con ajustes para factores de confusión (generalmente GLM)
+- Análisis de varianza (ANOVA)
+- El coeficiente de correlación (el coeficiente de regresión lineal estandarizado está relacionado con el coeficiente de correlación de Pearson)
+- ...
+
+Lo que estoy diciendo aquí en realidad no es nada nuevo.
+Entonces, ¿por qué pasar de analizar modelos transparentes basados en suposiciones a analizar modelos de caja negra sin suposiciones?
+Porque hacer todos estos supuestos es problemático:
+Por lo general, están equivocados (a menos que creas que la mayor parte del mundo sigue una distribución gaussiana), son difíciles de verificar, son muy inflexibles y difíciles de automatizar.
+En muchos dominios, los modelos basados en suposiciones suelen tener un peor rendimiento predictivo en datos de prueba intactos que los modelos de aprendizaje automático de caja negra.
+Esto solo es cierto para grandes conjuntos de datos, ya que los modelos interpretables con buenas suposiciones a menudo funcionan mejor con conjuntos de datos pequeños que los modelos de caja negra.
+El enfoque de aprendizaje automático de caja negra requiere una gran cantidad de datos para funcionar bien.
+Con la digitalización de todo, tendremos conjuntos de datos cada vez más grandes y, por lo tanto, el enfoque del aprendizaje automático se vuelve más atractivo.
+No hacemos suposiciones, aproximamos la realidad lo más cerca posible (al tiempo que evitamos el sobreajuste de los datos de entrenamiento).
+Sostengo que deberíamos desarrollar todas las herramientas que tenemos en estadística para responder preguntas (pruebas de hipótesis, medidas de correlación, medidas de interacción, herramientas de visualización, intervalos de confianza, valores p, intervalos de predicción, distribuciones de probabilidad) y reescribirlas para modelos de caja negra.
+En cierto modo, esto ya está sucediendo:
+
+- Tomemos un modelo lineal clásico: el coeficiente de regresión estandarizado ya es una medida de importancia característica.
+Con la [medida de importancia de la característica de permutación](#importanciadecaracteristicas), tenemos una herramienta que funciona con cualquier modelo.
+- En un modelo lineal, los coeficientes miden el efecto de una sola característica en el resultado previsto.
+La versión generalizada de esto es el [gráfico de dependencia parcial](#pdp).
+- Prueba si A o B es mejor:
+Para esto también podemos usar funciones de dependencia parcial.
+Lo que aún no tenemos (según mi leal saber y entender) son pruebas estadísticas para modelos arbitrarios de caja negra.
+
+
+**Los científicos de datos se automatizarán a sí mismos.**
+
+Creo que los científicos de datos eventualmente se automatizarán para muchas tareas de análisis y predicción.
+Para que esto suceda, las tareas deben estar bien definidas y debe haber algunos procesos y rutinas a su alrededor.
+Hoy, faltan estas rutinas y procesos, pero los científicos de datos y colegas están trabajando en ellos.
+A medida que el aprendizaje automático se convierta en una parte integral de muchas industrias e instituciones, muchas de las tareas se automatizarán.
+ 
+
+**Los robots y los programas se explicarán por sí mismos.**
+
+Necesitamos interfaces más intuitivas para las máquinas y los programas que hacen un uso intensivo del aprendizaje automático.
+Algunos ejemplos:
+Un automóvil autónomo que informa por qué se detuvo abruptamente ("70% de probabilidad de que un niño cruce la calle");
+Un programa de incumplimiento de crédito que explica a un empleado del banco por qué se rechazó una solicitud de crédito ("El solicitante tiene demasiadas tarjetas de crédito y está empleado en un trabajo inestable");
+Un brazo robótico que explica por qué movió el artículo de la cinta transportadora al contenedor de basura ("El artículo tiene una mancha en la parte inferior").
+
+
+**La interpretabilidad podría impulsar la investigación de inteligencia artificial.**
+
+Me imagino que al investigar más sobre cómo los programas y las máquinas pueden explicarse, podemos mejorar nuestra comprensión de la inteligencia y mejorar la creación de máquinas inteligentes.
+
+Al final, todas estas predicciones son especulaciones y tenemos que ver lo que realmente trae el futuro.
+¡Forma tu propia opinión y sigue aprendiendo!
