@@ -24,7 +24,7 @@
 <meta name="author" content="Christoph Molnar" />
 
 
-<meta name="date" content="2020-12-07" />
+<meta name="date" content="2021-01-07" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -52,22 +52,14 @@
 
 <link href="libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0/anchor-sections.js"></script>
-<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-159445204-1"></script>
 <script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '258165756');
+gtag('config', 'UA-159445204-1');
 
-ga('create', 'UA-159445204-1', 'https://fedefliguer.github.io/AAI/', {
-  'anonymizeIp': true
-  , 'storage': 'none'
-  , 'clientId': window.localStorage.getItem('ga_clientId')
-});
-ga(function(tracker) {
-  window.localStorage.setItem('ga_clientId', tracker.get('clientId'));
-});
-ga('send', 'pageview');
 </script>
 
 <link rel="stylesheet" type="text/css" href="css/cookieconsent.min.css" />
@@ -351,7 +343,7 @@ window.cookieconsent.initialise({
 <h1 class="title">Aprendizaje automatico interpretable</h1>
 <h2 class="subtitle"><em>Una guia para hacer que los modelos de caja negra sean explicables.</em></h2>
 <p class="author"><em>Christoph Molnar</em></p>
-<p class="date"><em>2020-12-07</em></p>
+<p class="date"><em>2021-01-07</em></p>
 </div>
 <div id="prefacio" class="section level1 unnumbered">
 <h1>Prefacio</h1>
