@@ -1,5 +1,5 @@
 ---
-title: "Aprendizaje automatico interpretable"
+title: "Aprendizaje automático interpretable"
 subtitle: "Una guia para hacer que los modelos de caja negra sean explicables."
 author: "Christoph Molnar"
 date: "`r Sys.Date()`"
@@ -13,7 +13,7 @@ fontsize: 12pt
 monofont: "Source Code Pro"
 monofontoptions: "Scale=0.7"
 site: bookdown::bookdown_site
-description: "Los algoritmos de aprendizaje autom?tico generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automatico sean interpretables."
+description: "Los algoritmos de aprendizaje automático generalmente funcionan como cajas negras y no esta claro como determinan sus decisiones. Este libro es una guia para profesionales para hacer que las decisiones de aprendizaje automático sean interpretables."
 #url:
 always_allow_html: yes
 ---

@@ -43,8 +43,6 @@ Portada por [\@YvonneDoinel](https://twitter.com/YvonneDoinel)
 
 **Sobre el traductor:** Mi nombre es Federico Fliguer, Soy economista y científico de datos. Encontré este libro durante mi carrera de posgrado, y decidí traducirlo para difundirlo entre la creciente comunidad de habla hispana interesada en el aprendizaje automático. ¡Espero que lo disfrutes!
 
-Seguime en Twitter! [\@FedeFliguer](https://twitter.com/FedeFliguer)
-
 `r if(is.html){"![Licencia](images/by-nc-sa.png)"}`
 
 `r if(is.html){"Este libro está licenciado bajo la licencia [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International](http://creativecommons.org/licenses/by-nc-sa/4.0/)."}`
